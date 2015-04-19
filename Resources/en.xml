@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dict>
+	<key>start</key>
+	<string>开始游戏</string>
+	<key>setting</key>
+	<string>设置</string>
+	<key>exit</key>
+	<string>退出</string>
+	<key>story</key>
+	<string>战役</string>
+	<key>vsAi</key>
+	<string>人机</string>
+	<key>vsPlayer</key>
+	<string>双人</string>
+	<key>vsNet</key>
+	<string>网络</string>
+	<key>back</key>
+	<string>返回</string>
+	<key>musicOn</key>
+	<string>音乐	开</string>
+	<key>musicOff</key>
+	<string>音乐    关</string>
+	<key>seOn</key>
+	<string>音效    开</string>
+	<key>seOff</key>
+	<string>音效    关</string>
+	<key>ensureExit</key>
+	<string>确认退出</string>
+	<key>server</key>
+	<string>作为主机</string>
+	<key>client</key>
+	<string>连接他人</string>
+	<key>pak</key>
+	<string>按任意键继续。。。</string>
+</dict>
