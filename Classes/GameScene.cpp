@@ -9,6 +9,7 @@ GameScene::~GameScene()
 {
 }
 
+/*
 std::vector<MyPointStruct> GameScene::getNearPoint(const MyPointStruct & point)
 {
 	std::vector<MyPointStruct> result;
@@ -34,7 +35,7 @@ std::vector<MyPointStruct> GameScene::getNearPoint(const MyPointStruct & point)
 	{
 	cout << "near: " << i.x << "," << i.y << endl;
 	}
-	*/
+	//
 	return result;
 }
 
@@ -66,7 +67,7 @@ std::vector<PathNodeStruct> GameScene::getPathTree(MyPointStruct point, int rang
 				/*debug
 				cout << "new point: " << n.x << ", " << n.y << endl;
 				cout << "head now: " << head << ", " << "tail now:" << tail << endl;
-				*/
+				//
 				visitedSet.insert(n);
 				result.push_back(PathNodeStruct{ n, head, result[head].stepLeft - 1 });
 				++tail;
@@ -77,7 +78,7 @@ std::vector<PathNodeStruct> GameScene::getPathTree(MyPointStruct point, int rang
 	}
 	return result;
 }
-
+*/
 bool GameScene::init()
 {
 	if (!Scene::init())

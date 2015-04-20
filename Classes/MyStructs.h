@@ -12,6 +12,7 @@ struct MyPointStruct
 };
 
 
+/*
 bool operator < (const MyPointStruct & thisOne, const MyPointStruct & another)
 {
 	if (thisOne.x != another.x)
@@ -19,6 +20,7 @@ bool operator < (const MyPointStruct & thisOne, const MyPointStruct & another)
 	else
 		return (thisOne.y < another.y);
 }
+*/
 
 //use this in vector
 struct PathNodeStruct
@@ -28,10 +30,12 @@ struct PathNodeStruct
 	int stepLeft;
 };
 
+/*
 bool operator < (const PathNodeStruct & thisOne, const PathNodeStruct & another)
 {
 	return (thisOne.stepLeft < another.stepLeft);
 }
+*/
 
 //use it in vector
 struct TechTreeNodeStruct
@@ -42,10 +46,12 @@ struct TechTreeNodeStruct
 	bool isUnclocked = false;
 };
 
+/*
 bool operator < (const TechTreeNodeStruct & thisOne, const TechTreeNodeStruct & another)
 {
 	return (thisOne.techName < another.techName);
 }
+*/
 
 struct UnitPropertyStruct
 {

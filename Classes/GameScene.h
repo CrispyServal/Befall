@@ -8,6 +8,7 @@
 #include "TechTree.h"
 using namespace cocos2d;
 
+/*
 struct GameStateStruct
 {
 	//一颗科技树
@@ -17,6 +18,7 @@ struct GameStateStruct
 	std::map<UnitEnum, UnitPropertyStruct> mInitialUnitPropertyMap;
 	std::map<MyPointStruct, Unit> unitMap;
 };
+*/
 
 
 class GameScene : public Scene
@@ -58,14 +60,14 @@ private:
 	void onMouseMoved(Event * event);
 	//abstract things----------------------------------------
 	//0是己方，1是对方
-	GameStateStruct mGameState[2];
+	//GameStateStruct mGameState[2];
 	//矿藏的数据，只需要一份，两边会分别减少
 	std::map<MyPointStruct, Unit> mResourceMap;
 	//method
 	//初始静态数据在这里面。此函数初始化双方的GameState。可能会读字典。
 	void initGameState();
-	std::vector<MyPointStruct> getNearPoint(const MyPointStruct & point);
-	std::vector<PathNodeStruct> getPathTree(MyPointStruct point, int range, const std::set<MyPointStruct> & barrier);
+	//std::vector<MyPointStruct> getNearPoint(const MyPointStruct & point);
+	//std::vector<PathNodeStruct> getPathTree(MyPointStruct point, int range, const std::set<MyPointStruct> & barrier);
 };
 
 #endif // !GAMESCENE_H

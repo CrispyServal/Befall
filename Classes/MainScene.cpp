@@ -40,18 +40,20 @@ bool MainScene::init()
 	bgSprite->setPosition(vWidth / 2, vHeight / 2);
 	bgSprite->setColor(Color3B(120,120,120));
 	mainLayer->addChild(bgSprite, -2);
+	//label
+	initLabelPAK();
 	//ball
 	ball = Node::create();
 	ball->setPosition(vWidth / 2, vHeight / 2);
-	Sprite * ring[10];
-	RotateBy * ringRotate[10];
-	RepeatForever * ringRepeat[10];
-	for (int i = 0; i < 10; ++ i)
+	Sprite * ring[11];
+	RotateBy * ringRotate[11];
+	RepeatForever * ringRepeat[11];
+	for (int i = 0; i < 11; ++ i)
 	{
 		std::stringstream ss;
-		ss << "ring" << i << ".png";
-		CCLOG("%s", ss.str());
+		ss << "ring/ring" << i << ".png";
 		ring[i] = Sprite::create(ss.str());
+		//ring[i] = Sprite::create(std::string{"ring/ring0.png"});
 		//delta angle
 		int de;
 		if (CCRANDOM_0_1() > 0.5)
@@ -71,11 +73,9 @@ bool MainScene::init()
 		//rotate
 		ball->addChild(ring[i]);
 	}
-	float scale = (vHeight / 3 * 2) / ring[9]->getContentSize().height;
+	float scale = (vHeight / 3 * 2) / ring[10]->getContentSize().height;
 	ball->setScale(scale);
 	mainLayer->addChild(ball, 0);
-	//label
-	initLabelPAK();
 	//dispatcher
 	auto dispatcher = Director::getInstance()->getEventDispatcher();
 	//listener
