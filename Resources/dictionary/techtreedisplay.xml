@@ -1,0 +1,194 @@
+<dict>
+		<key>techroot</key>
+	<string>未来降临</string>
+	<string>开启聚能研究所</string>
+	<string>未来终将属于我们</string>
+	<string>icon_flask.png<string>
+
+		<key>techtree1</key>
+	<string>研究小组</string>
+	<string>提高基地科研水平</string>
+	<string>除了公式，还需要点什么</string>
+	<string>icon_research.png<string>
+
+		<key>techtree2</key>
+	<string>强子对撞</string>
+	<string>大幅提升基地科研水平</string>
+	<string>我要拆开你！</string>
+	<string>icon_atoms.png<string>
+
+		<key>techtree3</key>
+	<string>星际科技</string>
+	<string>最大化基地科研水平</string>
+	<string>宇宙奥秘，方寸之间</string>
+	<string>icon_brain.png<string>
+
+		<key>unlocklongrangeunit1</key>
+	<string>电磁重构</string>
+	<string>解锁电磁聚能装置</string>
+	<string>首先，按下这个按钮</string>
+	<string>icon_loudspeaker.png<string>
+
+		<key>unlocklongrangeunit2</key>
+	<string>广义引力</string>
+	<string>解锁引力轰击船</string>
+	<string>有谁，能逃脱引力</string>
+	<string>icon_tap.png<string>
+
+		<key>unlockshortrangeunit1</key>
+	<string>机械原理</string>
+	<string>解锁机械撞击装置</string>
+	<string>动量，貌似是守恒的</string>
+	<string>icon_geers.png<string>
+
+		<key>unlockshortrangeunit2</key>
+	<string>原子核心</string>
+	<string>解锁原子爆破船</string>
+	<string>请指引我方位</string>
+	<string>icon_cd.png<string>
+
+		<key>unlocklongrangeunit3</key>
+	<string>高度聚合</string>
+	<string>解锁大型聚合航母</string>
+	<string>粉碎你的一切！</string>
+	<string>icon_wolfram_alpha.png<string>
+
+		<key>productivity1</key>
+	<string>重振工业</string>
+	<string>提高基地生产力</string>
+	<string>少说话，多实干</string>
+	<string>icon_factory.png<string>
+
+		<key>productivity2</key>
+	<string>尖端自动</string>
+	<string>大幅提升基地生产力</string>
+	<string>工作！工作！</string>
+	<string>icon_field_chip.png<string>
+
+		<key>productivity3</key>
+	<string>星系智能</string>
+	<string>最大化基地生产力</string>
+	<string>运转不止，建造不休</string>
+	<string>icon_hub.png<string>
+
+		<key>resourcefixed1</key>
+	<string>量子运输</string>
+	<string>提高核聚氢采集效率</string>
+	<string>啊，伟大的太阳</string>
+	<string>icon_sun.png<string>
+
+		<key>resourcefixed2</key>
+	<string>宏维传输</string>
+	<string>大幅提升核聚氢采集效率</string>
+	<string>两点之间，直线最短</string>
+	<string>icon_point_objects.png<string>
+
+		<key>resourcefixed3</key>
+	<string>跨膜传送</string>
+	<string>最大化核聚氢采集效率</string>
+	<string>超越空间，无尽能源</string>
+	<string>icon_foil_space_blanket.png<string>
+
+		<key>resourcerandom1</key>
+	<string>纳容装备</string>
+	<string>提高引力波采集效率</string>
+	<string>引力维持着宇宙的运转</string>
+	<string>icon_battery_empty.png<string>
+
+		<key>resourcerandom2</key>
+	<string>能源压缩</string>
+	<string>大幅提升引力波采集效率</string>
+	<string>我要更多，更多</string>
+	<string>icon_battery_almost_empty.png</tring>
+
+		<key>resourcerandom3</key>
+	<string>深度挖掘</string>
+	<string>最大化引力波采集效率</string>
+	<string>取之不尽，万世不竭</string>
+	<string>icon_battery_almost_full.png</tring>
+
+		<key>hplongrange1</key>
+	<string>分散储能</string>
+	<string>增加远程兵种生命值</string>
+	<string>这次总不会一下就死了</string>
+	<string>icon_donat_chart.png</tring>
+
+		<key>hplongrange2</key>
+	<string>致密压缩</string>
+	<string>最大化远程兵种生命值</string>
+	<string>终于可以安心输出了</string>
+	<string>icon_wipes.png</tring>
+
+		<key>arglongrange1</key>
+	<string>能量虫洞</string>
+	<string>增加远程兵种攻击距离</string>
+	<string>高冷到无法触碰</string>
+	<string>icon_rotate.png</tring>
+
+		<key>arglongrange2</key>
+	<string>超弦折射</string>
+	<string>最大化远程兵种攻击距离</string>
+	<string>全面覆盖，插翅难逃</string>
+	<string>icon_path.png</tring>
+
+		<key>atklongrange1</key>
+	<string>电磁控制</string>
+	<string>增加远程兵种攻击力</string>
+	<string>电和磁都是我的玩具</string>
+	<string>icon_infrared_field.png</tring>
+
+		<key>atklongrange2</key>
+	<string>极限聚能</string>
+	<string>最大化远程兵种攻击力</string>
+	<string>消灭一切，片甲不留</string>
+	<string>icon_laser_beam.png</tring>
+
+		<key>atkshortrange1</key>
+	<string>炮火升级</string>
+	<string>增加近程兵种攻击力</string>
+	<string>尝尝新的武器</string>
+	<string>icon_chili_papper.png</tring>
+
+		<key>atkshortrange2</key>
+	<string>聚能核爆</string>
+	<string>最大化近程兵种攻击力</string>
+	<string>一口气解决</string>
+	<string>icon_energy.png</tring>
+
+		<key>defshortrange1</key>
+	<string>机械硬化</string>
+	<string>增加近程兵种防御力</string>
+	<string>真的挡得住攻击吗</string>
+	<string>icon_shield.png</tring>
+
+		<key>defshortrange2</key>
+	<string>近场反射</string>
+	<string>最大化近程兵种防御力</string>
+	<string>坚不可摧，所向披靡</string>
+	<string>icon_shellfish.png</tring>
+
+		<key>mrgshortrange1</key>
+	<string>驱动引擎</string>
+	<string>增加近程兵种移动范围</string>
+	<string>追求更快的速度</string>
+	<string>icon_rocket.png</tring>
+
+		<key>mrgshortrange2</key>
+	<string>高维折叠</string>
+	<string>最大化近程兵种移动范围</string>
+	<string>难道超越了光速</string>
+	<string>icon_stairs.png</tring>
+
+		<key>defbase1</key>
+	<string>基地加固</string>
+	<string>增加基地生命值</string>
+	<string>修修补补总比没有强</string>
+	<string>icon_lighthouse.png</tring>
+
+		<key>defbase2</key>
+	<string>终极防护</string>
+	<string>最大化基地生命值</string>
+	<string>修修补补总比没有强</string>
+	<string>icon_processor.png</tring>
+
+</dict>

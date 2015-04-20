@@ -1,0 +1,16 @@
+<dict>
+		<key>option</key>
+	<string>选项</string>
+
+		<key>resume</key>
+	<string>继续游戏</string>
+
+		<key>backtomenu</key>
+	<string>回到菜单</string>
+
+		<key>exit</key>
+	<string>退出游戏</string>
+
+		<key>about</key>
+	<string>关于我们</string>
+</dict>

@@ -1,0 +1,30 @@
+<dict>
+		<key>base</key>
+	<string>基地</string>
+	<string>作为升级发展的基础设施，拥有聚能研究所与械能工厂，提供基础的研究与制造能力</string>
+
+		<key>farmer</key>
+	<string>简单资源作业船</string>
+	<string>用于资源的收集，可在聚能研究所中研究相应的科技以提高资源采集效率</string>
+
+		<key>shortrangeunit1</key>
+	<string>机械撞击装置</string>
+	<string>运用纯物理的攻击手法，对敌人造成硬打击，少量的资源需求以及强劲的攻击，使得其拥有较高性价比</string>
+
+		<key>shortrangeunit2</key>
+	<string>原子爆破船</string>
+	<string>利用基础的裂变与聚变，在近距离内对敌人产生大量伤害，坚固的船身也保证其拥有较高续航力</string>
+
+		<key>longrangeunit1</key>
+	<string>电磁聚能装置</string>
+	<string>运用古典的电磁理论，扭曲周围的电磁场而产生电磁伤害，较大的攻击范围保证了自己不会被轻易打击</string>
+
+		<key>longrangeunit2</key>
+	<string>引力轰击船</string>
+	<string>利用引力波发动远程打击，不低的攻击以及灵活的运动性，使其能在战场上发挥不小的优势</string>
+
+		<key>longrangeunit3</key>
+	<string>大型聚合航母</string>
+	<string>作为最强大的装置，极高的防御力以及强大的攻城能力，使其具有很大的吸引力，也是终极对决的选择之一</string>
+
+</dict>

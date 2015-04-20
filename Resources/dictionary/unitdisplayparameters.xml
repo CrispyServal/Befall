@@ -1,0 +1,107 @@
+<dict>
+		<key>base</key>
+	<attribute>
+		<value numHitPoint>500</value>
+		<value numDefence>10</value>
+		<value numAttack>0</value>
+		<value numAttackRange>0</value>
+		<value numMoveRange>0</value>
+		<value numPopulation>0</value>
+	</attribute>
+	<consumption>
+		<value numFixedResource>0</value>
+		<value numRandomResource>0</value>
+		<value absProductivity>0</value>
+	</consumption>
+
+		<key>farmer</key>
+	<attribute>
+		<value numHitPoint>30</value>
+		<value numDefence>5</value>
+		<value numAttack>5</value>
+		<value numAttackRange>1</value>
+		<value numMoveRange>3</value>
+		<value numPopulation>1</value>
+	</attribute>
+	<consumption>
+		<value numFixedResource>5</value>
+		<value numRandomResource>5</value>
+		<value absProductivity>20</value>
+	</consumption>
+
+		<key>shortrangeunit1</key>
+	<attribute>
+		<value numHitPoint>50</value>
+		<value numDefence>10</value>
+		<value numAttack>20</value>
+		<value numAttackRange>1</value>
+		<value numMoveRange>3</value>
+		<value numPopulation>5</value>
+	</attribute>
+	<consumption>
+		<value numFixedResource>10</value>
+		<value numRandomResource>20</value>
+		<value absProductivity>40</value>
+	</consumption>
+
+		<key>shortrangeunit2</key>
+	<attribute>
+		<value numHitPoint>80</value>
+		<value numDefence>15</value>
+		<value numAttack>30</value>
+		<value numAttackRange>1</value>
+		<value numMoveRange>3</value>
+		<value numPopulation>10</value>
+	</attribute>
+	<consumption>
+		<value numFixedResource>20</value>
+		<value numRandomResource>40</value>
+		<value absProductivity>80</value>
+	</consumption>	
+
+		<key>longrangeunit1</key>
+	<attribute>
+		<value numHitPoint>30</value>
+		<value numDefence>5</value>
+		<value numAttack>25</value>
+		<value numAttackRange>2</value>
+		<value numMoveRange>4</value>
+		<value numPopulation>8</value>
+	</attribute>
+	<consumption>
+		<value numFixedResource>20</value>
+		<value numRandomResource>10</value>
+		<value absProductivity>20</value>
+	</consumption>
+
+		<key>longrangeunit2</key>
+	<attribute>
+		<value numHitPoint>30</value>
+		<value numDefence>5</value>
+		<value numAttack>35</value>
+		<value numAttackRange>3</value>
+		<value numMoveRange>4</value>
+		<value numPopulation>16</value>
+	</attribute>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>20</value>
+		<value absProductivity>80</value>
+	</consumption>
+
+		<key>longrangeunit3</key>
+	<attribute>
+		<value numHitPoint>120</value>
+		<value numDefence>20</value>
+		<value numAttack>20</value>
+		<value numAttackRange>3</value>
+		<value numMoveRange>2</value>
+		<value numPopulation>20</value>
+	</attribute>
+	<consumption>
+		<value numFixedResource>100</value>
+		<value numRandomResource>50</value>
+		<value absProductivity>200</value>
+	</consumption>
+
+</dict>

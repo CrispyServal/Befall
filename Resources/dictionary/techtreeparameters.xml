@@ -1,0 +1,401 @@
+<dict>
+		<key>techroot</key>
+	<child>techtree1</child>
+	<child>productivity1</child>
+	<child>unlocklongrangeunit1</child>
+	<child>unlockshortrangeunit1</child>
+	<child>resourcefixed1</child>
+	<child>resourcerandom1</child>
+
+
+		<key>techtree1</key>
+	<father>techroot</father>
+	<child>techtree2</child>
+	<child>unlocklongrangeunit2</child>
+	<child>resourcerandom2</child>
+	<influence>
+		<value numResearchLevel>10</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>10</value>
+		<value numRandomResource>5</value>
+		<value absResearchLevel>20</value>
+	</consumption>
+
+		<key>techtree2</key>
+	<father>techtree1</father>
+	<child>techtree3</child>
+	<child>atklongrangeunit2</child>
+	<influence>
+		<value numResearchLevel>20</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>20</value>
+		<value absResearchLevel>80</value>
+	</consumption>
+
+		<key>techtree3</key>
+	<father>techtree2</father>
+	<influence>
+		<value numResearchLevel>40</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>160</value>
+		<value numRandomResource>80</value>
+		<value absResearchLevel>160</value>
+	</consumption>
+
+		<key>unlocklongrangeunit1</key>
+	<father>techroot</father>
+	<child>unlocklongrangeunit2</child>
+	<child>hplongrange1</child>
+	<influence>
+		<value unlockLongRangeUnit1>true</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>10</value>
+		<value numRandomResource>5</value>
+		<value absResearchLevel>20</value>
+	</consumption>
+
+		<key>unlocklongrangeunit2</key>
+	<father>unlocklongrangeunit1</father>
+	<father>techtree1</father>
+	<child>arglongrange1</child>
+	<child>atklongrange1</child>
+	<influence>
+		<value unlockLongRangeUnit2>true</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>20</value>
+		<value numRandomResource>10</value>
+		<value absResearchLevel>40</value>
+	</consumption>
+
+		<key>unlockshortrangeunit1</key>
+	<father>techroot</father>
+	<child>unlockshortrangeunit2</child>
+	<child>defshortrange1</child>
+	<influence>
+		<value unlockShortRangeUnit1>true</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>5</value>
+		<value numRandomResource>10</value>
+		<value absResearchLevel>20</value>
+	</consumption>
+
+		<key>unlockshortrangeunit2</key>
+	<father>productivity1</father>
+	<child>mrgshortrange1</child>
+	<child>atkshortrange1</child>
+	<influence>
+		<value unlockShortRangeUnit2>true</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>10</value>
+		<value numRandomResource>20</value>
+		<value absResearchLevel>40</value>
+	</consumption>
+
+		<key>unlocklongrangeunit3</key>
+	<father>arglongrange2</father>
+	<father>hplongrange2</father>
+	<influence>
+		<value unlockLongRangeUnit3>true</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>160</value>
+		<value numRandomResource>80</value>
+		<value absResearchLevel>160</value>
+	</consumption>
+
+		<key>productivity1</key>
+	<father>techroot</father>
+	<child>unshortlongrangeunit2</child>
+	<child>productivity2</child>
+	<child>resourcefixed2</child>
+	<influence>
+		<value numProductivity>10</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>5</value>
+		<value numRandomResource>10</value>
+		<value absResearchLevel>20</value>
+	</consumption>
+
+		<key>productivity2</key>
+	<father>productivity1</father>
+	<child>productivity3</child>
+	<child>atkshortrange2</child>
+	<influence>
+		<value numProductivity>20</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>10</value>
+		<value numRandomResource>20</value>
+		<value absResearchLevel>40</value>
+	</consumption>
+
+		<key>productivity3</key>
+	<father>productivity2</father>
+	<influence>
+		<value numProductivity>40</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>80</value>
+		<value absResearchLevel>80</value>
+	</consumption>
+
+		<key>resourcefixed1</key>
+	<father>techroot</father>
+	<child>resourcefixed2</child>
+	<child>hplongrange1</child>
+	<influence>
+		<value numFixedResource>10</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>10</value>
+		<value numRandomResource>20</value>
+		<value absResearchLevel>20</value>
+	</consumption>
+
+		<key>resourcefixed2</key>
+	<father>productivity1</father>
+	<father>resourcefixed1</father>
+	<child>resourcefixed3</child>
+	<influence>
+		<value numFixedResource>20</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>80</value>
+		<value absResearchLevel>80</value>
+	</consumption>
+
+		<key>resourcefixed3</key>
+	<father>resourcefixed2</father>
+	<influence>
+		<value numFixedResource>40</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>80</value>
+		<value numRandomResource>160</value>
+		<value absResearchLevel>120</value>
+	</consumption>
+
+		<key>resourcerandom1</key>
+	<father>techroot</father>
+	<child>defshortrange1</child>
+	<child>resourcerandom2</child>
+	<influence>
+		<value numRandomResource>10</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>20</value>
+		<value numRandomResource>10</value>
+		<value absResearchLevel>20</value>
+	</consumption>
+
+		<key>resourcerandom2</key>
+	<father>resourcerandom1</father>
+	<father>techtree1</father>
+	<child>resourcerandom3</child>
+	<influence>
+		<value numRandomResource>20</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>20</value>
+		<value absResearchLevel>40</value>
+	</consumption>
+
+		<key>resourcerandom3</key>
+	<father>resourcerandom2</father>
+	<influence>
+		<value numRandomResource>40</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>80</value>
+		<value numRandomResource>40</value>
+		<value absResearchLevel>120</value>
+	</consumption>
+
+		<key>hplongrange1</key>
+	<father>resourcefixed1</father>
+	<father>unlocklongrangeunit1</father>
+	<child>arglongrange1</child>
+	<child>hplongrange2</child>
+	<influence>
+		<value numLongRangeHitPoint>10</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>20</value>
+		<value numRandomResource>10</value>
+		<value absResearchLevel>20</value>
+	</consumption>
+
+		<key>hplongrange2</key>
+	<father>hplongrange1</father>
+	<child>unlocklongrangeunit3</child>
+	<influence>
+		<value numLongRangeHitPoint>20</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>80</value>
+		<value numRandomResource>40</value>
+		<value absResearchLevel>80</value>
+	</consumption>
+
+
+		<key>arglongrange1</key>
+	<father>unlocklongrangeunit2</father>
+	<father>hplongrange1</father>
+	<child>arglongrange2</child>
+	<influence>
+		<value numLongRangeAttackRange>1</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>20</value>
+		<value absResearchLevel>40</value>
+	</consumption>
+
+		<key>arglongrange2</key>
+	<father>arglongrange1</father>
+	<child>unlocklongrangeunit3</child>
+	<influence>
+		<value numLongRangeAttackRange>1</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>80</value>
+		<value numRandomResource>40</value>
+		<value absResearchLevel>80</value>
+	</consumption>
+
+		<key>atklongrange1</key>
+	<father>unlocklongrangeunit2</father>
+	<child>atklongrange2</child>
+	<influence>
+		<value numLongRangeAttack>10</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>20</value>
+		<value absResearchLevel>40</value>
+	</consumption>
+
+		<key>atklongrange2</key>
+	<father>techtree2</father>
+	<father>atklongrange1</father>
+	<influence>
+		<value numLongRangeAttack>20</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>80</value>
+		<value numRandomResource>40</value>
+		<value absResearchLevel>80</value>
+	</consumption>
+
+		<key>atkshortrange1</key>
+	<father>unlockshortrangeunit2</father>
+	<child>atkshortrange2</child>
+	<influence>
+		<value numShortRangeAttack>10</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>10</value>
+		<value numRandomResource>20</value>
+		<value absResearchLevel>20</value>
+	</consumption>
+
+		<key>atkshortrange2</key>
+	<father>atkshortrange1</father>
+	<influence>
+		<value numShortRangeAttack>20</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>80</value>
+		<value absResearchLevel>80</value>
+	</consumption>
+
+		<key>defshortrange1</key>
+	<father>unlockshortrangeunit1</father>
+	<father>resourcerandom1</father>
+	<child>defshortrange2</child>
+	<influence>
+		<value numShortRangeDefence>10</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>20</value>
+		<value numRandomResource>40</value>
+		<value absResearchLevel>40</value>
+	</consumption>
+
+		<key>defshortrange2</key>
+	<father>defshortrange1</father>
+	<child>defbase1</child>
+	<influence>
+		<value numShortRangeDefence>20</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>80</value>
+		<value absResearchLevel>40</value>
+	</consumption>
+
+		<key>mrgshortrange1</key>
+	<father>unlockshortrangeunit2</father>
+	<father>defshortrange1</father>
+	<child>mrgshortrange2</child>
+	<influence>
+		<value numShortRangeMoveRange>1</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>20</value>
+		<value numRandomResource>40</value>
+		<value absResearchLevel>40</value>
+	</consumption>
+
+		<key>mrgshortrange2</key>
+	<father>mrgshortrange1</father>
+	<child>defbase1</child>
+	<influence>
+		<value numShortRangeMoveRange>1</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>40</value>
+		<value numRandomResource>80</value>
+		<value absResearchLevel>80</value>
+	</consumption>
+
+		<key>defbase1</key>
+	<father>defshortrange1</father>
+	<father>mrgshortrange1</father>
+	<child>defbase2</child>
+	<influence>
+		<value numBaseDefence>20</value>
+		<value numBaseHitPoint>200</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>80</value>
+		<value numRandomResource>160</value>
+		<value absResearchLevel>120</value>
+	</consumption>
+
+		<key>defbase2</key>
+	<father>defbase1</father>
+	<influence>
+		<value numBaseDefence>40</value>
+		<value numBaseHitPoint>400</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>120</value>
+		<value numRandomResource>240</value>
+		<value absResearchLevel>120</value>
+	</consumption>
+
+</dict>
