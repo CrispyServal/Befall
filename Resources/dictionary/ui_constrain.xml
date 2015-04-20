@@ -1,0 +1,83 @@
+<!--UI constrains-->
+<UI>
+	<TopBar>
+		<length>1280px</length>
+		<height>40px</height>
+		<gravity>center_horizontal_top</gravity>
+
+		<Option>
+			<gravity>left_horizontal_top</gravity>
+			<textSize>36sp</textSize>
+			<textEffect>Bold<textEffect>
+			<textColor>000000</textColor>
+			<MenuItem>
+				<length>250px</length>
+				<height>30px</height>
+				<textSize>30sp</textSize>
+				<textColor>000000</textColor>
+			</MenuItem>
+		<Option>
+
+		<iconMenu>
+			<gravity>center_horizontal_top</gravity>	
+			
+			<iconMenuItem>	
+				<length>32px</length>
+				<height>32px</height>
+			</iconMenuItem>	
+		</iconMenu>
+
+		<TurnInfo>
+			<gravity>right_horizontal_top</gravity>
+			<textSize>36sp</textSize>
+			<textEffect>Bold<textEffect>
+			<textColor>000000</textColor>
+		</TurnInfo>
+	</TopBar>
+
+	<InfoMap>
+		<length>250px</length>
+		<height>250px</height>
+		<gravity>left_horizontal_bottom</gravity>
+		<margin>5px</margin>
+		<backGroundColor>0A90C7</backGroundColor>
+	</InfoMap>
+
+	<Map>
+		<length>250px</length>
+		<height>250px</height>
+		<gravity>right_horizontal_bottom</gravity>
+		<margin>5px</margin>
+		<backGroundColor>0A90C7</backGroundColor>
+	</Map>
+
+	<BottomBar>
+		<length>1280px</length>
+		<height>60px</height>
+		<gravity>center_horizontal_bottom</gravity>
+		<color>9B9B9B</color>
+		<alpha>0.75</alpha>
+
+		<MapPad>		
+			<length>260px</length>
+			<height>260px</height>
+			<gravity>right_horizontal_bottom</gravity>
+			<color>9B9B9B</color>
+		</MapPad>
+
+		<MapPad>		
+			<length>260px</length>
+			<height>260px</height>
+			<gravity>right_horizontal_bottom</gravity>
+			<color>9B9B9B</color>
+		</MapPad>
+	</BottomBar>
+
+	<Timer>
+			<length>200px</length>
+			<height>200px</height>
+			<gravity>center_horizontal_bottom</gravity>
+	</Timer>
+
+
+</UI>
