@@ -2,6 +2,10 @@
 #define UNITFACTORY_H
 
 #include "MyEnums.h"
+#include <map>
+
+using std::map;
+
 
 class UnitFactory
 {
@@ -19,11 +23,15 @@ public:
 	void cancelNowUnit();
 	//开始一个建造, 去查需要的时间
 	void addNewUnit(UnitEnum unit);
+	//
+	bool unitExistence();
 private:
 	//等待中队列
 	UnitEnum mBuldingUnit;
 	//建造中的剩余量
 	int mTimer;
+	bool mUnitExistence;
+	map<UnitEnum, int> timeTable;
 
 };
 
