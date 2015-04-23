@@ -2,12 +2,12 @@
 
 UnitFactory::UnitFactory()
 {
-	timeTable[farmer] = 10;
-	timeTable[longrangeunit1] = 10;
-	timeTable[longrangeunit2] = 10;
-	timeTable[longrangeunit3] = 10;
-	timeTable[shortrangeunit1] = 10;
-	timeTable[shortrangeunit2] = 10;
+	mUnitTimeTable[farmer] = 10;
+	mUnitTimeTable[longrangeunit1] = 10;
+	mUnitTimeTable[longrangeunit2] = 10;
+	mUnitTimeTable[longrangeunit3] = 10;
+	mUnitTimeTable[shortrangeunit1] = 10;
+	mUnitTimeTable[shortrangeunit2] = 10;
 }
 UnitFactory::~UnitFactory()
 {
@@ -41,7 +41,7 @@ void UnitFactory::addNewUnit(UnitEnum unit)
 {
 	mUnitExistence = true;
 	mBuldingUnit = unit;
-	mTimer = timeTable[unit];
+	mTimer = mUnitTimeTable[unit];
 }
 bool UnitFactory::unitExistence()
 {

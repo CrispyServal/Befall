@@ -31,7 +31,7 @@ private:
 	//建造中的剩余量
 	int mTimer;
 	bool mUnitExistence;
-	map<UnitEnum, int> timeTable;
+	map<UnitEnum, int> mUnitTimeTable;
 
 };
 

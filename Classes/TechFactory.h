@@ -2,6 +2,9 @@
 #define TECHFACTORY_H
 
 #include "MyEnums.h"
+#include <map>
+
+using std::map;
 
 class TechFactory
 {
@@ -19,12 +22,15 @@ public:
 	void cancelNowTech();
 	//开始一个建造, 去查需要的时间
 	void addNewTech(TechEnum tech);
+	//
+	bool techExistence();
 private:
 	//等待中队列
 	TechEnum mBuldingTech;
 	//建造中的剩余量
 	int mTimer;
-
+	bool mTechExistence;
+	map<TechEnum, int> mTechTimeTable;
 };
 
 #endif // !TECHFACTORY_H
