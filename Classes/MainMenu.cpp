@@ -1,8 +1,4 @@
 #include "MainMenu.h"
-//using namespace cocos2d;
-
-//USING_NS_CC_EXT;
-//USING_NS_CC;
 
 MainMenu::MainMenu()
 {
@@ -31,7 +27,6 @@ bool MainMenu::init()
 	//菜单共两级，根菜单叫做root，以root中的选项命名二级菜单
 	//root
 	auto startLabel = createMenuLabel("start");
-	//auto startLabel = Label::createWithTTF("fuckyou","fonts/STXIHEI.TTF", 30);
 	auto start = MenuItemLabel::create(startLabel, CC_CALLBACK_1(MainMenu::enterCallback, this, "root", "start", 0));
 	items["start"] = start;
 	auto settingLabel = createMenuLabel("setting");
@@ -117,7 +112,6 @@ bool MainMenu::init()
 	menuMap["exit"] = exitMenu;
 	addChild(exitMenu);
 	//net Menu
-	//auto serverLabel = Label::cre
 	auto serverLabel = createMenuLabel("server");
 	auto server = MenuItemLabel::create(serverLabel, CC_CALLBACK_1(MainMenu::displayEditBoxCallback,this,"server"));
 	items["server"] = server;
@@ -141,6 +135,13 @@ bool MainMenu::init()
 		)
 		);
 	editBoxInServer->setColor(Color3B(200,200,200));
+	auto rectInServer = DrawNode::create();
+	float halfWidthRectS = 100;
+	rectInServer->drawRect(
+		Vec2(Director::getInstance()->getWinSize().width / 2 - halfWidthRectS, editBoxInServer->getBoundingBox().getMinY()),
+		Vec2(Director::getInstance()->getWinSize().width / 2 + halfWidthRectS, editBoxInServer->getBoundingBox().getMaxY()),
+		Color4F(0.5,0.5,0.5,1)
+		);
 	auto cancelInServerLabel = createMenuLabel("cancel");
 	auto cancelInServer = MenuItemLabel::create(cancelInServerLabel, CC_CALLBACK_1(MainMenu::cancelCallback, this, "server"));
 	items["cancelInServer"] = cancelInServer;
@@ -150,6 +151,7 @@ bool MainMenu::init()
 	auto serverMenu = Menu::create(host, cancelInServer, NULL);
 	serverMenu->alignItemsHorizontallyWithPadding(30);
 	serverLayer = Layer::create();
+	serverLayer->addChild(rectInServer);
 	serverLayer->addChild(editBoxInServer);
 	serverLayer->addChild(serverMenu);
 	serverLayer->setVisible(false);
@@ -163,6 +165,13 @@ bool MainMenu::init()
 		)
 		);
 	editBoxInClient->setColor(Color3B(200,200,200));
+	auto rectInClient= DrawNode::create();
+	float halfWidthRectC = 200;
+	rectInClient->drawRect(
+		Vec2(Director::getInstance()->getWinSize().width / 2 - halfWidthRectC, editBoxInClient->getBoundingBox().getMinY()),
+		Vec2(Director::getInstance()->getWinSize().width / 2 + halfWidthRectC, editBoxInClient->getBoundingBox().getMaxY()),
+		Color4F(0.5,0.5,0.5,1)
+		);
 	auto cancelInClientLabel = createMenuLabel("cancel");
 	auto cancelInClient = MenuItemLabel::create(cancelInClientLabel, CC_CALLBACK_1(MainMenu::cancelCallback, this, "client"));
 	items["cancelInClient"] = cancelInClient;
@@ -172,6 +181,7 @@ bool MainMenu::init()
 	auto clientMenu = Menu::create(connect, cancelInClient, NULL);
 	clientMenu->alignItemsHorizontallyWithPadding(30);
 	clientLayer= Layer::create();
+	clientLayer->addChild(rectInClient);
 	clientLayer->addChild(editBoxInClient);
 	clientLayer->addChild(clientMenu);
 	clientLayer->setVisible(false);
@@ -220,7 +230,8 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
         }
 		if ((keyCode >= EventKeyboard::KeyCode::KEY_0) && (keyCode <= EventKeyboard::KeyCode::KEY_9))
 		{
-			nowStr += '0' + static_cast<int>(keyCode) - static_cast<int>(EventKeyboard::KeyCode::KEY_0);
+			if (nowStr.length() < 6)
+				nowStr += '0' + static_cast<int>(keyCode)-static_cast<int>(EventKeyboard::KeyCode::KEY_0);
 		}
 		if (keyCode == EventKeyboard::KeyCode::KEY_BACKSPACE)
 		{
@@ -250,15 +261,18 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
         }
 		if ((keyCode >= EventKeyboard::KeyCode::KEY_0) && (keyCode <= EventKeyboard::KeyCode::KEY_9))
 		{
-			nowStr += '0' + static_cast<int>(keyCode) - static_cast<int>(EventKeyboard::KeyCode::KEY_0);
+			if (nowStr.length() < 22)
+				nowStr += '0' + static_cast<int>(keyCode)-static_cast<int>(EventKeyboard::KeyCode::KEY_0);
 		}
 		if (keyCode == EventKeyboard::KeyCode::KEY_SEMICOLON)
 		{
-			nowStr += ':';
+			if (nowStr.length() < 22)
+				nowStr += ':';
 		}
 		if (keyCode == EventKeyboard::KeyCode::KEY_PERIOD)
 		{
-			nowStr += '.';
+			if (nowStr.length() < 22)
+				nowStr += '.';
 		}
 		if (keyCode == EventKeyboard::KeyCode::KEY_BACKSPACE)
 		{
@@ -292,8 +306,6 @@ void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const s
 		auto fadeOutSpawn = Spawn::create(mainMenuFadeOut, moveLeft, NULL);
 		auto fadeOutSequence = Sequence::create(fadeOutSpawn, hide, NULL);
 		menuMap[thisMenu]->runAction(fadeOutSequence);
-		//rootMenu->setOpacity(0);
-		//rootMenu->setVisible(false);
 		CCLOG("clicked!");
 		//2rd menu
 		Menu * menu;
@@ -304,7 +316,6 @@ void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const s
 		auto moveLeft1 = MoveBy::create(0.3, Vec2(-100, 0));
 		auto fadeInSpawn = Spawn::create(fadeIn, moveLeft1, NULL);
 		menu->runAction(fadeInSpawn);
-		//menu->runAction(fadeIn);
 		menuOpen[nowDeep + 1] = true;
 	}
 }
@@ -323,7 +334,6 @@ void MainMenu::backCallback(Ref * sender, const std::string & thisMenu, const st
 		auto hide = Hide::create();
 		auto fadeOutSequence = Sequence::create(fadeOutSpawn, hide, NULL);
 		menu->runAction(fadeOutSequence);
-		//menu->runAction(fadeOutSpawn);
 		menuMap[leftMenu]->setVisible(true);
 		menuMap[leftMenu]->setOpacity(0);
 		auto fadeIn = FadeIn::create(0.5);
@@ -337,7 +347,6 @@ void MainMenu::backCallback(Ref * sender, const std::string & thisMenu, const st
 }
 
 void MainMenu::enterGameCallback(GameModeEnum gamemode)
-//void MainMenu::enterGameCallback(Ref * sender, GameModeEnum gamemode)
 {
 	if (closeModeSet.find(gamemode) != closeModeSet.end())
 	{
