@@ -3,6 +3,7 @@
 #include "MyEnums.h"
 
 #include <set>
+#include <vector>
 #include <map>
 
 struct MyPointStruct
@@ -12,15 +13,7 @@ struct MyPointStruct
 };
 
 
-/*
-bool operator < (const MyPointStruct & thisOne, const MyPointStruct & another)
-{
-	if (thisOne.x != another.x)
-		return (thisOne.x < another.x);
-	else
-		return (thisOne.y < another.y);
-}
-*/
+bool operator < (const MyPointStruct & thisOne, const MyPointStruct & another);
 
 //use this in vector
 struct PathNodeStruct
@@ -41,9 +34,8 @@ bool operator < (const PathNodeStruct & thisOne, const PathNodeStruct & another)
 struct TechTreeNodeStruct
 {
 	TechEnum techName;
-	std::set<int> indexParents;
-	std::set<int> indexChildren;
-	bool isUnclocked = false;
+	std::vector<int> indexParents;
+	bool isUnclocked;
 };
 
 /*

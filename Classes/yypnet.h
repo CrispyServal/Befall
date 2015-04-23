@@ -3,10 +3,25 @@
 #include <iostream>
 #include <thread>
 #include<stdio.h>
+
+#ifdef __linux__
+#define SOCKET_ERROR -1
+#include <arpa/inet.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+typedef int SOCKET;
+#define INVALID_SOCKET -1
+#else
 #include <winsock2.h>
+#endif
+
 //#include "stdafx.h"
 #pragma comment (lib, "ws2_32")
 //#pragma once
+
 
 enum techNameEnum// just for test
 {

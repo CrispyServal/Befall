@@ -9,7 +9,6 @@ GameScene::~GameScene()
 {
 }
 
-/*
 std::vector<MyPointStruct> GameScene::getNearPoint(const MyPointStruct & point)
 {
 	std::vector<MyPointStruct> result;
@@ -35,7 +34,7 @@ std::vector<MyPointStruct> GameScene::getNearPoint(const MyPointStruct & point)
 	{
 	cout << "near: " << i.x << "," << i.y << endl;
 	}
-	//
+	*/
 	return result;
 }
 
@@ -67,7 +66,7 @@ std::vector<PathNodeStruct> GameScene::getPathTree(MyPointStruct point, int rang
 				/*debug
 				cout << "new point: " << n.x << ", " << n.y << endl;
 				cout << "head now: " << head << ", " << "tail now:" << tail << endl;
-				//
+				*/
 				visitedSet.insert(n);
 				result.push_back(PathNodeStruct{ n, head, result[head].stepLeft - 1 });
 				++tail;
@@ -78,7 +77,6 @@ std::vector<PathNodeStruct> GameScene::getPathTree(MyPointStruct point, int rang
 	}
 	return result;
 }
-*/
 bool GameScene::init()
 {
 	if (!Scene::init())
@@ -88,7 +86,8 @@ bool GameScene::init()
 	//global
 	mDirector = Director::getInstance();
 	mUserDefault = UserDefault::getInstance();
-	mDictionary = Dictionary::createWithContentsOfFile(std::string{ mUserDefault->getStringForKey("language") + ".xml" }.c_str());
+    mDictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + mUserDefault->getStringForKey("language") + ".xml" }.c_str());
+    mDictionary->retain();
 	mDispatcher = mDirector->getEventDispatcher();
 	mWinHeight = mDirector->getWinSize().height;
 	mWinWidth = mDirector->getWinSize().width;
@@ -109,10 +108,12 @@ bool GameScene::init()
 		auto juRepaet = RepeatForever::create(juRotate);
 		juFlower->runAction(juRepaet);
 		//wating label
-		auto watingLabel = Label::createWithTTF("", "/fonts/STXIHEI.TTF", 30);
+		auto watingLabel = Label::createWithTTF("fuck", "/fonts/STXIHEI.TTF", 30);
+        //CCLOG("%s",watingLabel->getString().c_str());
 		if (mGameMode == GameModeEnum::server)
 		{
-			watingLabel->setString(mDictionary->valueForKey("waiting")->getCString());
+            CCLOG("waiting:  %s",mDictionary->valueForKey("wating")->getCString());
+            watingLabel->setString(mDictionary->valueForKey("waiting")->getCString());
 		}
 		if (mGameMode = GameModeEnum::client)
 		{
@@ -203,7 +204,7 @@ void GameScene::onMouseMoved(Event * event)
 	//get mouse coordinate
 	mMouseCoordinate.x = e->getLocation().x;
 	mMouseCoordinate.y = 2 * mDirector->getWinSize().height - e->getLocation().y;
-	CCLOG("%f,%f", mMouseCoordinate.x, mMouseCoordinate.y);
+	//CCLOG("%f,%f", mMouseCoordinate.x, mMouseCoordinate.y);
 	//cancel's scale effect
 	auto box = backToMainSceneItem->boundingBox();
 	auto size = backToMainSceneItem->getContentSize();

@@ -26,7 +26,7 @@ bool MainScene::init()
 		userDefault->setStringForKey("language", "ch");
 	}
 	//dictionary = Dictionary::createWithContentsOfFile("ch.xml");
-	dictionary = Dictionary::createWithContentsOfFile(std::string{ userDefault->getStringForKey("language") + ".xml" }.c_str());
+	dictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + userDefault->getStringForKey("language") + ".xml" }.c_str());
 	dictionary->retain();
 	//layer
 	mainLayer = Layer::create();

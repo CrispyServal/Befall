@@ -25,7 +25,7 @@ bool MainMenu::init()
 	//global
 	menuOpen[0] = true;
 	userDefault = UserDefault::getInstance();
-	dictionary = Dictionary::createWithContentsOfFile(std::string{ userDefault->getStringForKey("language") + ".xml" }.c_str());
+	dictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + userDefault->getStringForKey("language") + ".xml" }.c_str());
 	//fuck you memory manager
 	dictionary->retain();
 	//菜单共两级，根菜单叫做root，以root中的选项命名二级菜单
@@ -133,17 +133,14 @@ bool MainMenu::init()
 	menuMap["net"] = netMenu;
 	addChild(netMenu);
 	//server
-	editBoxInServer = EditBox::create(Size(200, 40), "1pixel.png");
+	editBoxInServer = createMenuLabel("inputPort");
 	editBoxInServer->setPosition(
 		Vec2(
 		Director::getInstance()->getWinSize().width / 2,
 		Director::getInstance()->getWinSize().height / 2 + editBoxInServer->getContentSize().height + 10
 		)
 		);
-	editBoxInServer->setPlaceHolder(getDicValue("inputPort").c_str());
-	editBoxInServer->setFocused(true);
 	editBoxInServer->setColor(Color3B(200,200,200));
-	editBoxInServer->setEnabled(false);
 	auto cancelInServerLabel = createMenuLabel("cancel");
 	auto cancelInServer = MenuItemLabel::create(cancelInServerLabel, CC_CALLBACK_1(MainMenu::cancelCallback, this, "server"));
 	items["cancelInServer"] = cancelInServer;
@@ -158,17 +155,14 @@ bool MainMenu::init()
 	serverLayer->setVisible(false);
 	addChild(serverLayer);
 	//client
-	editBoxInClient = EditBox::create(Size(400, 40), "1pixel.png");
+	editBoxInClient = createMenuLabel("inputIp");
 	editBoxInClient->setPosition(
 		Vec2(
 		Director::getInstance()->getWinSize().width / 2,
 		Director::getInstance()->getWinSize().height / 2 + editBoxInClient->getContentSize().height + 10
 		)
 		);
-	editBoxInClient->setPlaceHolder(getDicValue("inputIp").c_str());
-	editBoxInClient->setFocused(true);
 	editBoxInClient->setColor(Color3B(200,200,200));
-	editBoxInClient->setEnabled(false);
 	auto cancelInClientLabel = createMenuLabel("cancel");
 	auto cancelInClient = MenuItemLabel::create(cancelInClientLabel, CC_CALLBACK_1(MainMenu::cancelCallback, this, "client"));
 	items["cancelInClient"] = cancelInClient;
@@ -219,7 +213,11 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
 	if (serverLayer->isVisible())
 	{
-		std::string nowStr = editBoxInServer->getText();
+		std::string nowStr = editBoxInServer->getString();
+        if (nowStr == std::string{getDicValue("inputPort")} )
+        {
+            nowStr = "";
+        }
 		if ((keyCode >= EventKeyboard::KeyCode::KEY_0) && (keyCode <= EventKeyboard::KeyCode::KEY_9))
 		{
 			nowStr += '0' + static_cast<int>(keyCode) - static_cast<int>(EventKeyboard::KeyCode::KEY_0);
@@ -230,18 +228,26 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 			{
 				nowStr.pop_back();
 			}
+			if (nowStr == std::string{""})
+            {
+                nowStr = getDicValue("inputPort");
+            }
 		}
 		if (keyCode == static_cast<EventKeyboard::KeyCode>(35) )
 		//enter
 		{
-			CCLOG("enter pressed %d", keyCode);
+			//CCLOG("enter pressed %d", keyCode);
 			enterGameCallback(GameModeEnum::server);
 		}
-		editBoxInServer->setText(nowStr.c_str());
+		editBoxInServer->setString(nowStr.c_str());
 	}
 	if (clientLayer->isVisible())
 	{
-		std::string nowStr = editBoxInClient->getText();
+		std::string nowStr = editBoxInClient->getString();
+        if (nowStr == std::string{getDicValue("inputIp")} )
+        {
+            nowStr = "";
+        }
 		if ((keyCode >= EventKeyboard::KeyCode::KEY_0) && (keyCode <= EventKeyboard::KeyCode::KEY_9))
 		{
 			nowStr += '0' + static_cast<int>(keyCode) - static_cast<int>(EventKeyboard::KeyCode::KEY_0);
@@ -260,13 +266,17 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 			{
 				nowStr.pop_back();
 			}
+            if (nowStr == std::string{""})
+            {
+                nowStr = getDicValue("inputPort");
+            }
 		}
 		if (keyCode == static_cast<EventKeyboard::KeyCode>(35) )
 		{
-			CCLOG("enter pressed: %d",keyCode);
+			//CCLOG("enter pressed: %d",keyCode);
 			enterGameCallback(GameModeEnum::client);
 		}
-		editBoxInClient->setText(nowStr.c_str());
+		editBoxInClient->setString(nowStr.c_str());
 	}
 }
 
@@ -337,8 +347,8 @@ void MainMenu::enterGameCallback(GameModeEnum gamemode)
 	{
 		if (gamemode == GameModeEnum::server)
 		{
-			std::string portStr = editBoxInServer->getText();
-			CCLOG("%s", portStr);
+			std::string portStr = editBoxInServer->getString();
+			//CCLOG("%s", portStr);
 			int port = -1;
 			bool inputIllegal = false;
 			//check input
@@ -370,7 +380,7 @@ void MainMenu::enterGameCallback(GameModeEnum gamemode)
 		}
 		else if (gamemode == GameModeEnum::client)
 		{
-			std::string ipAndPortStr = editBoxInClient->getText();
+			std::string ipAndPortStr = editBoxInClient->getString();
 			//check input
 			//check finish, get ip and port
 			if (! checkClientInput(ipAndPortStr))

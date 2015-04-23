@@ -3,13 +3,13 @@
 
 //#include "usefulFuncs.h"
 #include "cocos2d.h"
-#include "cocos-ext.h"
+//#include "cocos-ext.h"
 #include "MyEnums.h"
 #include <map>
 #include <set>
 
 //using namespace cocos2d;
-USING_NS_CC_EXT;
+//USING_NS_CC_EXT;
 USING_NS_CC;
 
 #include "GameScene.h"
@@ -33,8 +33,8 @@ private:
 	Menu * netMenu;
 	Layer * serverLayer;
 	Layer * clientLayer;
-	EditBox * editBoxInServer;
-	EditBox * editBoxInClient;
+	Label * editBoxInServer;
+	Label * editBoxInClient;
 	std::map<std::string, MenuItemLabel *> items;
 	std::map<std::string, Menu *> menuMap;
 	std::set<GameModeEnum> closeModeSet;

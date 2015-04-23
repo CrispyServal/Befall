@@ -92,12 +92,14 @@ bool YypNet::read()
 bool YypNet::startServer(int pot)
 {
 	//初始化WSA
+#ifndef __linux__
 	WORD sockVersion = MAKEWORD(2, 2);
 	WSADATA wsaData;
 	if (WSAStartup(sockVersion, &wsaData) != 0)
 	{
 		return 0;
 	}
+#endif
 	//创建套接字
 	slisten = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (slisten == INVALID_SOCKET)
@@ -109,8 +111,17 @@ bool YypNet::startServer(int pot)
 	sockaddr_in sin;
 	sin.sin_family = AF_INET;
 	sin.sin_port = htons(pot);
+#ifndef __linux__
 	sin.sin_addr.S_un.S_addr = INADDR_ANY;
+#else
+    sin.sin_addr.s_addr = INADDR_ANY;
+#endif
+    
+#ifndef __linux__
 	if (bind(slisten, (LPSOCKADDR)&sin, sizeof(sin)) == SOCKET_ERROR)
+#else
+    if (bind(slisten, (sockaddr *)&sin, sizeof(sin)) == SOCKET_ERROR)
+#endif
 	{
 		//printf("bind error !");
 	}
@@ -149,7 +160,11 @@ bool YypNet::serverListen(int pot)
 	int nAddrlen = sizeof(remoteAddr);
 	//printf("等待连接...\n");
 	//noneblock
+#ifndef __linux__
 	sclient = accept(slisten, (SOCKADDR *)&remoteAddr, &nAddrlen);
+#else
+    sclient = accept(slisten, (sockaddr *)&remoteAddr, (socklen_t *)&nAddrlen); //signed or unsigned ?
+#endif
 	if (sclient == INVALID_SOCKET)
 	{
 		//printf("accept error !");
@@ -164,19 +179,25 @@ bool YypNet::serverListen(int pot)
 
 bool YypNet::endServer()
 {
+#ifndef __linux__
 	if (!closesocket(sclient) && !WSACleanup())
+#else
+    if (!close(sclient))
+#endif
 		return true;
 	else
 		return false;;
 }
 bool YypNet::makeConnect(char *IP, int pot)
 {
+#ifndef __linux__
 	WORD sockVersion = MAKEWORD(2, 2);
 	WSADATA data;
 	if (WSAStartup(sockVersion, &data) != 0)
 	{
 		return 0;
 	}
+#endif
 	sclient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sclient == INVALID_SOCKET)
 	{
@@ -186,18 +207,30 @@ bool YypNet::makeConnect(char *IP, int pot)
 	sockaddr_in serAddr;
 	serAddr.sin_family = AF_INET;
 	serAddr.sin_port = htons(pot);
+#ifndef __linux__
 	serAddr.sin_addr.S_un.S_addr = inet_addr(IP);
+#else
+    serAddr.sin_addr.s_addr = inet_addr(IP);
+#endif
 	if (connect(sclient, (sockaddr *)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 	{
 		printf("connect error !");
+#ifndef __linux__
 		closesocket(sclient);
+#else
+        close(sclient);
+#endif
 		return 0;
 	}
 	return 1;
 }
 bool YypNet::deleteConnect()
 {
-	if (!closesocket(sclient) && !WSACleanup())
+#ifndef __linux__
+    if (!closesocket(sclient) && !WSACleanup())
+#else
+    if (!close(sclient))
+#endif
 		return true;
 	else
 		return false;

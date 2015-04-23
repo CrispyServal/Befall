@@ -110,18 +110,35 @@ include_directories(
   /usr/local/include/GLFW
   /usr/include/GLFW
   ${COCOS2D_ROOT}/cocos
+  ${COCOS2D_ROOT}/extensions
+  ${COCOS2D_ROOT}/external
+  ${COCOS2D_ROOT}
   Classes
 )
 
 set(GAME_SRC
   Classes/AppDelegate.cpp
+  Classes/AppDelegate.cpp
+  Classes/GameScene.cpp
   Classes/HelloWorldScene.cpp
+  Classes/MainMenu.cpp
+  Classes/MainScene.cpp
+  Classes/MyStructs.cpp
+  Classes/TechTree.cpp
+  Classes/yypnet.cpp
   ${PLATFORM_SPECIFIC_SRC}
 )
 
 set(GAME_HEADERS
   Classes/AppDelegate.h
+  Classes/AppDelegate.h
+  Classes/GameScene.h
   Classes/HelloWorldScene.h
+  Classes/MainMenu.h
+  Classes/MainScene.h
+  Classes/MyStructs.h
+  Classes/TechTree.h
+  Classes/yypnet.h
   ${PLATFORM_SPECIFIC_HEADERS}
 )
 
