@@ -1,0 +1,241 @@
+{
+	"techs" :
+	[
+	{
+		"tech" : "techroot",
+		"fathers" : 
+		[ 
+		 "techroot"
+		]
+	},
+	{
+		"tech" : "techtree1",
+		"fathers" :
+		[
+		"techroot"
+		]
+	},
+	{
+		"tech" : "unlocklongrangeunit1",
+		"fathers" :
+		[
+		"techroot"
+		]
+	},
+	{
+		"tech" : "resourcefixed1",
+		"fathers" :
+		[
+		"techroot"
+		]
+	},
+	{
+		"tech" : "productivity1",
+		"fathers" :
+		[
+		"techroot"
+		]
+	},
+	{
+		"tech" : "unlockshortrangeunit1",
+		"fathers" :
+		[
+		"techroot"
+		]
+	},
+	{
+		"tech" : "resourcerandom1",
+		"fathers" :
+		[
+		"techroot"
+		]
+	},
+	{
+		"tech" : "techtree2",
+		"fathers" :
+		[
+		"techtree1"
+		]
+	},
+	{
+		"tech" : "unlocklongrangeunit2",
+		"fathers" :
+		[
+		"techtree1",
+		"unlocklongrangeunit1"
+		]
+	},
+	{
+		"tech" : "hplongrange1",
+		"fathers" :
+		[
+		"unlocklongrangeunit1",
+		"resourcefixed1"
+		]
+	},
+	{
+		"tech" : "resourcefixed2",
+		"fathers" :
+		[
+		"resourcefixed1",
+		"productivity1"
+		]
+	},
+	{
+		"tech" : "productivity2",
+		"fathers" :
+		[
+		"productivity1"
+		]
+	},
+	{
+		"tech" : "unlockshortrangeunit2",
+		"fathers" :
+		[
+		"productivity1",
+		"unlockshortrangeunit1"
+		]
+	},
+	{
+		"tech" : "defshortrange1",
+		"fathers" :
+		[
+		"unlockshortrangeunit1",
+		"resourcerandom1"
+		]
+	},
+	{
+		"tech" : "resourcerandom2",
+		"fathers" :
+		[
+		"resourcerandom1",
+		"techtree1"
+		]
+	},
+	{
+		"tech" : "techtree3",
+		"fathers" :
+		[
+		"techtree2"
+		]
+	},
+	{
+		"tech" : "atklongrange1",
+		"fathers" :
+		[
+		"unlocklongrangeunit2"
+		]
+	},
+	{
+		"tech" : "arglongrange1",
+		"fathers" :
+		[
+		"unlocklongrangeunit2",
+		"hplongrange1"
+		]
+	},
+	{
+		"tech" : "hplongrange2",
+		"fathers" :
+		[
+		"hplongrange1"
+		]
+	},
+	{
+		"tech" : "resourcefixed3",
+		"fathers" :
+		[
+		"resourcefixed2"
+		]
+	},
+	{
+		"tech" : "productivity3",
+		"fathers" :
+		[
+		"productivity2"
+		]
+	},
+	{
+		"tech" : "atkshortrange1",
+		"fathers" :
+		[
+		"unlockshortrangeunit2"
+		]
+	},
+	{
+		"tech" : "mrgshortrange1",
+		"fathers" :
+		[
+		"unlockshortrangeunit2",
+		"defshortrange1"
+		]
+	},
+	{
+		"tech" : "defshortrange2",
+		"fathers" :
+		[
+		"defshortrange1"
+		]
+	},
+	{
+		"tech" : "resourcerandom3",
+		"fathers" :
+		[
+		"resourcerandom2"
+		]
+	},
+	{
+		"tech" : "atklongrange2",
+		"fathers" :
+		[
+		"techtree2",
+		"atklongrange1"
+		]
+	},
+	{
+		"tech" : "atkshortrange2",
+		"fathers" :
+		[
+		"productivity2",
+		"atkshortrange1"
+		]
+	},
+	{
+		"tech" : "arglongrange2",
+		"fathers" :
+		[
+		"arglongrange1"
+		]
+	},
+	{
+		"tech" : "mrgshortrange2",
+		"fathers" :
+		[
+		"mrgshortrange1"
+		]
+	},
+	{
+		"tech" : "unlocklongrangeunit3",
+		"fathers" :
+		[
+		"arglongrange2",
+		"hplongrange2"
+		]
+	},
+	{
+		"tech" : "defbase1",
+		"fathers" :
+		[
+		"mrgshortrange2",
+		"defshortrange2"
+		]
+	},
+	{
+		"tech" : "defbase2",
+		"fathers" :
+		[
+		"defbase1"
+		]
+	}
+	]
+}
