@@ -434,8 +434,8 @@ void MainMenu::enterGameCallback(GameModeEnum gamemode)
 		}
 		//enter game!
 		auto gameScene = GameScene::create();
-		Director::getInstance()->pushScene(Director::getInstance()->getRunningScene());
-		Director::getInstance()->replaceScene(gameScene);
+		//Director::getInstance()->pushScene(Director::getInstance()->getRunningScene());
+		Director::getInstance()->pushScene(gameScene);
 	}
 }
 

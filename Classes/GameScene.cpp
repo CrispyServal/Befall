@@ -194,8 +194,8 @@ void GameScene::update(float delta)
 
 void GameScene::backToMainScene(Ref * sender)
 {
-	//mDirector->popScene();
-	mDirector->popToRootScene();
+	mDirector->popScene();
+	//mDirector->popToRootScene();
 }
 
 void GameScene::onMouseMoved(Event * event)
