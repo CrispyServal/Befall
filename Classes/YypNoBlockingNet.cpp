@@ -31,8 +31,8 @@ bool YypNoBlockingNet::sendNewSoldier(newSoldierStruct newSoldier)
 {
 	int sendData[6];
 	sendData[0] = 1;
-	sendData[1] = newSoldier.x1;
-	sendData[2] = newSoldier.y1;
+	sendData[1] = newSoldier.loc.x;
+	sendData[2] = newSoldier.loc.y;
 	sendData[3] = 0;
 	sendData[4] = 0;
 	sendData[5] = (int) newSoldier.unit;
@@ -46,10 +46,10 @@ bool YypNoBlockingNet::sedTwoPoind(twoPointStruct points)
 {
 	int sendData[6];
 	sendData[0] = 2;
-	sendData[1] = points.x1;
-	sendData[2] = points.y1;
-	sendData[3] = points.x2;
-	sendData[4] = points.y2;
+	sendData[1] = points.first.x;
+	sendData[2] = points.first.y;
+	sendData[3] = points.second.x;
+	sendData[4] = points.second.y;
 	sendData[5] = 0;
 	int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
 	if (ret == SOCKET_ERROR)
@@ -80,8 +80,8 @@ bool YypNoBlockingNet::read()
 			switch (flag)
 			{
 			case 0:tech = (TechEnum)enu; break;
-			case 1:newSoldier.unit = (UnitEnum)enu; newSoldier.x1 = x1; newSoldier.y1 = y1; break;
-			case 2:points.x1 = x1; points.y1 = y1; points.x2 = x2; points.y2 = y2; break;
+			case 1:newSoldier.unit = (UnitEnum)enu; newSoldier.loc.x = x1; newSoldier.loc.y = y1; break;
+			case 2:points.first.x = x1; points.first.y = y1; points.second.x = x2; points.second.y = y2; break;
 			}
 			lock = false;
 		}
@@ -108,7 +108,7 @@ bool YypNoBlockingNet::startServer(int pot)
 	unsigned long nNonBlocking = 1;
 	if (ioctlsocket(slisten, FIONBIO, &nNonBlocking) == SOCKET_ERROR)
 	{
-		printf("set nonblocking mode error\n");
+		//printf("set nonblocking mode error\n");
 		closesocket(slisten);
 		return false;
 	}
@@ -119,12 +119,13 @@ bool YypNoBlockingNet::startServer(int pot)
 	sin.sin_addr.S_un.S_addr = INADDR_ANY;
 	if (bind(slisten, (LPSOCKADDR)&sin, sizeof(sin)) == SOCKET_ERROR)
 	{
-		printf("bind error !");
+		//printf("bind error !");
+		return false;
 	}
 	//开始监听
 	if (listen(slisten, 5) == SOCKET_ERROR)
 	{
-		printf("listen error !");
+		//printf("listen error !");
 		return false;
 	}
 	//循环接收数据
@@ -158,7 +159,7 @@ bool YypNoBlockingNet::makeConnect(char *IP, int pot)
 	sclient = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (sclient == INVALID_SOCKET)
 	{
-		printf("invalid socket !");
+		//printf("invalid socket !");
 		return false;
 	}
 	sockaddr_in serAddr;
@@ -167,7 +168,7 @@ bool YypNoBlockingNet::makeConnect(char *IP, int pot)
 	serAddr.sin_addr.S_un.S_addr = inet_addr(IP);
 	if (connect(sclient, (sockaddr *)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 	{
-		printf("connect error !");
+		//printf("connect error !");
 		closesocket(sclient);
 		return false;
 	}
