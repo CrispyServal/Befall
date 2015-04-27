@@ -4,7 +4,8 @@
 #include <thread>
 #include <stdio.h>
 #include <winsock2.h>
-#include "MyEnums.h"
+#include "MyStructs.h"
+
 #pragma comment (lib, "ws2_32")
 
 using std::cout;
@@ -13,16 +14,13 @@ using std::endl;
 struct newSoldierStruct
 {
 	UnitEnum unit;
-	int x1;
-	int y1;
+	MyPointStruct loc;
 };
 
 struct twoPointStruct
 {
-	int x1;
-	int y1;
-	int x2;
-	int y2;
+	MyPointStruct first;
+	MyPointStruct second;
 };
 
 enum whichEnum
@@ -47,12 +45,14 @@ public:
 	void lockOn()
 	{
 		lock = true;
-	}	
+	}
+	bool lockState();
 	bool sendTech(TechEnum tech);
 	bool sendNewSoldier(newSoldierStruct newSoldier);
 	bool sedTwoPoind(twoPointStruct points);
 	bool read();
 	bool startServer(int pot);
+	bool acceptConnect();
 	bool endServer();
 	bool makeConnect(char* IP, int pot);
 	bool deleteConnect();
