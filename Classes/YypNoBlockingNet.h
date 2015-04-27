@@ -47,12 +47,14 @@ public:
 	void lockOn()
 	{
 		lock = true;
-	}	
+	}
+	bool lockState();
 	bool sendTech(TechEnum tech);
 	bool sendNewSoldier(newSoldierStruct newSoldier);
 	bool sedTwoPoind(twoPointStruct points);
 	bool read();
 	bool startServer(int pot);
+	bool acceptConnect();
 	bool endServer();
 	bool makeConnect(char* IP, int pot);
 	bool deleteConnect();

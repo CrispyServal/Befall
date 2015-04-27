@@ -7,6 +7,10 @@ YypNoBlockingNet::YypNoBlockingNet()
 YypNoBlockingNet::~YypNoBlockingNet()
 {
 }
+bool YypNoBlockingNet::lockState()
+{
+	return lock;
+}
 bool YypNoBlockingNet::sendTech(TechEnum tech)
 {
 	int sendData[6];
@@ -16,26 +20,12 @@ bool YypNoBlockingNet::sendTech(TechEnum tech)
 	sendData[3] = 0;
 	sendData[4] = 0;
 	sendData[5] = (int) tech;
-	while (true)
-	{
-		int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
-		if (ret == SOCKET_ERROR)
-		{
-			int r = WSAGetLastError();
-			if (r == WSAEWOULDBLOCK)
-			{
-				Sleep(20);
-				continue;
-			}
-			else
-			{
-				std::cout << "数据发送失败！" << std::endl;
-				return false;
-			}
-		}
-		else
-			return true;
-	}
+	int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
+	if (ret == SOCKET_ERROR)
+		return false;
+	else
+		return true;
+
 }
 bool YypNoBlockingNet::sendNewSoldier(newSoldierStruct newSoldier)
 {
@@ -46,26 +36,11 @@ bool YypNoBlockingNet::sendNewSoldier(newSoldierStruct newSoldier)
 	sendData[3] = 0;
 	sendData[4] = 0;
 	sendData[5] = (int) newSoldier.unit;
-	while (true)
-	{
-		int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
-		if (ret == SOCKET_ERROR)
-		{
-			int r = WSAGetLastError();
-			if (r == WSAEWOULDBLOCK)
-			{
-				Sleep(20);
-				continue;
-			}
-			else
-			{
-			std::cout << "数据发送失败！" << std::endl;
-			return false;
-			}
-		}
-		else
-			return true;
-	}	
+	int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
+	if (ret == SOCKET_ERROR)
+		return false;
+	else
+		return true;
 }
 bool YypNoBlockingNet::sedTwoPoind(twoPointStruct points)
 {
@@ -76,78 +51,42 @@ bool YypNoBlockingNet::sedTwoPoind(twoPointStruct points)
 	sendData[3] = points.x2;
 	sendData[4] = points.y2;
 	sendData[5] = 0;
-	while (true)
-	{
-		int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
-		if (ret == SOCKET_ERROR)
-		{
-			int r = WSAGetLastError();
-			if (r == WSAEWOULDBLOCK)
-			{
-				Sleep(20);
-				continue;
-			}
-			else
-			{
-				std::cout << "数据发送失败！" << std::endl;
-				return false;
-			}
-		}
-		else
-			return true;
-	}
+	int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
+	if (ret == SOCKET_ERROR)
+		return false;
+	else
+		return true;
 }
 bool YypNoBlockingNet::read()
 {
 	char revData[255];// need to adjust size
-	int ret;
-	while (true)
-	{
-		ret = recv(sclient, revData, 255, 0);
-		if (ret == SOCKET_ERROR)
-		{
-			auto err = WSAGetLastError();
-			if (err == WSAEWOULDBLOCK)
-			{
-				continue;
-			}
-			//else if (err == WSAETIMEDOUT)//超时。  
-			//{
-				//return false;
-			//}
-			else if (err == WSAENETDOWN)//连接断开。  
-			{
-				return false;
-			}
-			else//其他错误。  
-				return false;
-		}
-		else
-			break;//接受成功。 
-	}
-	if (ret < 0 )// means no connect
+	int ret = recv(sclient, revData, 255, 0);
+	if (ret == SOCKET_ERROR)
 		return false;
-	if (ret > 0 && ret != MSIZE)//invalid data
-		return false;
-	if (ret == MSIZE)
+	else
 	{
-		int *mess = (int *)revData;
-		int flag = mess[0];
-		which = (whichEnum) flag;
-		int x1 = mess[1];
-		int y1 = mess[2];
-		int x2 = mess[3];
-		int y2 = mess[4];
-		int enu = mess[5];
-		switch (flag)
+		if (ret > 0 && ret != MSIZE)//invalid data
+			return false;
+		if (ret == MSIZE)
 		{
-		case 0:tech = (TechEnum) enu; break;
-		case 1:newSoldier.unit = (UnitEnum)enu; newSoldier.x1 = x1; newSoldier.y1 = y1; break;
-		case 2:points.x1 = x1; points.y1 = y1; points.x2 = x2; points.y2 = y2; break;
+			int *mess = (int *)revData;
+			int flag = mess[0];
+			which = (whichEnum)flag;
+			int x1 = mess[1];
+			int y1 = mess[2];
+			int x2 = mess[3];
+			int y2 = mess[4];
+			int enu = mess[5];
+			switch (flag)
+			{
+			case 0:tech = (TechEnum)enu; break;
+			case 1:newSoldier.unit = (UnitEnum)enu; newSoldier.x1 = x1; newSoldier.y1 = y1; break;
+			case 2:points.x1 = x1; points.y1 = y1; points.x2 = x2; points.y2 = y2; break;
+			}
+			lock = false;
 		}
-		lock = false;
+		return true;
 	}
-	return true;
 }
 bool YypNoBlockingNet::startServer(int pot)
 {
@@ -189,28 +128,16 @@ bool YypNoBlockingNet::startServer(int pot)
 		return false;
 	}
 	//循环接收数据
+	return true;
+}
+bool YypNoBlockingNet::acceptConnect()
+{
 	nAddrlen = sizeof(remoteAddr);
-	while (true)
-	{
-		sclient = accept(slisten, (SOCKADDR *)&remoteAddr, &nAddrlen);
-		if (sclient == SOCKET_ERROR)
-		{
-			int r = WSAGetLastError();
-			if (r == WSAEWOULDBLOCK)
-			{
-				//std::cout<<"未收到客户端的连接请求。"<<std::endl;  
-				continue;
-			}
-			else
-			{
-				std::cout << "未知错误，接受客户端连接线程退出。" << std::endl;
-				getchar();
-				return false;
-			}
-		}
-		printf("接受到一个连接：%s \r\n", inet_ntoa(remoteAddr.sin_addr));
+	sclient = accept(slisten, (SOCKADDR *)&remoteAddr, &nAddrlen);
+	if (sclient == SOCKET_ERROR)
+		return false;
+	else
 		return true;
-	}
 }
 
 bool YypNoBlockingNet::endServer()
