@@ -11,4 +11,8 @@
 #####2、bool blockClick
 	如果为true，意义为点击被吞没，显示该层是点击该层以外区域也不会传递点击。
 ##目前几个.h的分配
-	yyp:	网络，InfoMap，Factory*2
+	y:	网络(finished)，InfoMap(finished)，Factory*2
+	l:		兵营层(施工中)
+	f:	小地图，科技树层(待确认分配)
+###特殊说明/备忘可以写在readme里
+	//here
