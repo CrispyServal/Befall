@@ -2,12 +2,6 @@
 
 UnitFactory::UnitFactory()
 {
-	mUnitTimeTable[farmer] = 10;
-	mUnitTimeTable[longrangeunit1] = 10;
-	mUnitTimeTable[longrangeunit2] = 10;
-	mUnitTimeTable[longrangeunit3] = 10;
-	mUnitTimeTable[shortrangeunit1] = 10;
-	mUnitTimeTable[shortrangeunit2] = 10;
 }
 UnitFactory::~UnitFactory()
 {
