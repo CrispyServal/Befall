@@ -13,6 +13,7 @@
 ##目前几个.h的分配
 	y:	网络(finished)，InfoMap(finished)，Factory*2
 	l:		兵营层(施工中)
-	f:	小地图，科技树层(待确认分配)
+	f:	小地图
 ###特殊说明/备忘可以写在readme里
 	//here
+	cocos官网：http://www.cocos2d-x.org/；中文官网：http://cn.cocos2d-x.org/.
