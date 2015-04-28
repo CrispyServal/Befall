@@ -20,20 +20,25 @@ int main()
 		cin >> pots;
 		server.startServer(pots);
 		
-		while (!server.acceptConnect())
+		while (true)
 		{
-			int r = WSAGetLastError();
-			if (r == WSAEWOULDBLOCK)
+			if (!server.acceptConnect())
 			{
-				//std::cout<<"未收到客户端的连接请求。"<<std::endl;  
-				continue;
+				int r = WSAGetLastError();
+				if (r == WSAEWOULDBLOCK)
+				{
+					//std::cout<<"未收到客户端的连接请求。"<<std::endl;  
+					continue;
+				}
+				else
+				{
+					//std::cout << "未知错误" << std::endl;
+					getchar();
+					return -1;
+				}
 			}
 			else
-			{
-				//std::cout << "未知错误" << std::endl;
-				getchar();
-				return -1;
-			}
+				break;
 		}
 		cout << "接受到一个连接：" << endl;
 		while (!server.read())
@@ -81,8 +86,8 @@ int main()
 			}
 		}
 		cout << "soldier = " << server.newSoldier.unit << endl;
-		cout << "x1 = " << server.newSoldier.x1 << endl;
-		cout << "y1 = " << server.newSoldier.y1 << endl;
+		cout << "x1 = " << server.newSoldier.loc.x << endl;
+		cout << "y1 = " << server.newSoldier.loc.y << endl;
 
 		while (!server.read())
 		{
@@ -106,10 +111,10 @@ int main()
 			}
 		}
 
-		cout << "p: x1 = " << server.points.x1 << endl;
-		cout << "p: x2 = " << server.points.y1 << endl; 
-		cout << "p: y1 = " << server.points.x2 << endl; 
-		cout << "p: y2 = " << server.points.y2 << endl; 
+		cout << "p: x1 = " << server.points.first.x << endl;
+		cout << "p: x2 = " << server.points.first.y << endl; 
+		cout << "p: y1 = " << server.points.second.x << endl; 
+		cout << "p: y2 = " << server.points.second.y << endl; 
 		server.endServer();
 		system("pause");
 	}
@@ -142,8 +147,8 @@ int main()
 
 		newSoldierStruct newSoldier;
 		newSoldier.unit = base;
-		newSoldier.x1 = 2;
-		newSoldier.y1 = 23;
+		newSoldier.loc.x = 2;
+		newSoldier.loc.y = 23;
 		cout << "soldier = " << newSoldier.unit << endl;
 		Sleep(20);
 		while (!client.sendNewSoldier(newSoldier))
@@ -162,10 +167,10 @@ int main()
 		}
 
 		twoPointStruct points;
-		points.x1 = 21;
-		points.y1 = 23;
-		points.x2 = 54;
-		points.y2 = 76;
+		points.first.x = 21;
+		points.first.y = 23;
+		points.second.x = 54;
+		points.second.y = 76;
 		Sleep(20);
 		while (!client.sedTwoPoind(points))
 		{
