@@ -94,7 +94,7 @@ bool MainScene::init()
 	//
 	dispatcher->addEventListenerWithSceneGraphPriority(keyListener, this);
 	//
-	scheduleUpdate();
+	//scheduleUpdate();
 	return true;
 }
 

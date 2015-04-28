@@ -435,7 +435,7 @@ void MainMenu::enterGameCallback(GameModeEnum gamemode)
 		//enter game!
 		auto gameScene = GameScene::create();
 		//Director::getInstance()->pushScene(Director::getInstance()->getRunningScene());
-		Director::getInstance()->pushScene(gameScene);
+		Director::getInstance()->pushScene(TransitionFade::create(0.7,gameScene));
 	}
 }
 
@@ -621,18 +621,3 @@ bool MainMenu::checkClientInput(std::string & ipAndPortStr)
 	}
 	return true;
 }
-/*
-char * MainMenu::strUTF8(const char * str)
-{
-		int len = MultiByteToWideChar(CP_ACP, 0, str, -1, NULL, 0);
-		wchar_t* wstr = new wchar_t[len + 1];
-		memset(wstr, 0, len + 1);
-		MultiByteToWideChar(CP_ACP, 0, str, -1, wstr, len);
-		len = WideCharToMultiByte(CP_UTF8, 0, wstr, -1, NULL, 0, NULL, NULL);
-		char* result = new char[len + 1];
-		memset(result, 0, len + 1);
-		WideCharToMultiByte(CP_UTF8, 0, wstr, -1, result, len, NULL, NULL);
-		if (wstr)delete[] wstr;
-		return result;
-}
-*/
