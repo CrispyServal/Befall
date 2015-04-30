@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #include "MyEnums.h"
 #include "MyStructs.h"
-#include "yypnet.h"
+#include "YypNoBlockingNet.h"
 #include "TechTree.h"
 //using namespace cocos2d;
 USING_NS_CC;
@@ -39,7 +39,7 @@ private:
 	Vec2 mMouseCoordinate;
 	const int MAXSIZE = 22;
 	//m
-	YypNet mNet;
+	YypNoBlockingNet mNet;
 	MenuItemLabel * backToMainSceneItem;
 	//Layers
 	//when connecting or listening, display juFlower or something else
@@ -47,17 +47,18 @@ private:
 	Layer * mTouchLayer;
 	EventListenerMouse * mMouseListener;
 	EventListenerTouch * mTouchListener;
-	//methods----------------------
+	//methods----------------------------------------------------------
 	//updates
-	void startServer(float delta);
+	void acceptConnect(float delta);
 	void startConnecting(float delta);
+	void startGame();
 	//1、检查计时器是否结束
 	void update(float delta);
 
 	//callback
 	void backToMainScene(Ref * sender);
 	void onMouseMoved(Event * event);
-	//abstract things----------------------------------------
+	//abstract things--------------------
 	//0是己方，1是对方
 	GameStateStruct mGameState[2];
 	//矿藏的数据，只需要一份，两边会分别减少

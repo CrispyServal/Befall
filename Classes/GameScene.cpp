@@ -146,10 +146,12 @@ bool GameScene::init()
 	{
 	case server:
 		mNet.startServer(mUserDefault->getIntegerForKey("port"));
-		//schedule(schedule_selector(GameScene::startServer),0,CC_REPEAT_FOREVER,0.1);
+		schedule(schedule_selector(GameScene::acceptConnect),1,CC_REPEAT_FOREVER,0);
 		break;
 	case client:
 		//display juFlower
+		char * ip = (char *)(mUserDefault->getStringForKey("ip").c_str());
+		mNet.makeConnect(ip , mUserDefault->getIntegerForKey("port"));
 		//schedule(schedule_selector(GameScene::startConnecting), 0, CC_REPEAT_FOREVER, 0.1);
 		break;
 	case vsPlayer:
@@ -165,15 +167,27 @@ bool GameScene::init()
 	return true;
 }
 
-void GameScene::startServer(float delta)
+void GameScene::acceptConnect(float delta)
 {
 	//listen
 	CCLOG("lisening...");
-	mNet.serverListen(mUserDefault->getIntegerForKey("port"));
-	if (mNet.beConnected())
+	if (!mNet.acceptConnect())
 	{
-		CCLOG("someone connected!");
-		unschedule(schedule_selector(GameScene::startServer));
+		int r = WSAGetLastError();
+		if (r == WSAEWOULDBLOCK)
+		{
+			CCLOG("no client connected");
+		}
+		else
+		{
+			CCLOG("error!");
+		}
+	}
+	else
+	{
+		CCLOG("accept succeed");
+		startGame();
+		unschedule(schedule_selector(GameScene::acceptConnect));
 	}
 }
 
@@ -229,4 +243,10 @@ void GameScene::onMouseMoved(Event * event)
 		backToMainSceneItem->setScale(1);
 	}
 
+}
+
+void GameScene::startGame()
+{
+	//
+	mWelcomeLayer->setVisible(false);
 }
