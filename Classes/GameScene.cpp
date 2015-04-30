@@ -150,8 +150,7 @@ bool GameScene::init()
 		break;
 	case client:
 		//display juFlower
-		char * ip = (char *)(mUserDefault->getStringForKey("ip").c_str());
-		mNet.makeConnect(ip , mUserDefault->getIntegerForKey("port"));
+		mNet.makeConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
 		//schedule(schedule_selector(GameScene::startConnecting), 0, CC_REPEAT_FOREVER, 0.1);
 		break;
 	case vsPlayer:
