@@ -21,25 +21,25 @@ bool GameTimer::init()
 	//BgCircle
 	mBgCircle = Sprite::create("/uiComponent/timer.png");
 	mBgCircle->setScale(0.15, 0.15);	
-	mBgCircle->setPosition(width / 2, 0);
+	mBgCircle->setPosition(width / 2, height / 2);
 	addChild(mBgCircle, 1);
 	//EndLabel
 	mEndLabel = Label::createWithSystemFont("END", "Arial", 30);
 	mEndLabel->setPosition(mBgCircle->getPositionX(), mBgCircle->getPositionY()+30);
 	addChild(mEndLabel, 2);
-	radius = 600 * mBgCircle->getScaleX();
+	radius = 600 * mBgCircle->getScaleX() * this->getScaleX();
 	mVitualCircle = DrawNode::create();
 	mVitualCircle->drawSolidCircle(mBgCircle->getPosition(), radius, CC_DEGREES_TO_RADIANS(90), 50, Color4F(0, 0, 0, 0.5));	
 	addChild(mVitualCircle, 3);
 	//cover
 	mCoverCircle = Sprite::create("/uiComponent/time_locked.png");
-	mCoverCircle->setScale(0.15, 0.15);
-	mCoverCircle->setPosition(width / 2, 0);
+	mCoverCircle->setScale(mBgCircle->getScale());
+	mCoverCircle->setPosition(mBgCircle->getPosition());
 	addChild(mCoverCircle, 4);
 	//visible
 	mBgCircle->setVisible(true);
 	mEndLabel->setVisible(true);
-	mVitualCircle->setVisible(false);
+	mVitualCircle->setVisible(true);
 	mCoverCircle->setVisible(false);
 	return true;
 }
@@ -55,7 +55,8 @@ void GameTimer::setEndName(std::string endName)
 //只需判断结束回合有没有包含
 bool GameTimer::containPoint(Vec2 mousePoint)
 {
-	Point wpoint = mBgCircle->getParent()->convertToNodeSpace(mBgCircle->getPosition());
+	radius = 600 * mBgCircle->getScaleX() * this->getScaleX();
+	Point wpoint = mBgCircle->getParent()->convertToWorldSpace(mBgCircle->getPosition());
 	if ((wpoint.x - mousePoint.x)*(wpoint.x - mousePoint.x) + (wpoint.y - mousePoint.y)*(wpoint.y - mousePoint.y) <= (radius)*(radius))
 		return true;
 	else
