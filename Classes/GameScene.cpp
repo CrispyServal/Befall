@@ -111,7 +111,7 @@ bool GameScene::init()
 		juFlower[0]->runAction(RepeatForever::create(RotateBy::create(1, -30)));
 		juFlower[1]->runAction(RepeatForever::create(RotateBy::create(1, 30)));
 		//wating label
-		auto watingLabel = Label::createWithTTF("fuck", "/fonts/STXIHEI.TTF", 30);
+		auto watingLabel = Label::createWithTTF("no word", "/fonts/STXIHEI.TTF", 30);
         //CCLOG("%s",watingLabel->getString().c_str());
 		if (mGameMode == GameModeEnum::server)
 		{
@@ -154,8 +154,8 @@ bool GameScene::init()
 		break;
 	case client:
 		//display juFlower
-		mNet.makeConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
-		//schedule(schedule_selector(GameScene::startConnecting), 0, CC_REPEAT_FOREVER, 0.1);
+		//mNet.makeConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
+		schedule(schedule_selector(GameScene::startConnecting),1,CC_REPEAT_FOREVER,0);
 		break;
 	case vsPlayer:
 		break;
@@ -171,6 +171,7 @@ bool GameScene::init()
 	return true;
 }
 
+//for server, waiting client
 void GameScene::acceptConnect(float delta)
 {
 	//listen
@@ -195,12 +196,14 @@ void GameScene::acceptConnect(float delta)
 	}
 }
 
+//for client, make connecting
 void GameScene::startConnecting(float delta)
 {
 	CCLOG("connecting...");
 	if (mNet.makeConnect((char *)mUserDefault->getStringForKey("ip").c_str(), mUserDefault->getIntegerForKey("port")))
 	{
 		CCLOG("connecting successed");
+		startGame();
 		unschedule(schedule_selector(GameScene::startConnecting));
 	}
 }
