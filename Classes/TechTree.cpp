@@ -49,7 +49,7 @@ TechTree::TechTree()
 	{
 		for (int i = 0; i < techs.Size(); ++i)
 		{
-			CCLOG("this:  %s", techs[i]["tech"].GetString());
+			//CCLOG("this:  %s", techs[i]["tech"].GetString());
 			rapidjson::Value & fathers = techs[i]["fathers"];
 			std::vector<TechEnum> fathersList;
 			if (fathers.IsArray())
@@ -58,7 +58,7 @@ TechTree::TechTree()
 				{
 					if (fathers[j].IsString())
 					{
-						CCLOG("fathers: %s", fathers[j].GetString());
+						//CCLOG("fathers: %s", fathers[j].GetString());
 						fathersList.push_back(mTechStringEnumMap.at(std::string{ fathers[j].GetString() }));
 					}
 				}
