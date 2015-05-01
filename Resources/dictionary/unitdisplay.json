@@ -1,0 +1,174 @@
+{
+"unitdisplay" :
+[
+{
+"unit" : "base",
+"title" : "基地",
+"explain" : "作为升级发展的基础设施，拥有聚能研究所与械能工厂，提供基础的研究与制造能力", 
+"attributes" :
+[
+{
+"numHitPoint" : "500",
+"numDefence" : "10",
+"numAttack" : "0",
+"numAttackRange" : "0",
+"numMoveRange" : "0",
+"numPopulation" : "0"
+}
+],
+"consumption" :
+[
+{
+"numFixedResource" : "0",
+"numRandomResource" : "0",
+"absProductivity" : "0"
+}
+]
+},
+{
+"unit" : "farmer",
+"title" : "简单资源作业船",
+"explain" : "用于资源的收集，可在聚能研究所中研究相应的科技以提高资源采集效率", 
+"attributes" :
+[
+{
+"numHitPoint" : "30",
+"numDefence" : "5",
+"numAttack" : "5",
+"numAttackRange" : "1",
+"numMoveRange" : "3",
+"numPopulation" : "1"
+}
+],
+"consumption" :
+[
+{
+"numFixedResource" : "5",
+"numRandomResource" : "5",
+"absProductivity" : "20"
+}
+]
+},
+{
+"unit" : "shortrangeunit1",
+"title" : "机械撞击装置",
+"explain" : "运用纯物理的攻击手法，对敌人造成硬打击，少量的资源需求以及强劲的攻击，使得其拥有较高性价比", 
+"attributes" :
+[
+{
+"numHitPoint" : "50",
+"numDefence" : "10",
+"numAttack" : "20",
+"numAttackRange" : "1",
+"numMoveRange" : "3",
+"numPopulation" : "5"
+}
+],
+"consumption" :
+[
+{
+"numFixedResource" : "10",
+"numRandomResource" : "20",
+"absProductivity" : "40"
+}
+]
+},
+{
+"unit" : "shortrangeunit2",
+"title" : "原子爆破船",
+"explain" : "利用基础的裂变与聚变，在近距离内对敌人产生大量伤害，坚固的船身也保证其拥有较高续航力", 
+"attributes" :
+[
+{
+"numHitPoint" : "80",
+"numDefence" : "15",
+"numAttack" : "30",
+"numAttackRange" : "1",
+"numMoveRange" : "3",
+"numPopulation" : "10"
+}
+],
+"consumption" :
+[
+{
+"numFixedResource" : "20",
+"numRandomResource" : "40",
+"absProductivity" : "80"
+}
+]
+},
+{
+"unit" : "longrangeunit1",
+"title" : "电磁聚能装置",
+"explain" : "运用古典的电磁理论，扭曲周围的电磁场而产生电磁伤害，较大的攻击范围保证了自己不会被轻易打击", 
+"attributes" :
+[
+{
+"numHitPoint" : "30",
+"numDefence" : "5",
+"numAttack" : "25",
+"numAttackRange" : "2",
+"numMoveRange" : "4",
+"numPopulation" : "8"
+}
+],
+"consumption" :
+[
+{
+"numFixedResource" : "20",
+"numRandomResource" : "10",
+"absProductivity" : "20"
+}
+]
+},
+{
+"unit" : "longrangeunit2",
+"title" : "引力轰击船",
+"explain" : "利用引力波发动远程打击，不低的攻击以及灵活的运动性，使其能在战场上发挥不小的优势", 
+"attributes" :
+[
+{
+"numHitPoint" : "30",
+"numDefence" : "5",
+"numAttack" : "35",
+"numAttackRange" : "3",
+"numMoveRange" : "4",
+"numPopulation" : "16"
+}
+],
+"consumption" :
+[
+{
+"numFixedResource" : "40",
+"numRandomResource" : "20",
+"absProductivity" : "80"
+}
+]
+},
+{
+"unit" : "longrangeunit3",
+"title" : "大型聚合航母",
+"explain" : "作为最强大的装置，极高的防御力以及强大的攻城能力，使其具有很大的吸引力，也是终极对决的选择之一", 
+"attributes" :
+[
+{
+"numHitPoint" : "120",
+"numDefence" : "20",
+"numAttack" : "20",
+"numAttackRange" : "3",
+"numMoveRange" : "2",
+"numPopulation" : "20"
+}
+],
+"consumption" :
+[
+{
+"numFixedResource" : "100",
+"numRandomResource" : "50",
+"absProductivity" : "200"
+}
+]
+}
+
+]
+}
