@@ -1,11 +1,20 @@
 <dict>
 		<key>techroot</key>
+	<father>techroot</father>
 	<child>techtree1</child>
 	<child>productivity1</child>
 	<child>unlocklongrangeunit1</child>
 	<child>unlockshortrangeunit1</child>
 	<child>resourcefixed1</child>
 	<child>resourcerandom1</child>
+	<influence>
+		<value openTechTree>true</value>
+	</influence>
+	<consumption>
+		<value numFixedResource>0</value>
+		<value numRandomResource>0</value>
+		<value absResearchLevel>0</value>
+	</consumption>
 
 
 		<key>techtree1</key>
@@ -377,8 +386,7 @@
 	<father>mrgshortrange1</father>
 	<child>defbase2</child>
 	<influence>
-		<value numBaseDefence>20</value>
-		<value numBaseHitPoint>200</value>
+		<value numBaseHitPoint>400</value>
 	</influence>
 	<consumption>
 		<value numFixedResource>80</value>
@@ -389,8 +397,7 @@
 		<key>defbase2</key>
 	<father>defbase1</father>
 	<influence>
-		<value numBaseDefence>40</value>
-		<value numBaseHitPoint>400</value>
+		<value numBaseHitPoint>800</value>
 	</influence>
 	<consumption>
 		<value numFixedResource>120</value>

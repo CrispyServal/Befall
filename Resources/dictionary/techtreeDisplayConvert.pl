@@ -30,23 +30,12 @@ while(<TECHIN1>)
 		}
 		if(<TECHIN1> =~ /<string>(.*)<string>/)
 		{
-			print TECHOUT "\"imagename\" : \"$1\"";
-		}
-		if($name =~ /techroot/)
-		{
-		}
-		else
-		{
-			print TECHOUT ",\n";
+			print TECHOUT "\"imagename\" : \"$1\", \n";
 		}
 
 		open TECHIN2, "< techtreeparameters.xml" or die "Cannot Open Arch File!\n";
 		while (<TECHIN2>)
 		{
-			if($name =~ /techroot/)
-			{
-				last;
-			}
 			if($_ =~ /<key>$name<\/key>/)
 			{
 				print TECHOUT "\"fathers\" :\n";
@@ -71,14 +60,14 @@ while(<TECHIN1>)
 				{
 					if($_ =~ /<value (.*)>(.*)<\/value>/)
 					{
-						print TECHOUT "\"$1\" : \"$2\"\n}\n],\n";
+						print TECHOUT "\"type\" : \"$1\",\n \"num\" : \"$2\"\n}\n],\n";
 						last;
 					}
 				}
 				my $buff = <TECHIN2>;
 				$buff = <TECHIN2>;
 
-				print TECHOUT "\"consumption\" :\n[\n{\n";
+				print TECHOUT "\"consumption\" :\n{\n";
 				if(<TECHIN2> =~ /<value (.*)>(.*)<\/value>/)
 				{
 					print TECHOUT "\"$1\" : \"$2\",\n";
@@ -89,7 +78,7 @@ while(<TECHIN1>)
 				}
 				if(<TECHIN2> =~ /<value (.*)>(.*)<\/value>/)
 				{
-					print TECHOUT "\"$1\" : \"$2\"\n}\n]\n";
+					print TECHOUT "\"$1\" : \"$2\"\n}\n";
 				}
 			}
 			

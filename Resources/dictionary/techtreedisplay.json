@@ -1,18 +1,12 @@
 {
-"techtreedisplay" :
+"techtree" :
 [
 {
 "tech" : "techroot",
 "title" : "未来降临",
 "explain" : "开启聚能研究所", 
 "dialogue" : "未来终将属于我们", 
-"imagename" : "icon_flask.png"},
-{
-"tech" : "techtree1",
-"title" : "研究小组",
-"explain" : "提高基地科研水平", 
-"dialogue" : "除了公式，还需要点什么", 
-"imagename" : "icon_research.png",
+"imagename" : "icon_flask.png", 
 "fathers" :
 [
 "techroot"
@@ -20,24 +14,47 @@
 "influence" :
 [
 {
-"numResearchLevel" : "10"
+"type" : "openTechTree",
+ "num" : "true"
 }
 ],
 "consumption" :
+{
+"numFixedResource" : "0",
+"numRandomResource" : "0",
+"absResearchLevel" : "0"
+}
+},
+{
+"tech" : "techtree1",
+"title" : "研究小组",
+"explain" : "提高基地科研水平", 
+"dialogue" : "除了公式，还需要点什么", 
+"imagename" : "icon_research.png", 
+"fathers" :
 [
+"techroot"
+],
+"influence" :
+[
+{
+"type" : "numResearchLevel",
+ "num" : "10"
+}
+],
+"consumption" :
 {
 "numFixedResource" : "10",
 "numRandomResource" : "5",
 "absResearchLevel" : "20"
 }
-]
 },
 {
 "tech" : "techtree2",
 "title" : "强子对撞",
 "explain" : "大幅提升基地科研水平", 
 "dialogue" : "我要拆开你！", 
-"imagename" : "icon_atoms.png",
+"imagename" : "icon_atoms.png", 
 "fathers" :
 [
 "techtree1"
@@ -45,24 +62,23 @@
 "influence" :
 [
 {
-"numResearchLevel" : "20"
+"type" : "numResearchLevel",
+ "num" : "20"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "40",
 "numRandomResource" : "20",
 "absResearchLevel" : "80"
 }
-]
 },
 {
 "tech" : "techtree3",
 "title" : "星际科技",
 "explain" : "最大化基地科研水平", 
 "dialogue" : "宇宙奥秘，方寸之间", 
-"imagename" : "icon_brain.png",
+"imagename" : "icon_brain.png", 
 "fathers" :
 [
 "techtree2"
@@ -70,24 +86,23 @@
 "influence" :
 [
 {
-"numResearchLevel" : "40"
+"type" : "numResearchLevel",
+ "num" : "40"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "160",
 "numRandomResource" : "80",
 "absResearchLevel" : "160"
 }
-]
 },
 {
 "tech" : "unlocklongrangeunit1",
 "title" : "电磁重构",
 "explain" : "解锁电磁聚能装置", 
 "dialogue" : "首先，按下这个按钮", 
-"imagename" : "icon_loudspeaker.png",
+"imagename" : "icon_loudspeaker.png", 
 "fathers" :
 [
 "techroot"
@@ -95,24 +110,23 @@
 "influence" :
 [
 {
-"unlockLongRangeUnit1" : "true"
+"type" : "unlockLongRangeUnit1",
+ "num" : "true"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "10",
 "numRandomResource" : "5",
 "absResearchLevel" : "20"
 }
-]
 },
 {
 "tech" : "unlocklongrangeunit2",
 "title" : "广义引力",
 "explain" : "解锁引力轰击船", 
 "dialogue" : "有谁，能逃脱引力", 
-"imagename" : "icon_tap.png",
+"imagename" : "icon_tap.png", 
 "fathers" :
 [
 "unlocklongrangeunit1",
@@ -121,24 +135,23 @@
 "influence" :
 [
 {
-"unlockLongRangeUnit2" : "true"
+"type" : "unlockLongRangeUnit2",
+ "num" : "true"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "20",
 "numRandomResource" : "10",
 "absResearchLevel" : "40"
 }
-]
 },
 {
 "tech" : "unlockshortrangeunit1",
 "title" : "机械原理",
 "explain" : "解锁机械撞击装置", 
 "dialogue" : "动量，貌似是守恒的", 
-"imagename" : "icon_geers.png",
+"imagename" : "icon_geers.png", 
 "fathers" :
 [
 "techroot"
@@ -146,24 +159,23 @@
 "influence" :
 [
 {
-"unlockShortRangeUnit1" : "true"
+"type" : "unlockShortRangeUnit1",
+ "num" : "true"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "5",
 "numRandomResource" : "10",
 "absResearchLevel" : "20"
 }
-]
 },
 {
 "tech" : "unlockshortrangeunit2",
 "title" : "原子核心",
 "explain" : "解锁原子爆破船", 
 "dialogue" : "请指引我方位", 
-"imagename" : "icon_cd.png",
+"imagename" : "icon_cd.png", 
 "fathers" :
 [
 "productivity1"
@@ -171,24 +183,23 @@
 "influence" :
 [
 {
-"unlockShortRangeUnit2" : "true"
+"type" : "unlockShortRangeUnit2",
+ "num" : "true"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "10",
 "numRandomResource" : "20",
 "absResearchLevel" : "40"
 }
-]
 },
 {
 "tech" : "unlocklongrangeunit3",
 "title" : "高度聚合",
 "explain" : "解锁大型聚合航母", 
 "dialogue" : "粉碎你的一切！", 
-"imagename" : "icon_wolfram_alpha.png",
+"imagename" : "icon_wolfram_alpha.png", 
 "fathers" :
 [
 "arglongrange2",
@@ -197,24 +208,23 @@
 "influence" :
 [
 {
-"unlockLongRangeUnit3" : "true"
+"type" : "unlockLongRangeUnit3",
+ "num" : "true"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "160",
 "numRandomResource" : "80",
 "absResearchLevel" : "160"
 }
-]
 },
 {
 "tech" : "productivity1",
 "title" : "重振工业",
 "explain" : "提高基地生产力", 
 "dialogue" : "少说话，多实干", 
-"imagename" : "icon_factory.png",
+"imagename" : "icon_factory.png", 
 "fathers" :
 [
 "techroot"
@@ -222,24 +232,23 @@
 "influence" :
 [
 {
-"numProductivity" : "10"
+"type" : "numProductivity",
+ "num" : "10"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "5",
 "numRandomResource" : "10",
 "absResearchLevel" : "20"
 }
-]
 },
 {
 "tech" : "productivity2",
 "title" : "尖端自动",
 "explain" : "大幅提升基地生产力", 
 "dialogue" : "工作！工作！", 
-"imagename" : "icon_field_chip.png",
+"imagename" : "icon_field_chip.png", 
 "fathers" :
 [
 "productivity1"
@@ -247,24 +256,23 @@
 "influence" :
 [
 {
-"numProductivity" : "20"
+"type" : "numProductivity",
+ "num" : "20"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "10",
 "numRandomResource" : "20",
 "absResearchLevel" : "40"
 }
-]
 },
 {
 "tech" : "productivity3",
 "title" : "星系智能",
 "explain" : "最大化基地生产力", 
 "dialogue" : "运转不止，建造不休", 
-"imagename" : "icon_hub.png",
+"imagename" : "icon_hub.png", 
 "fathers" :
 [
 "productivity2"
@@ -272,24 +280,23 @@
 "influence" :
 [
 {
-"numProductivity" : "40"
+"type" : "numProductivity",
+ "num" : "40"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "40",
 "numRandomResource" : "80",
 "absResearchLevel" : "80"
 }
-]
 },
 {
 "tech" : "resourcefixed1",
 "title" : "量子运输",
 "explain" : "提高核聚氢采集效率", 
 "dialogue" : "啊，伟大的太阳", 
-"imagename" : "icon_sun.png",
+"imagename" : "icon_sun.png", 
 "fathers" :
 [
 "techroot"
@@ -297,24 +304,23 @@
 "influence" :
 [
 {
-"numFixedResource" : "10"
+"type" : "numFixedResource",
+ "num" : "10"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "10",
 "numRandomResource" : "20",
 "absResearchLevel" : "20"
 }
-]
 },
 {
 "tech" : "resourcefixed2",
 "title" : "宏维传输",
 "explain" : "大幅提升核聚氢采集效率", 
 "dialogue" : "两点之间，直线最短", 
-"imagename" : "icon_point_objects.png",
+"imagename" : "icon_point_objects.png", 
 "fathers" :
 [
 "productivity1",
@@ -323,24 +329,23 @@
 "influence" :
 [
 {
-"numFixedResource" : "20"
+"type" : "numFixedResource",
+ "num" : "20"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "40",
 "numRandomResource" : "80",
 "absResearchLevel" : "80"
 }
-]
 },
 {
 "tech" : "resourcefixed3",
 "title" : "跨膜传送",
 "explain" : "最大化核聚氢采集效率", 
 "dialogue" : "超越空间，无尽能源", 
-"imagename" : "icon_foil_space_blanket.png",
+"imagename" : "icon_foil_space_blanket.png", 
 "fathers" :
 [
 "resourcefixed2"
@@ -348,24 +353,23 @@
 "influence" :
 [
 {
-"numFixedResource" : "40"
+"type" : "numFixedResource",
+ "num" : "40"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "80",
 "numRandomResource" : "160",
 "absResearchLevel" : "120"
 }
-]
 },
 {
 "tech" : "resourcerandom1",
 "title" : "纳容装备",
 "explain" : "提高引力波采集效率", 
 "dialogue" : "引力维持着宇宙的运转", 
-"imagename" : "icon_battery_empty.png",
+"imagename" : "icon_battery_empty.png", 
 "fathers" :
 [
 "techroot"
@@ -373,24 +377,23 @@
 "influence" :
 [
 {
-"numRandomResource" : "10"
+"type" : "numRandomResource",
+ "num" : "10"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "20",
 "numRandomResource" : "10",
 "absResearchLevel" : "20"
 }
-]
 },
 {
 "tech" : "resourcerandom2",
 "title" : "能源压缩",
 "explain" : "大幅提升引力波采集效率", 
 "dialogue" : "我要更多，更多", 
-"imagename" : "icon_battery_almost_empty.png",
+"imagename" : "icon_battery_almost_empty.png", 
 "fathers" :
 [
 "resourcerandom1",
@@ -399,24 +402,23 @@
 "influence" :
 [
 {
-"numRandomResource" : "20"
+"type" : "numRandomResource",
+ "num" : "20"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "40",
 "numRandomResource" : "20",
 "absResearchLevel" : "40"
 }
-]
 },
 {
 "tech" : "resourcerandom3",
 "title" : "深度挖掘",
 "explain" : "最大化引力波采集效率", 
 "dialogue" : "取之不尽，万世不竭", 
-"imagename" : "icon_battery_almost_full.png",
+"imagename" : "icon_battery_almost_full.png", 
 "fathers" :
 [
 "resourcerandom2"
@@ -424,24 +426,23 @@
 "influence" :
 [
 {
-"numRandomResource" : "40"
+"type" : "numRandomResource",
+ "num" : "40"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "80",
 "numRandomResource" : "40",
 "absResearchLevel" : "120"
 }
-]
 },
 {
 "tech" : "hplongrange1",
 "title" : "分散储能",
 "explain" : "增加远程兵种生命值", 
 "dialogue" : "这次总不会一下就死了", 
-"imagename" : "icon_donat_chart.png",
+"imagename" : "icon_donat_chart.png", 
 "fathers" :
 [
 "resourcefixed1",
@@ -450,24 +451,23 @@
 "influence" :
 [
 {
-"numLongRangeHitPoint" : "10"
+"type" : "numLongRangeHitPoint",
+ "num" : "10"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "20",
 "numRandomResource" : "10",
 "absResearchLevel" : "20"
 }
-]
 },
 {
 "tech" : "hplongrange2",
 "title" : "致密压缩",
 "explain" : "最大化远程兵种生命值", 
 "dialogue" : "终于可以安心输出了", 
-"imagename" : "icon_wipes.png",
+"imagename" : "icon_wipes.png", 
 "fathers" :
 [
 "hplongrange1"
@@ -475,24 +475,23 @@
 "influence" :
 [
 {
-"numLongRangeHitPoint" : "20"
+"type" : "numLongRangeHitPoint",
+ "num" : "20"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "80",
 "numRandomResource" : "40",
 "absResearchLevel" : "80"
 }
-]
 },
 {
 "tech" : "arglongrange1",
 "title" : "能量虫洞",
 "explain" : "增加远程兵种攻击距离", 
 "dialogue" : "高冷到无法触碰", 
-"imagename" : "icon_rotate.png",
+"imagename" : "icon_rotate.png", 
 "fathers" :
 [
 "unlocklongrangeunit2",
@@ -501,24 +500,23 @@
 "influence" :
 [
 {
-"numLongRangeAttackRange" : "1"
+"type" : "numLongRangeAttackRange",
+ "num" : "1"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "40",
 "numRandomResource" : "20",
 "absResearchLevel" : "40"
 }
-]
 },
 {
 "tech" : "arglongrange2",
 "title" : "超弦折射",
 "explain" : "最大化远程兵种攻击距离", 
 "dialogue" : "全面覆盖，插翅难逃", 
-"imagename" : "icon_path.png",
+"imagename" : "icon_path.png", 
 "fathers" :
 [
 "arglongrange1"
@@ -526,24 +524,23 @@
 "influence" :
 [
 {
-"numLongRangeAttackRange" : "1"
+"type" : "numLongRangeAttackRange",
+ "num" : "1"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "80",
 "numRandomResource" : "40",
 "absResearchLevel" : "80"
 }
-]
 },
 {
 "tech" : "atklongrange1",
 "title" : "电磁控制",
 "explain" : "增加远程兵种攻击力", 
 "dialogue" : "电和磁都是我的玩具", 
-"imagename" : "icon_infrared_field.png",
+"imagename" : "icon_infrared_field.png", 
 "fathers" :
 [
 "unlocklongrangeunit2"
@@ -551,24 +548,23 @@
 "influence" :
 [
 {
-"numLongRangeAttack" : "10"
+"type" : "numLongRangeAttack",
+ "num" : "10"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "40",
 "numRandomResource" : "20",
 "absResearchLevel" : "40"
 }
-]
 },
 {
 "tech" : "atklongrange2",
 "title" : "极限聚能",
 "explain" : "最大化远程兵种攻击力", 
 "dialogue" : "消灭一切，片甲不留", 
-"imagename" : "icon_laser_beam.png",
+"imagename" : "icon_laser_beam.png", 
 "fathers" :
 [
 "techtree2",
@@ -577,24 +573,23 @@
 "influence" :
 [
 {
-"numLongRangeAttack" : "20"
+"type" : "numLongRangeAttack",
+ "num" : "20"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "80",
 "numRandomResource" : "40",
 "absResearchLevel" : "80"
 }
-]
 },
 {
 "tech" : "atkshortrange1",
 "title" : "炮火升级",
 "explain" : "增加近程兵种攻击力", 
 "dialogue" : "尝尝新的武器", 
-"imagename" : "icon_chili_papper.png",
+"imagename" : "icon_chili_papper.png", 
 "fathers" :
 [
 "unlockshortrangeunit2"
@@ -602,24 +597,23 @@
 "influence" :
 [
 {
-"numShortRangeAttack" : "10"
+"type" : "numShortRangeAttack",
+ "num" : "10"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "10",
 "numRandomResource" : "20",
 "absResearchLevel" : "20"
 }
-]
 },
 {
 "tech" : "atkshortrange2",
 "title" : "聚能核爆",
 "explain" : "最大化近程兵种攻击力", 
 "dialogue" : "一口气解决", 
-"imagename" : "icon_energy.png",
+"imagename" : "icon_energy.png", 
 "fathers" :
 [
 "atkshortrange1"
@@ -627,24 +621,23 @@
 "influence" :
 [
 {
-"numShortRangeAttack" : "20"
+"type" : "numShortRangeAttack",
+ "num" : "20"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "40",
 "numRandomResource" : "80",
 "absResearchLevel" : "80"
 }
-]
 },
 {
 "tech" : "defshortrange1",
 "title" : "机械硬化",
 "explain" : "增加近程兵种防御力", 
 "dialogue" : "真的挡得住攻击吗", 
-"imagename" : "icon_shield.png",
+"imagename" : "icon_shield.png", 
 "fathers" :
 [
 "unlockshortrangeunit1",
@@ -653,24 +646,23 @@
 "influence" :
 [
 {
-"numShortRangeDefence" : "10"
+"type" : "numShortRangeDefence",
+ "num" : "10"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "20",
 "numRandomResource" : "40",
 "absResearchLevel" : "40"
 }
-]
 },
 {
 "tech" : "defshortrange2",
 "title" : "近场反射",
 "explain" : "最大化近程兵种防御力", 
 "dialogue" : "坚不可摧，所向披靡", 
-"imagename" : "icon_shellfish.png",
+"imagename" : "icon_shellfish.png", 
 "fathers" :
 [
 "defshortrange1"
@@ -678,24 +670,23 @@
 "influence" :
 [
 {
-"numShortRangeDefence" : "20"
+"type" : "numShortRangeDefence",
+ "num" : "20"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "40",
 "numRandomResource" : "80",
 "absResearchLevel" : "40"
 }
-]
 },
 {
 "tech" : "mrgshortrange1",
 "title" : "驱动引擎",
 "explain" : "增加近程兵种移动范围", 
 "dialogue" : "追求更快的速度", 
-"imagename" : "icon_rocket.png",
+"imagename" : "icon_rocket.png", 
 "fathers" :
 [
 "unlockshortrangeunit2",
@@ -704,24 +695,23 @@
 "influence" :
 [
 {
-"numShortRangeMoveRange" : "1"
+"type" : "numShortRangeMoveRange",
+ "num" : "1"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "20",
 "numRandomResource" : "40",
 "absResearchLevel" : "40"
 }
-]
 },
 {
 "tech" : "mrgshortrange2",
 "title" : "高维折叠",
 "explain" : "最大化近程兵种移动范围", 
 "dialogue" : "难道超越了光速", 
-"imagename" : "icon_stairs.png",
+"imagename" : "icon_stairs.png", 
 "fathers" :
 [
 "mrgshortrange1"
@@ -729,24 +719,23 @@
 "influence" :
 [
 {
-"numShortRangeMoveRange" : "1"
+"type" : "numShortRangeMoveRange",
+ "num" : "1"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "40",
 "numRandomResource" : "80",
 "absResearchLevel" : "80"
 }
-]
 },
 {
 "tech" : "defbase1",
 "title" : "基地加固",
 "explain" : "增加基地生命值", 
 "dialogue" : "修修补补总比没有强", 
-"imagename" : "icon_lighthouse.png",
+"imagename" : "icon_lighthouse.png", 
 "fathers" :
 [
 "defshortrange1",
@@ -755,23 +744,23 @@
 "influence" :
 [
 {
-"numBaseDefence" : "20"
+"type" : "numBaseHitPoint",
+ "num" : "400"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "80",
-"numRandomResource" : "160"
+"numRandomResource" : "160",
+"absResearchLevel" : "120"
 }
-]
 },
 {
 "tech" : "defbase2",
 "title" : "终极防护",
 "explain" : "最大化基地生命值", 
 "dialogue" : "修修补补总比没有强", 
-"imagename" : "icon_processor.png",
+"imagename" : "icon_processor.png", 
 "fathers" :
 [
 "defbase1"
@@ -779,16 +768,16 @@
 "influence" :
 [
 {
-"numBaseDefence" : "40"
+"type" : "numBaseHitPoint",
+ "num" : "800"
 }
 ],
 "consumption" :
-[
 {
 "numFixedResource" : "120",
-"numRandomResource" : "240"
+"numRandomResource" : "240",
+"absResearchLevel" : "120"
 }
-]
 }
 
 ]
