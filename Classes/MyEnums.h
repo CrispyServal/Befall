@@ -50,6 +50,7 @@ enum TechStateEnum
 {
 	unavailable,
 	available,
+	unlocking,
 	unlocked
 };
 
