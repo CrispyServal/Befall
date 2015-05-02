@@ -3,7 +3,9 @@
 
 #include "cocos2d.h" 
 #include <map>
+#include "json/document.h"
 #include "MyEnums.h"
+#include <cmath>
 
 using namespace cocos2d;
 
@@ -21,23 +23,27 @@ public:
 	TechEnum getTechContainingPoint(Vec2 mousePoint);
 	//切换科技显示状态
 	void setTechState(TechEnum tech, TechStateEnum techState);
-	//以下没有用
-	/*
-	void onTouchBegan(Vec2 mousePoint);
-	void onTouchMoved(Vec2 mousePoint);
-	void onTouchEnded(Vec2 mousePoint);
-	void onMouseMoved(Vec2 mousePoint);
-	*/
+	//吞没，不再往下查找
+	bool blockClick()
+	{
+		return true;
+	}
+
 
 private:
+	float width;
+	float height;
+	float sideLength;
+	float spaceLength;
+	float directLength;
+	float triLength;
+	float halfLength;
 	//图片本身
 	std::map<TechEnum, Sprite *> mTechSpriteMap;
 	//绘制在上层的一组，用来做点击区域
 	std::map<TechEnum, Sprite *> mClickAreaMap;
-	//吞没，不再往下查找
-	bool blockClick = true;
-	int flag;
-
+	std::map<TechEnum, TechStateEnum> mTechStateMap;
+	Dictionary * dictionary;
 };
 
 #endif // !TECHTREELAYER_H
