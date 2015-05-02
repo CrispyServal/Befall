@@ -99,96 +99,96 @@
 	<string>能源压缩</string>
 	<string>大幅提升引力波采集效率</string>
 	<string>我要更多，更多</string>
-	<string>icon_battery_almost_empty.png</tring>
+	<string>icon_battery_almost_empty.png<string>
 
 		<key>resourcerandom3</key>
 	<string>深度挖掘</string>
 	<string>最大化引力波采集效率</string>
 	<string>取之不尽，万世不竭</string>
-	<string>icon_battery_almost_full.png</tring>
+	<string>icon_battery_almost_full.png<string>
 
 		<key>hplongrange1</key>
 	<string>分散储能</string>
 	<string>增加远程兵种生命值</string>
 	<string>这次总不会一下就死了</string>
-	<string>icon_donat_chart.png</tring>
+	<string>icon_donat_chart.png<string>
 
 		<key>hplongrange2</key>
 	<string>致密压缩</string>
 	<string>最大化远程兵种生命值</string>
 	<string>终于可以安心输出了</string>
-	<string>icon_wipes.png</tring>
+	<string>icon_wipes.png<string>
 
 		<key>arglongrange1</key>
 	<string>能量虫洞</string>
 	<string>增加远程兵种攻击距离</string>
 	<string>高冷到无法触碰</string>
-	<string>icon_rotate.png</tring>
+	<string>icon_rotate.png<string>
 
 		<key>arglongrange2</key>
 	<string>超弦折射</string>
 	<string>最大化远程兵种攻击距离</string>
 	<string>全面覆盖，插翅难逃</string>
-	<string>icon_path.png</tring>
+	<string>icon_path.png<string>
 
 		<key>atklongrange1</key>
 	<string>电磁控制</string>
 	<string>增加远程兵种攻击力</string>
 	<string>电和磁都是我的玩具</string>
-	<string>icon_infrared_field.png</tring>
+	<string>icon_infrared_field.png<string>
 
 		<key>atklongrange2</key>
 	<string>极限聚能</string>
 	<string>最大化远程兵种攻击力</string>
 	<string>消灭一切，片甲不留</string>
-	<string>icon_laser_beam.png</tring>
+	<string>icon_laser_beam.png<string>
 
 		<key>atkshortrange1</key>
 	<string>炮火升级</string>
 	<string>增加近程兵种攻击力</string>
 	<string>尝尝新的武器</string>
-	<string>icon_chili_papper.png</tring>
+	<string>icon_chili_papper.png<string>
 
 		<key>atkshortrange2</key>
 	<string>聚能核爆</string>
 	<string>最大化近程兵种攻击力</string>
 	<string>一口气解决</string>
-	<string>icon_energy.png</tring>
+	<string>icon_energy.png<string>
 
 		<key>defshortrange1</key>
 	<string>机械硬化</string>
 	<string>增加近程兵种防御力</string>
 	<string>真的挡得住攻击吗</string>
-	<string>icon_shield.png</tring>
+	<string>icon_shield.png<string>
 
 		<key>defshortrange2</key>
 	<string>近场反射</string>
 	<string>最大化近程兵种防御力</string>
 	<string>坚不可摧，所向披靡</string>
-	<string>icon_shellfish.png</tring>
+	<string>icon_shellfish.png<string>
 
 		<key>mrgshortrange1</key>
 	<string>驱动引擎</string>
 	<string>增加近程兵种移动范围</string>
 	<string>追求更快的速度</string>
-	<string>icon_rocket.png</tring>
+	<string>icon_rocket.png<string>
 
 		<key>mrgshortrange2</key>
 	<string>高维折叠</string>
 	<string>最大化近程兵种移动范围</string>
 	<string>难道超越了光速</string>
-	<string>icon_stairs.png</tring>
+	<string>icon_stairs.png<string>
 
 		<key>defbase1</key>
 	<string>基地加固</string>
 	<string>增加基地生命值</string>
 	<string>修修补补总比没有强</string>
-	<string>icon_lighthouse.png</tring>
+	<string>icon_lighthouse.png<string>
 
 		<key>defbase2</key>
 	<string>终极防护</string>
 	<string>最大化基地生命值</string>
 	<string>修修补补总比没有强</string>
-	<string>icon_processor.png</tring>
+	<string>icon_processor.png<string>
 
 </dict>
