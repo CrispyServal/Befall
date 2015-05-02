@@ -99,35 +99,38 @@ bool GameScene::init()
 	{
 		//init juFlower
 		mWelcomeLayer = Layer::create();
-		auto juFlower = Sprite::create("item1.png");
-		juFlower->setScale(0.3);
-		juFlower->setPosition(
-			mWinWidth / 2,
-			mWinHeight / 2);
-		auto juRotate = RotateBy::create(1, -30);
-		auto juRepaet = RepeatForever::create(juRotate);
-		juFlower->runAction(juRepaet);
+		Sprite * juFlower[2];
+		for (int i = 0; i < 2; ++i)
+		{
+			juFlower[i] = Sprite::create("uiComponent/icon_waiting" + std::string{(char)('0' + i)} + ".png");
+			juFlower[i]->setScale(0.8);
+			juFlower[i]->setPosition(
+				mWinWidth / 2,
+				mWinHeight / 2);
+		}
+		juFlower[0]->runAction(RepeatForever::create(RotateBy::create(1, -30)));
+		juFlower[1]->runAction(RepeatForever::create(RotateBy::create(1, 30)));
 		//wating label
-		auto watingLabel = Label::createWithTTF("fuck", "/fonts/STXIHEI.TTF", 30);
+		auto watingLabel = Label::createWithTTF("no word", "/fonts/STXIHEI.TTF", 30);
         //CCLOG("%s",watingLabel->getString().c_str());
 		if (mGameMode == GameModeEnum::server)
 		{
             CCLOG("waiting:  %s",mDictionary->valueForKey("wating")->getCString());
             watingLabel->setString(mDictionary->valueForKey("waiting")->getCString());
 		}
-		if (mGameMode = GameModeEnum::client)
+		if (mGameMode == GameModeEnum::client)
 		{
 			watingLabel->setString(mDictionary->valueForKey("connecting")->getCString());
 		}
 		watingLabel->setPosition(
 			mWinWidth / 2,
-			2 * juFlower->getBoundingBox().getMaxY() - juFlower->getBoundingBox().getMinY()
+			juFlower[0]->getBoundingBox().getMaxY() + 0.3 * (juFlower[0]->getBoundingBox().getMaxY() - juFlower[0]->getBoundingBox().getMinY())
 			);
 		auto backToMainSceneLabel = Label::createWithTTF(mDictionary->valueForKey("cancel")->getCString(), "/fonts/STXIHEI.TTF", 30);
 		backToMainSceneItem = MenuItemLabel::create(backToMainSceneLabel, CC_CALLBACK_1(GameScene::backToMainScene, this));
 		backToMainSceneItem->setPosition(
 			backToMainSceneItem->getPosition().x,
-			backToMainSceneItem->getPosition().y - juFlower->getBoundingBox().getMaxY() + juFlower->getBoundingBox().getMinY() - 10
+			backToMainSceneItem->getPosition().y - juFlower[0]->getBoundingBox().getMaxY() + juFlower[0]->getBoundingBox().getMinY() + 10
 			);
 		auto welcomeMenu = Menu::create(backToMainSceneItem, NULL);
 		/*
@@ -138,7 +141,8 @@ bool GameScene::init()
 			*/
 		mWelcomeLayer->addChild(watingLabel);
 		mWelcomeLayer->addChild(welcomeMenu);
-		mWelcomeLayer->addChild(juFlower);
+		mWelcomeLayer->addChild(juFlower[0]);
+		mWelcomeLayer->addChild(juFlower[1]);
 		addChild(mWelcomeLayer, 3);
 	}
 	//yypNet
@@ -150,12 +154,13 @@ bool GameScene::init()
 		break;
 	case client:
 		//display juFlower
-		mNet.makeConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
-		//schedule(schedule_selector(GameScene::startConnecting), 0, CC_REPEAT_FOREVER, 0.1);
+		//mNet.makeConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
+		schedule(schedule_selector(GameScene::startConnecting),1,CC_REPEAT_FOREVER,0);
 		break;
 	case vsPlayer:
 		break;
 	default:
+		CCLOG("default?");
 		break;
 	}
 	//scheduleUpdate();
@@ -166,6 +171,7 @@ bool GameScene::init()
 	return true;
 }
 
+//for server, waiting client
 void GameScene::acceptConnect(float delta)
 {
 	//listen
@@ -190,12 +196,14 @@ void GameScene::acceptConnect(float delta)
 	}
 }
 
+//for client, make connecting
 void GameScene::startConnecting(float delta)
 {
 	CCLOG("connecting...");
 	if (mNet.makeConnect((char *)mUserDefault->getStringForKey("ip").c_str(), mUserDefault->getIntegerForKey("port")))
 	{
 		CCLOG("connecting successed");
+		startGame();
 		unschedule(schedule_selector(GameScene::startConnecting));
 	}
 }
