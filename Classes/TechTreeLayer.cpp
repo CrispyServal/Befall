@@ -19,10 +19,15 @@ bool TechTreeLayer::init()
 	auto director = Director::getInstance();
 	width = director->getWinSize().width;
 	height = director->getWinSize().height;
+	//bg
+	mBg = Sprite::create("/uiComponent/tech_tree_bg.png");
+	mBg->setOpacity(125);
+	mBg->setPosition(width / 2, height / 2);
+	addChild(mBg);
 	//click area
 	for (int i = 0; i < 32; i++)
 	{
-		mClickAreaMap[(TechEnum)i] = Sprite::create("/uiComponent/techcell_transparent_100px.png");	
+		mClickAreaMap[(TechEnum)i] = Sprite::create("/uiComponent/techcell_opaque_100px.png");	
 		mClickAreaMap[(TechEnum)i]->setScale(0.45, 0.45);
 		addChild(mClickAreaMap[(TechEnum)i]);	
 	}

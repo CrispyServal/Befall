@@ -38,6 +38,8 @@ private:
 	float directLength;
 	float triLength;
 	float halfLength;
+	//bg
+	Sprite *  mBg;
 	//图片本身
 	std::map<TechEnum, Sprite *> mTechSpriteMap;
 	//绘制在上层的一组，用来做点击区域
