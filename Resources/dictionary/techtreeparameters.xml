@@ -8,7 +8,7 @@
 	<child>resourcefixed1</child>
 	<child>resourcerandom1</child>
 	<influence>
-		<value openTechTree>true</value>
+		<value unlockTechTree>true</value>
 	</influence>
 	<consumption>
 		<value numFixedResource>0</value>
@@ -60,7 +60,7 @@
 	<child>unlocklongrangeunit2</child>
 	<child>hplongrange1</child>
 	<influence>
-		<value unlockLongRangeUnit1>true</value>
+		<value longRangeUnit1>true</value>
 	</influence>
 	<consumption>
 		<value numFixedResource>10</value>
@@ -74,7 +74,7 @@
 	<child>arglongrange1</child>
 	<child>atklongrange1</child>
 	<influence>
-		<value unlockLongRangeUnit2>true</value>
+		<value longRangeUnit2>true</value>
 	</influence>
 	<consumption>
 		<value numFixedResource>20</value>
@@ -87,7 +87,7 @@
 	<child>unlockshortrangeunit2</child>
 	<child>defshortrange1</child>
 	<influence>
-		<value unlockShortRangeUnit1>true</value>
+		<value shortRangeUnit1>true</value>
 	</influence>
 	<consumption>
 		<value numFixedResource>5</value>
@@ -100,7 +100,7 @@
 	<child>mrgshortrange1</child>
 	<child>atkshortrange1</child>
 	<influence>
-		<value unlockShortRangeUnit2>true</value>
+		<value shortRangeUnit2>true</value>
 	</influence>
 	<consumption>
 		<value numFixedResource>10</value>
@@ -112,7 +112,7 @@
 	<father>arglongrange2</father>
 	<father>hplongrange2</father>
 	<influence>
-		<value unlockLongRangeUnit3>true</value>
+		<value longRangeUnit3>true</value>
 	</influence>
 	<consumption>
 		<value numFixedResource>160</value>

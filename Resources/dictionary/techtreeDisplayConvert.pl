@@ -55,12 +55,31 @@ while(<TECHIN1>)
 				}
 				print TECHOUT "\n],\n";
 
-				print TECHOUT "\"influence\" :\n[\n{\n";
+				print TECHOUT "\"influence\" :\n{\n";
 				while (<TECHIN2>)
 				{
 					if($_ =~ /<value (.*)>(.*)<\/value>/)
 					{
-						print TECHOUT "\"type\" : \"$1\",\n \"num\" : \"$2\"\n}\n],\n";
+						my $value;
+						my $type;
+						my $target;
+						$value = $2;
+						if($2 == "true")
+						{
+							$value = 1;
+						}
+						$type = $1;
+						if($1 =~ /(.*)LongRange(.*)/)
+						{
+							$target = "longRange";
+							$type = "$1$2";
+						}
+						if($1 =~ /(.*)ShortRange(.*)/)
+						{
+							$target = "shortRange";
+							$type = "$1$2";
+						}
+						print TECHOUT "\"type\" : \"$type\",\n\"target\" : \"$target\",\n\"value\" : $value\n},\n";
 						last;
 					}
 				}
@@ -70,15 +89,15 @@ while(<TECHIN1>)
 				print TECHOUT "\"consumption\" :\n{\n";
 				if(<TECHIN2> =~ /<value (.*)>(.*)<\/value>/)
 				{
-					print TECHOUT "\"$1\" : \"$2\",\n";
+					print TECHOUT "\"$1\" : $2,\n";
 				}
 				if(<TECHIN2> =~ /<value (.*)>(.*)<\/value>/)
 				{
-					print TECHOUT "\"$1\" : \"$2\",\n";
+					print TECHOUT "\"$1\" : $2,\n";
 				}
 				if(<TECHIN2> =~ /<value (.*)>(.*)<\/value>/)
 				{
-					print TECHOUT "\"$1\" : \"$2\"\n}\n";
+					print TECHOUT "\"$1\" : $2\n}\n";
 				}
 			}
 			
