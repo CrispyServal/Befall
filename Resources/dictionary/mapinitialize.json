@@ -1,0 +1,83 @@
+{
+	"mapelement" :
+	[
+	//baseA
+	{
+		"element" : "base",
+		"position" : 
+		{
+			"X" : 3,
+			"Y" : 18 
+		},
+		"numHitPoint" : 400
+	},
+	//baseB
+	{
+		"element" : "base",
+		"position" : 
+		{
+			"X" : 18,
+			"Y" : 3 
+		},
+		"numHitPoint" : 400
+	},
+	//resourcefixed X 4
+	{
+		"element" : "resourceFixed",
+		"position" : 
+		{
+			"X" : 1,
+			"Y" : 20 
+		},
+		"numHitPoint" : 500
+	},
+	{
+		"element" : "resourceFixed",
+		"position" : 
+		{
+			"X" : 20,
+			"Y" : 1 
+		},
+		"numHitPoint" : 500
+	},
+	{
+		"element" : "resourceFixed",
+		"position" : 
+		{
+			"X" : 1,
+			"Y" : 1 
+		},
+		"numHitPoint" : 1500
+	},
+	{
+		"element" : "resourceFixed",
+		"position" : 
+		{
+			"X" : 20,
+			"Y" : 20 
+		},
+		"numHitPoint" : 1500
+	},
+	//resouceRandom X 2 
+	//+ resourceRandom X 10(Random by system)
+	{
+		"element" : "resourceRamdon",
+		"position" : 
+		{
+			"X" : 5,
+			"Y" : 20 
+		},
+		"numHitPoint" : 150
+	},
+	{
+		"element" : "resourceRamdon",
+		"position" : 
+		{
+			"X" : 20,
+			"Y" : 5 
+		},
+		"numHitPoint" : 150
+	}
+	
+	]
+}
