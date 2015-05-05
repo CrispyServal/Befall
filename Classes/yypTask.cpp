@@ -62,7 +62,7 @@ int main()
 				break;
 			}
 		}
-		cout << "tech = " << server.tech << endl;
+		cout << "tech = " << server.getTech() << endl;
 
 		while (!server.read())
 		{
@@ -85,9 +85,9 @@ int main()
 				break;
 			}
 		}
-		cout << "soldier = " << server.newSoldier.unit << endl;
-		cout << "x1 = " << server.newSoldier.loc.x << endl;
-		cout << "y1 = " << server.newSoldier.loc.y << endl;
+		cout << "soldier = " << server.getNewSoldier().unit << endl;
+		cout << "x1 = " << server.getNewSoldier().loc.x << endl;
+		cout << "y1 = " << server.getNewSoldier().loc.y << endl;
 
 		while (!server.read())
 		{
@@ -111,10 +111,32 @@ int main()
 			}
 		}
 
-		cout << "p: x1 = " << server.points.first.x << endl;
-		cout << "p: x2 = " << server.points.first.y << endl; 
-		cout << "p: y1 = " << server.points.second.x << endl; 
-		cout << "p: y2 = " << server.points.second.y << endl; 
+		cout << "p: x1 = " << server.getPoints().first.x << endl;
+		cout << "p: x2 = " << server.getPoints().first.y << endl; 
+		cout << "p: y1 = " << server.getPoints().second.x << endl; 
+		cout << "p: y2 = " << server.getPoints().second.y << endl; 
+		while (!server.read())
+		{
+			auto err = WSAGetLastError();
+			if (err == WSAEWOULDBLOCK)
+				continue;
+			else if (err == WSAETIMEDOUT)//超时。  
+			{
+				cout << "error";
+				break;
+			}
+			else if (err == WSAENETDOWN)//连接断开。  
+			{
+				cout << "error";
+				break;
+			}
+			else//其他错误。  
+			{
+				cout << "error";
+				break;
+			}
+		}
+		cout << server.getWhich() << endl;
 		server.endServer();
 		system("pause");
 	}
@@ -172,7 +194,7 @@ int main()
 		points.second.x = 54;
 		points.second.y = 76;
 		Sleep(20);
-		while (!client.sedTwoPoind(points))
+		while (!client.sedTwoPoint(points))
 		{
 			int r = WSAGetLastError();
 			if (r == WSAEWOULDBLOCK)
@@ -187,6 +209,21 @@ int main()
 			}
 		}
 
+		Sleep(20);
+		while (!client.sedEnd())
+		{
+			int r = WSAGetLastError();
+			if (r == WSAEWOULDBLOCK)
+			{
+				Sleep(20);
+				continue;
+			}
+			else
+			{
+				std::cout << "数据发送失败！" << std::endl;
+				return false;
+			}
+		}
 		client.deleteConnect();
 		system("pause");
 	}

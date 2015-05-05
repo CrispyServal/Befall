@@ -27,21 +27,30 @@ enum whichEnum
 {
 	newTech,
 	newSoldier,
-	twoPoints
+	twoPoints,
+	onePoint,
+	end
 };
 
 class YypNoBlockingNet
 {
+private:
 	SOCKET sclient;
 	SOCKET slisten;
 	sockaddr_in remoteAddr;
 	int nAddrlen;
-	bool lock;	
-public:
-	TechEnum tech;
-	newSoldierStruct newSoldier;
-	twoPointStruct points;
+	bool lock;
+	TechEnum mTech;
+	newSoldierStruct mNewSoldier;
+	twoPointStruct mPoints;
+	MyPointStruct mOnePoint;
 	whichEnum which;
+public:
+	TechEnum getTech();
+	newSoldierStruct getNewSoldier();
+	twoPointStruct getPoints();
+	MyPointStruct getOnePoint();
+	whichEnum getWhich();
 	void lockOn()
 	{
 		lock = true;
@@ -49,7 +58,9 @@ public:
 	bool lockState();
 	bool sendTech(TechEnum tech);
 	bool sendNewSoldier(newSoldierStruct newSoldier);
-	bool sedTwoPoind(twoPointStruct points);
+	bool sedTwoPoint(twoPointStruct points);
+	bool sedOnePoint(MyPointStruct onePoint);
+	bool sedEnd();
 	bool read();
 	bool startServer(int pot);
 	bool acceptConnect();

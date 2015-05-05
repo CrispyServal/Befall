@@ -7,6 +7,26 @@ YypNoBlockingNet::YypNoBlockingNet()
 YypNoBlockingNet::~YypNoBlockingNet()
 {
 }
+TechEnum YypNoBlockingNet::getTech()
+{
+	return mTech;
+}
+newSoldierStruct YypNoBlockingNet::getNewSoldier()
+{
+	return mNewSoldier;
+}
+twoPointStruct YypNoBlockingNet::getPoints()
+{
+	return mPoints;
+}
+MyPointStruct YypNoBlockingNet::getOnePoint()
+{
+	return mOnePoint;
+}
+whichEnum YypNoBlockingNet::getWhich()
+{
+	return which;
+}
 bool YypNoBlockingNet::lockState()
 {
 	return lock;
@@ -42,7 +62,7 @@ bool YypNoBlockingNet::sendNewSoldier(newSoldierStruct newSoldier)
 	else
 		return true;
 }
-bool YypNoBlockingNet::sedTwoPoind(twoPointStruct points)
+bool YypNoBlockingNet::sedTwoPoint(twoPointStruct points)
 {
 	int sendData[6];
 	sendData[0] = 2;
@@ -50,6 +70,36 @@ bool YypNoBlockingNet::sedTwoPoind(twoPointStruct points)
 	sendData[2] = points.first.y;
 	sendData[3] = points.second.x;
 	sendData[4] = points.second.y;
+	sendData[5] = 0;
+	int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
+	if (ret == SOCKET_ERROR)
+		return false;
+	else
+		return true;
+}
+bool YypNoBlockingNet::sedOnePoint(MyPointStruct onePoint)
+{
+	int sendData[6];
+	sendData[0] = 3;
+	sendData[1] = onePoint.x;
+	sendData[2] = onePoint.y;
+	sendData[3] = 0;
+	sendData[4] = 0;
+	sendData[5] = 0;
+	int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
+	if (ret == SOCKET_ERROR)
+		return false;
+	else
+		return true;
+}
+bool YypNoBlockingNet::sedEnd()
+{
+	int sendData[6];
+	sendData[0] = 4;
+	sendData[1] = 0;
+	sendData[2] = 0;
+	sendData[3] = 0;
+	sendData[4] = 0;
 	sendData[5] = 0;
 	int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
 	if (ret == SOCKET_ERROR)
@@ -79,9 +129,10 @@ bool YypNoBlockingNet::read()
 			int enu = mess[5];
 			switch (flag)
 			{
-			case 0:tech = (TechEnum)enu; break;
-			case 1:newSoldier.unit = (UnitEnum)enu; newSoldier.loc.x = x1; newSoldier.loc.y = y1; break;
-			case 2:points.first.x = x1; points.first.y = y1; points.second.x = x2; points.second.y = y2; break;
+			case 0:mTech = (TechEnum)enu; break;
+			case 1:mNewSoldier.unit = (UnitEnum)enu; mNewSoldier.loc.x = x1; mNewSoldier.loc.y = y1; break;
+			case 2:mPoints.first.x = x1; mPoints.first.y = y1; mPoints.second.x = x2; mPoints.second.y = y2; break;
+			case 3:mOnePoint.x = x1; mOnePoint.y = y1; break;
 			}
 			lock = false;
 		}
