@@ -1,7 +1,6 @@
 {
 	"mapelement" :
 	[
-	//baseA
 	{
 		"element" : "base",
 		"position" : 
@@ -11,7 +10,6 @@
 		},
 		"numHitPoint" : 400
 	},
-	//baseB
 	{
 		"element" : "base",
 		"position" : 
@@ -21,7 +19,6 @@
 		},
 		"numHitPoint" : 400
 	},
-	//resourcefixed X 4
 	{
 		"element" : "resourceFixed",
 		"position" : 
@@ -58,10 +55,8 @@
 		},
 		"numHitPoint" : 1500
 	},
-	//resouceRandom X 2 
-	//+ resourceRandom X 10(Random by system)
 	{
-		"element" : "resourceRamdon",
+		"element" : "resourceRandom",
 		"position" : 
 		{
 			"X" : 5,
@@ -70,7 +65,7 @@
 		"numHitPoint" : 150
 	},
 	{
-		"element" : "resourceRamdon",
+		"element" : "resourceRandom",
 		"position" : 
 		{
 			"X" : 20,

@@ -67,6 +67,7 @@ struct Unit
 {
 	UnitEnum type;
 	UnitPropertyStruct property;
+	UnitStateEnum state;
 };
 
 #endif // !MYSTRUCTS_H

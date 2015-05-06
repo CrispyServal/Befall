@@ -67,4 +67,10 @@ enum UnitEnum
 	randomResource
 };
 
+enum UnitStateEnum
+{
+	fresh,
+	moved,
+	attacked
+};
 #endif // !MYENUMS_H

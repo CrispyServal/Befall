@@ -14,7 +14,7 @@ bool TiledMapLayer::init()
 	{
 		return false;
 	}
-	mTiledMap = TMXTiledMap::create("tiledMap/tiledMap.tmx");
+	mTiledMap = TMXTiledMap::create("uiComponent/tiled_map.tmx");
 	addChild(mTiledMap);
 	return true;
 }
