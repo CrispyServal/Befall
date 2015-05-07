@@ -55,12 +55,12 @@ public:
 	{
 		lock = true;
 	}
-	bool lockState();
+	bool isLocked();
 	bool sendTech(TechEnum tech);
 	bool sendNewSoldier(newSoldierStruct newSoldier);
-	bool sedTwoPoint(twoPointStruct points);
-	bool sedOnePoint(MyPointStruct onePoint);
-	bool sedEnd();
+	bool sendTwoPoint(twoPointStruct points);
+	bool sendOnePoint(MyPointStruct onePoint);
+	bool sendEnd();
 	bool read();
 	bool startServer(int pot);
 	bool acceptConnect();

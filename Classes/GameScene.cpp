@@ -252,7 +252,7 @@ void GameScene::initResourceMap()
 		{
 			rapidjson::Value & item = mapElements[i];
 			MyPointStruct point = { item["position"]["X"].GetInt(), item["position"]["Y"].GetInt() };
-			CCLOG("point: %d,%d; num: %d", point.x, point.y, item["numHitPoint"].GetInt());
+			//CCLOG("point: %d,%d; num: %d", point.x, point.y, item["numHitPoint"].GetInt());
 			std::string element{ item["element"].GetString() };
 			//CCLOG("element: %s", element.c_str());
 			if (element == "base")
@@ -265,7 +265,7 @@ void GameScene::initResourceMap()
 					UnitStateEnum::attacked
 				};
 				//
-				CCLOG("reM,add base:%d,%d,%d,%d,%d,%d", unit.property.numHitPoint, unit.property.numDefence, unit.property.numAttack, unit.property.numRangeAttack, unit.property.numRangeMove, unit.property.numPopulation);
+				//CCLOG("reM,add base:%d,%d,%d,%d,%d,%d", unit.property.numHitPoint, unit.property.numDefence, unit.property.numAttack, unit.property.numRangeAttack, unit.property.numRangeMove, unit.property.numPopulation);
 				mResourceMap[point] = unit;
 				continue;
 			}
@@ -290,52 +290,79 @@ void GameScene::initResourceMap()
 				};
 				//save HP of randomR
 				mHitPointOfRandomResource = item["numHitPoint"].GetInt();
-				CCLOG("hp of ranP: %d", mHitPointOfRandomResource);
+				//CCLOG("hp of ranP: %d", mHitPointOfRandomResource);
 				mResourceMap[point] = unit;
 				continue;
 			}
 		}
 	}
 	//random: random
-	int i = 0;
-	while (i < mNumOfRandomResource)
+	Unit unitR = {
+		UnitEnum::randomResource,
+		UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
+		UnitStateEnum::attacked
+	};
+	if (mGameMode != client)
 	{
-		MyPointStruct ranP = {
-			CCRANDOM_0_1() * mMapSize.width,
-			CCRANDOM_0_1() * mMapSize.height
-		};
-		CCLOG("ranP: %d,%d", ranP.x, ranP.y);
-		bool occupied = false;
-		for (const auto & i : mResourceMap)
+		int i = 0;
+		while (i < mNumOfRandomResource)
 		{
-			if ((i.first.x == ranP.x) && (i.first.y == ranP.y))
+			MyPointStruct ranP = {
+				CCRANDOM_0_1() * mMapSize.width,
+				CCRANDOM_0_1() * mMapSize.height
+			};
+			//CCLOG("ranP: %d,%d", ranP.x, ranP.y);
+			bool occupied = false;
+			for (const auto & i : mResourceMap)
 			{
-				occupied = true;
-				break;
-			}
-			if (i.second.type == base)
-			{
-				for (auto p : getNearPoint(i.first))
+				if ((i.first.x == ranP.x) && (i.first.y == ranP.y))
 				{
-					if ((p.x == ranP.x) && (p.y == ranP.y))
+					occupied = true;
+					break;
+				}
+				if (i.second.type == base)
+				{
+					for (auto p : getNearPoint(i.first))
 					{
-						occupied = true;
-						break;
+						if ((p.x == ranP.x) && (p.y == ranP.y))
+						{
+							occupied = true;
+							break;
+						}
 					}
 				}
 			}
+			if (!occupied)
+			{
+				//send ranP to client
+				if (mGameMode == server)
+				{
+					while (!mNet.sendOnePoint(ranP));
+					CCLOG("sended. %d,%d", ranP.x, ranP.y);
+				}
+				mResourceMap[ranP] = unitR;
+				++i;
+			}
 		}
-		if (!occupied)
-		{
-			Unit unit = {
-				UnitEnum::randomResource,
-				UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
-				UnitStateEnum::attacked
-			};
-			mResourceMap[ranP] = unit;
-			++i;
-		}
+		while (!mNet.sendEnd());
+		CCLOG("sended end");
 	}
+	else
+	{
+		while (true)
+		{
+			while (!mNet.read());
+			if (mNet.getWhich() == onePoint)
+			{
+				mResourceMap[mNet.getOnePoint()] = unitR;
+				CCLOG("read: %d,%d", mNet.getOnePoint().x, mNet.getOnePoint().y);
+			}
+			if (mNet.getWhich() == end)
+				break;
+		}
+		CCLOG("read end");
+	}
+
 }
 
 void GameScene::initTechData()
@@ -414,7 +441,7 @@ void GameScene::initUnitData()
 				}
 			};
 			std::string type = unit["unit"].GetString();
-			CCLOG("type: %s", type.c_str());
+			//CCLOG("type: %s", type.c_str());
 			if (type == "base")
 			{
 				mUnitInitDataMap[base] = data;

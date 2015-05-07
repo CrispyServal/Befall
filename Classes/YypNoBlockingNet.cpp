@@ -27,7 +27,7 @@ whichEnum YypNoBlockingNet::getWhich()
 {
 	return which;
 }
-bool YypNoBlockingNet::lockState()
+bool YypNoBlockingNet::isLocked()
 {
 	return lock;
 }
@@ -62,7 +62,7 @@ bool YypNoBlockingNet::sendNewSoldier(newSoldierStruct newSoldier)
 	else
 		return true;
 }
-bool YypNoBlockingNet::sedTwoPoint(twoPointStruct points)
+bool YypNoBlockingNet::sendTwoPoint(twoPointStruct points)
 {
 	int sendData[6];
 	sendData[0] = 2;
@@ -77,7 +77,7 @@ bool YypNoBlockingNet::sedTwoPoint(twoPointStruct points)
 	else
 		return true;
 }
-bool YypNoBlockingNet::sedOnePoint(MyPointStruct onePoint)
+bool YypNoBlockingNet::sendOnePoint(MyPointStruct onePoint)
 {
 	int sendData[6];
 	sendData[0] = 3;
@@ -92,7 +92,7 @@ bool YypNoBlockingNet::sedOnePoint(MyPointStruct onePoint)
 	else
 		return true;
 }
-bool YypNoBlockingNet::sedEnd()
+bool YypNoBlockingNet::sendEnd()
 {
 	int sendData[6];
 	sendData[0] = 4;
