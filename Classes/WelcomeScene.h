@@ -22,6 +22,10 @@ private:
 	MainScene * mNextScene;
 	void jumpToNextScene();
 	void changeTexture(Texture2D * texture);
+	EventListenerTouchOneByOne * mTouchListener;
+	EventListenerKeyboard * mKeyboardListener;
+	void onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event);
+	void onTouchEnded(Touch * touch, Event * event);
 };
 
 #endif // !WELCOMESCENE_H

@@ -87,7 +87,7 @@ bool GameScene::init()
 	mDirector = Director::getInstance();
 	mUserDefault = UserDefault::getInstance();
     mDictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + mUserDefault->getStringForKey("language") + ".xml" }.c_str());
-    mDictionary->retain();
+    //mDictionary->retain();
 	mDispatcher = mDirector->getEventDispatcher();
 	mWinHeight = mDirector->getWinSize().height;
 	mWinWidth = mDirector->getWinSize().width;

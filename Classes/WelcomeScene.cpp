@@ -44,12 +44,39 @@ bool WelcomeScene::init()
 	//actions
 	//final action
 	mWelcomeBg->runAction(sequenceR);
+
+	mKeyboardListener = EventListenerKeyboard::create();
+	mKeyboardListener->onKeyReleased = CC_CALLBACK_2(WelcomeScene::onKeyReleased, this);
+	mTouchListener = EventListenerTouchOneByOne::create();
+	mTouchListener->onTouchBegan = [](Touch * touch, Event * event)->bool{return true; };
+	mTouchListener->onTouchEnded = CC_CALLBACK_2(WelcomeScene::onTouchEnded, this);
+	auto dispatcher = Director::getInstance()->getEventDispatcher();
+	dispatcher->addEventListenerWithSceneGraphPriority(mTouchListener, this);
+	dispatcher->addEventListenerWithSceneGraphPriority(mKeyboardListener, this);
 	return true;
+}
+
+void WelcomeScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
+{
+	if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE || keyCode == EventKeyboard::KeyCode::KEY_SPACE)
+	{
+		jumpToNextScene();
+	}
+}
+
+void WelcomeScene::onTouchEnded(Touch * touch, Event * event)
+{
+	jumpToNextScene();
 }
 
 void WelcomeScene::jumpToNextScene()
 {
-	Director::getInstance()->replaceScene(TransitionFade::create(0.8,mNextScene));
+	static bool called = false;
+	if (!called)
+	{
+		called = true;
+		Director::getInstance()->replaceScene(TransitionFade::create(0.8, mNextScene));
+	}
 }
 
 void WelcomeScene::changeTexture(Texture2D * texture)
