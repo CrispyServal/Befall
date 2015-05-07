@@ -74,7 +74,7 @@ TechTree::~TechTree()
 
 void TechTree::unlock(TechEnum tech)
 {
-	for (auto i : mTechTree)
+	for (auto & i : mTechTree)
 	{
 		if (i.techName == tech)
 		{
@@ -83,6 +83,17 @@ void TechTree::unlock(TechEnum tech)
 		}
 	}
 	//error
+}
+
+bool TechTree::isUnlocked(TechEnum tech)
+{
+	for (const auto & i : mTechTree)
+	{
+		if (i.techName == tech)
+		{
+			return i.isUnclocked;
+		}
+	}
 }
 
 bool TechTree::unlockable(TechEnum tech)

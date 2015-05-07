@@ -51,6 +51,7 @@ public:
 	TechTree();
 	~TechTree();
 	bool unlockable(TechEnum tech);
+	bool isUnlocked(TechEnum tech);
 	void unlock(TechEnum tech);
 private:
 	std::vector<TechTreeNodeStruct> mTechTree;

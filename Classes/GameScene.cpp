@@ -225,6 +225,17 @@ void GameScene::initGameState()
 	//mResources
 	mResources = ResourcesStruct{ 100, 100, 10, 10 };
 	mCollectionEffeciency = ResourcesStruct{ 0, 0, 0, 0 };
+	//Ë«±ß
+	TechTree techTree;
+	CCLOG("techroot? %d",techTree.isUnlocked(techroot));
+	std::map<MyPointStruct, Unit> unitMap;
+	std::map<UnitEnum, UnitPropertyStruct> extraProperty;
+	GameStateStruct  gameState = {
+		techTree,
+		unitMap,
+		extraProperty
+	};
+	mGameState[0] = mGameState[1] = gameState;
 }
 
 void GameScene::initResourceMap()
@@ -311,7 +322,7 @@ void GameScene::initResourceMap()
 				CCRANDOM_0_1() * mMapSize.width,
 				CCRANDOM_0_1() * mMapSize.height
 			};
-			//CCLOG("ranP: %d,%d", ranP.x, ranP.y);
+			CCLOG("i = %d, ranP: %d,%d",i, ranP.x, ranP.y);
 			bool occupied = false;
 			for (const auto & i : mResourceMap)
 			{
@@ -344,11 +355,15 @@ void GameScene::initResourceMap()
 				++i;
 			}
 		}
-		while (!mNet.sendEnd());
-		CCLOG("sended end");
+		if (mGameMode == server)
+		{
+			while (!mNet.sendEnd());
+			CCLOG("sended end");
+		}
 	}
 	else
 	{
+		//client: read ranP
 		while (true)
 		{
 			while (!mNet.read());
