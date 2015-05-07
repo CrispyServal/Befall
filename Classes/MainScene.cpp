@@ -66,7 +66,7 @@ bool MainScene::init()
 		}
 		//duration
 		int ringSpeed = CCRANDOM_0_1() + 1;
-		CCLOG("%f", ringSpeed);
+		//CCLOG("%f", ringSpeed);
 		ringRotate[i] = RotateBy::create(ringSpeed, de);
 		ringRepeat[i] = RepeatForever::create(ringRotate[i]);
 		ring[i]->runAction(ringRepeat[i]);
@@ -153,7 +153,7 @@ void MainScene::onTouchMoved(Touch * touch, Event * event)
 void MainScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
 	displayMainMenu();
-	CCLOG("KeyCode: %d", keyCode);
+	//CCLOG("KeyCode: %d", keyCode);
 }
 
 void MainScene::onTouchEnded(Touch * touch, Event * event)

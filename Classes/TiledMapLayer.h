@@ -22,6 +22,9 @@ public:
 	//focus.x in (0,1), y too
 	//place focus to the center of windows
 	void setFocusPoint(Vec2 focus);
+	//get float size, not number of tiles
+	Size getMapSizeF();
+	//get number of tiles
 	Size getMapSize();
 	//set all tile to gid1
 	void cleanUp();

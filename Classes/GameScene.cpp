@@ -21,11 +21,11 @@ std::vector<MyPointStruct> GameScene::getNearPoint(const MyPointStruct & point)
 	{
 		result.push_back(MyPointStruct{ point.x, point.y - 1 });
 	}
-	if (point.x < MAXSIZE)
+	if (point.x < mMapSize.width)
 	{
 		result.push_back(MyPointStruct{ point.x + 1, point.y });
 	}
-	if (point.y < MAXSIZE)
+	if (point.y < mMapSize.height)
 	{
 		result.push_back(MyPointStruct{ point.x, point.y + 1 });
 	}
@@ -91,11 +91,14 @@ bool GameScene::init()
 	mDispatcher = mDirector->getEventDispatcher();
 	mWinHeight = mDirector->getWinSize().height;
 	mWinWidth = mDirector->getWinSize().width;
+	//srand
+	srand(static_cast<unsigned>(time(NULL)));
 	//gamemode
 	mGameMode = static_cast<GameModeEnum>(mUserDefault->getIntegerForKey("gamemode"));
 	CCLOG("gameMode: %d", mGameMode);
 	//tiledMapLayer
 	mTiledMapLayer = TiledMapLayer::create();
+	mMapSize = mTiledMapLayer->getMapSize();
 	addChild(mTiledMapLayer,1);
 	
 	if (mGameMode == vsPlayer)
@@ -249,9 +252,12 @@ void GameScene::initResourceMap()
 		{
 			rapidjson::Value & item = mapElements[i];
 			MyPointStruct point = { item["position"]["X"].GetInt(), item["position"]["Y"].GetInt() };
-			//CCLOG("point: %d,%d; num: %d", point.x, point.y, item["numHitPoint"].GetInt());
-			if (item["element"].GetString() == "base")
+			CCLOG("point: %d,%d; num: %d", point.x, point.y, item["numHitPoint"].GetInt());
+			std::string element{ item["element"].GetString() };
+			//CCLOG("element: %s", element.c_str());
+			if (element == "base")
 			{
+				//CCLOG("a base!");
 				mBasePosition.push_back(point);
 				Unit unit = {
 					UnitEnum::base,
@@ -261,8 +267,9 @@ void GameScene::initResourceMap()
 				mResourceMap[point] = unit;
 				continue;
 			}
-			if (item["element"].GetString() == "resourceFixed")
+			if (element == "resourceFixed")
 			{
+				//CCLOG("a resourceF!");
 				Unit unit = {
 					UnitEnum::fixedResource,
 					UnitPropertyStruct{ item["numHitPoint"].GetInt(), 0, 0, 0, 0, 0 },
@@ -271,19 +278,62 @@ void GameScene::initResourceMap()
 				mResourceMap[point] = unit;
 				continue;
 			}
-			if (item["element"].GetString() == "resourceRandom")
+			if (element == "resourceRandom")
 			{
+				//CCLOG("a resourceR!");
 				Unit unit = {
 					UnitEnum::randomResource,
 					UnitPropertyStruct{ item["numHitPoint"].GetInt(), 0, 0, 0, 0, 0 },
 					UnitStateEnum::attacked
 				};
+				//save HP of randomR
+				mHitPointOfRandomResource = item["numHitPoint"].GetInt();
+				CCLOG("hp of ranP: %d", mHitPointOfRandomResource);
 				mResourceMap[point] = unit;
 				continue;
 			}
 		}
 	}
 	//random: random
+	int i = 0;
+	while (i < mNumOfRandomResource)
+	{
+		MyPointStruct ranP = {
+			CCRANDOM_0_1() * mMapSize.width,
+			CCRANDOM_0_1() * mMapSize.height
+		};
+		CCLOG("ranP: %d,%d", ranP.x, ranP.y);
+		bool occupied = false;
+		for (const auto & i : mResourceMap)
+		{
+			if ((i.first.x == ranP.x) && (i.first.y == ranP.y))
+			{
+				occupied = true;
+				break;
+			}
+			if (i.second.type == base)
+			{
+				for (auto p : getNearPoint(i.first))
+				{
+					if ((p.x == ranP.x) && (p.y == ranP.y))
+					{
+						occupied = true;
+						break;
+					}
+				}
+			}
+		}
+		if (!occupied)
+		{
+			Unit unit = {
+				UnitEnum::randomResource,
+				UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
+				UnitStateEnum::attacked
+			};
+			mResourceMap[ranP] = unit;
+			++i;
+		}
+	}
 }
 
 void GameScene::initTechData()

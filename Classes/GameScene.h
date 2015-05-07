@@ -53,7 +53,7 @@ private:
 	float mWinWidth;
 	Vec2 mMouseCoordinate;
 	//need to change to tilemap size
-	const int MAXSIZE = 22;
+	Size mMapSize;
 	//m
 	YypNoBlockingNet mNet;
 	MenuItemLabel * mBackToMainSceneItem;
@@ -89,11 +89,15 @@ private:
 	//tech->initial comsumption
 	//init this map from json file
 	std::map<TechEnum, ResourcesStruct> mTechInitDataMap;
+	//init tech->comsumption map
 	void initTechData();
 	//矿藏的数据，只需要一份，两边会分别减少
 	std::map<MyPointStruct, Unit> mResourceMap;
 	//init coordinate->fixedResource from json file
 	void initResourceMap();
+	//num of random resource
+	const int mNumOfRandomResource = 30;
+	int mHitPointOfRandomResource = 0;
 	//basePosition. 0 for server, 1 for client
 	std::vector<MyPointStruct> mBasePosition;
 

@@ -75,16 +75,21 @@ MyPointStruct TiledMapLayer::getMyPointMouseOn(const Vec2 & mousePoint)
 
 void TiledMapLayer::setFocusPoint(Vec2 focus)
 {
-	float mapW = getMapSize().width;
-	float mapH = getMapSize().height;
+	float mapW = getMapSizeF().width;
+	float mapH = getMapSizeF().height;
 	float x = Director::getInstance()->getWinSize().width / 2 - focus.x * mapW;
 	float y = Director::getInstance()->getWinSize().height / 2 - focus.y * mapH;
 	mTiledMap->setPosition(x, y);
 }
 
-Size TiledMapLayer::getMapSize()
+Size TiledMapLayer::getMapSizeF()
 {
 	return Size(mTiledMap->getMapSize().width * mTiledMap->getTileSize().width, mTiledMap->getMapSize().height * mTiledMap->getTileSize().height);
+}
+
+Size TiledMapLayer::getMapSize()
+{
+	return Size(mTiledMap->getMapSize().width, mTiledMap->getMapSize().height);
 }
 
 void TiledMapLayer::setTileColor(const MyPointStruct & point, int tileID)

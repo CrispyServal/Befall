@@ -296,7 +296,7 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 
 void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const std::string & rightMenu, int nowDeep)
 {
-	CCLOG("entercallback called");
+	//CCLOG("entercallback called");
 	if (menuOpen[nowDeep])
 	{
 		menuOpen[nowDeep]= false;
@@ -306,7 +306,7 @@ void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const s
 		auto fadeOutSpawn = Spawn::create(mainMenuFadeOut, moveLeft, NULL);
 		auto fadeOutSequence = Sequence::create(fadeOutSpawn, hide, NULL);
 		menuMap[thisMenu]->runAction(fadeOutSequence);
-		CCLOG("clicked!");
+		//CCLOG("clicked!");
 		//2rd menu
 		Menu * menu;
 		menu = menuMap[rightMenu];
@@ -489,7 +489,7 @@ void MainMenu::settingCallback(Ref * sender, const std::string & setting)
 		{
 			//std::string str = getDicValue("musicOn");
 			std::string str = std::string{ dictionary->valueForKey(std::string{ "musicOn" })->getCString() };
-			CCLOG("%s", str.c_str());
+			//CCLOG("%s", str.c_str());
 			items["music"]->setString(str);
 			//items["music"]->setString("fuck");
 			userDefault->setBoolForKey("musicOn", true);
@@ -498,7 +498,7 @@ void MainMenu::settingCallback(Ref * sender, const std::string & setting)
 		{
 			//std::string str = getDicValue("musicOff");
 			std::string str = std::string{ dictionary->valueForKey(std::string{ "musicOff" })->getCString() };
-			CCLOG("%s", str.c_str());
+			//CCLOG("%s", str.c_str());
 			items["music"]->setString(str);
 			//items["music"]->setString("you");
 			userDefault->setBoolForKey("musicOn", false);
