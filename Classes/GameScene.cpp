@@ -261,9 +261,11 @@ void GameScene::initResourceMap()
 				mBasePosition.push_back(point);
 				Unit unit = {
 					UnitEnum::base,
-					UnitPropertyStruct{ item["numHitPoint"].GetInt(), 0, 0, 0, 0, 0 },
+					mUnitInitDataMap[base].property,
 					UnitStateEnum::attacked
 				};
+				//
+				CCLOG("reM,add base:%d,%d,%d,%d,%d,%d", unit.property.numHitPoint, unit.property.numDefence, unit.property.numAttack, unit.property.numRangeAttack, unit.property.numRangeMove, unit.property.numPopulation);
 				mResourceMap[point] = unit;
 				continue;
 			}
@@ -374,6 +376,82 @@ void GameScene::initTechData()
 
 void GameScene::initUnitData()
 {
+	auto jsonFile = FileUtils::getInstance()->fullPathForFilename("dictionary/unitdata.json");
+	ssize_t size = 0;
+	unsigned char * loadStr = FileUtils::getInstance()->getFileData(jsonFile, "r", &size);
+	std::string jsonStr = std::string( (const char *)loadStr, size );
+
+	rapidjson::Document jDocument;
+	jDocument.Parse<0>(jsonStr.c_str());
+	if (jDocument.HasParseError())
+	{
+		CCLOG("unitDisplay.json parse error!");
+	}
+	if (!jDocument.IsObject())
+	{
+		CCLOG("error : not object!");
+	}
+	rapidjson::Value & unitData = jDocument["unitData"];
+	if (unitData.IsArray())
+	{
+		for (int i = 0; i < unitData.Size(); ++i)
+		{
+			rapidjson::Value & unit = unitData[i];
+			UnitInitDataStruct data = {
+				UnitPropertyStruct{
+					unit["attributes"]["numHitPoint"].GetInt(),
+					unit["attributes"]["numDefence"].GetInt(),
+					unit["attributes"]["numAttack"].GetInt(),
+					unit["attributes"]["numAttackRange"].GetInt(),
+					unit["attributes"]["numMoveRange"].GetInt(),
+					unit["attributes"]["numPopulation"].GetInt()
+				},
+				ResourcesStruct{
+					unit["consumption"]["numFixedResource"].GetInt(),
+					unit["consumption"]["numRandomResource"].GetInt(),
+					unit["consumption"]["absProductivity"].GetInt(),
+					0
+				}
+			};
+			std::string type = unit["unit"].GetString();
+			CCLOG("type: %s", type.c_str());
+			if (type == "base")
+			{
+				mUnitInitDataMap[base] = data;
+				continue;
+			}
+			if (type == "farmer")
+			{
+				mUnitInitDataMap[farmer] = data;
+				continue;
+			}
+			if (type == "shortrangeunit1")
+			{
+				mUnitInitDataMap[shortrangeunit1] = data;
+				continue;
+			}
+			if (type == "shortrangeunit2")
+			{
+				mUnitInitDataMap[shortrangeunit2] = data;
+				continue;
+			}
+			if (type == "longrangeunit1")
+			{
+				mUnitInitDataMap[longrangeunit1] = data;
+				continue;
+			}
+			if (type == "longrangeunit2")
+			{
+				mUnitInitDataMap[longrangeunit2] = data;
+				continue;
+			}
+			if (type == "longrangeunit3")
+			{
+				mUnitInitDataMap[longrangeunit3] = data;
+				continue;
+			}
+		}
+	}
 }
 
 void GameScene::initWelcomeLayer()

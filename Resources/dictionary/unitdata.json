@@ -5,126 +5,126 @@
 			"unit" : "base",
 			"attributes" :
 			{
-				"numHitPoint" : "500",
-				"numDefence" : "10",
-				"numAttack" : "0",
-				"numAttackRange" : "0",
-				"numMoveRange" : "0",
-				"numPopulation" : "0"
+				"numHitPoint" : 500,
+				"numDefence" : 10,
+				"numAttack" : 0,
+				"numAttackRange" : 0,
+				"numMoveRange" : 0,
+				"numPopulation" : 0
 			},
 			"consumption" :
 			{
-				"numFixedResource" : "0",
-				"numRandomResource" : "0",
-				"absProductivity" : "0"
+				"numFixedResource" : 0,
+				"numRandomResource" : 0,
+				"absProductivity" : 0
 			}
 		},
 		{
 			"unit" : "farmer",
 			"attributes" :
 			{
-				"numHitPoint" : "30",
-				"numDefence" : "5",
-				"numAttack" : "5",
-				"numAttackRange" : "1",
-				"numMoveRange" : "3",
-				"numPopulation" : "1"
+				"numHitPoint" : 30,
+				"numDefence" : 5,
+				"numAttack" : 5,
+				"numAttackRange" : 1,
+				"numMoveRange" : 3,
+				"numPopulation" : 1
 			},
 			"consumption" :
 			{
-				"numFixedResource" : "5",
-				"numRandomResource" : "5",
-				"absProductivity" : "20"
+				"numFixedResource" : 5,
+				"numRandomResource" : 5,
+				"absProductivity" : 20
 			}
 		},
 		{
 			"unit" : "shortrangeunit1",
 			"attributes" :
 			{
-				"numHitPoint" : "50",
-				"numDefence" : "10",
-				"numAttack" : "20",
-				"numAttackRange" : "1",
-				"numMoveRange" : "3",
-				"numPopulation" : "5"
+				"numHitPoint" : 50,
+				"numDefence" : 10,
+				"numAttack" : 20,
+				"numAttackRange" : 1,
+				"numMoveRange" : 3,
+				"numPopulation" : 5
 			} ,
 			"consumption" :
 			{
-				"numFixedResource" : "10",
-				"numRandomResource" : "20",
-				"absProductivity" : "40"
+				"numFixedResource" : 10,
+				"numRandomResource" : 20,
+				"absProductivity" : 40
 			}
 		},
 		{
 			"unit" : "shortrangeunit2",
 			"attributes" :
 			{
-				"numHitPoint" : "80",
-				"numDefence" : "15",
-				"numAttack" : "30",
-				"numAttackRange" : "1",
-				"numMoveRange" : "3",
-				"numPopulation" : "10"
+				"numHitPoint" : 80,
+				"numDefence" : 15,
+				"numAttack" : 30,
+				"numAttackRange" : 1,
+				"numMoveRange" : 3,
+				"numPopulation" : 10
 			},
 			"consumption" :
 			{
-				"numFixedResource" : "20",
-				"numRandomResource" : "40",
-				"absProductivity" : "80"
+				"numFixedResource" : 20,
+				"numRandomResource" : 40,
+				"absProductivity" : 80
 			}
 		},
 		{
 			"unit" : "longrangeunit1",
 			"attributes" :
 			{
-				"numHitPoint" : "30",
-				"numDefence" : "5",
-				"numAttack" : "25",
-				"numAttackRange" : "2",
-				"numMoveRange" : "4",
-				"numPopulation" : "8"
+				"numHitPoint" : 30,
+				"numDefence" : 5,
+				"numAttack" : 25,
+				"numAttackRange" : 2,
+				"numMoveRange" : 4,
+				"numPopulation" : 8
 			} ,
 			"consumption" :
 			{
-				"numFixedResource" : "20",
-				"numRandomResource" : "10",
-				"absProductivity" : "20"
+				"numFixedResource" : 20,
+				"numRandomResource" : 10,
+				"absProductivity" : 20
 			}
 		},
 		{
 			"unit" : "longrangeunit2",
 			"attributes" :
 			{
-				"numHitPoint" : "30",
-				"numDefence" : "5",
-				"numAttack" : "35",
-				"numAttackRange" : "3",
-				"numMoveRange" : "4",
-				"numPopulation" : "16"
+				"numHitPoint" : 30,
+				"numDefence" : 5,
+				"numAttack" : 35,
+				"numAttackRange" : 3,
+				"numMoveRange" : 4,
+				"numPopulation" : 16
 			},
 			"consumption" :
 			{
-				"numFixedResource" : "40",
-				"numRandomResource" : "20",
-				"absProductivity" : "80"
+				"numFixedResource" : 40,
+				"numRandomResource" : 20,
+				"absProductivity" : 80
 			}
 		},
 		{
 			"unit" : "longrangeunit3",
 			"attributes" :
 			{
-				"numHitPoint" : "120",
-				"numDefence" : "20",
-				"numAttack" : "20",
-				"numAttackRange" : "3",
-				"numMoveRange" : "2",
-				"numPopulation" : "20"
+				"numHitPoint" : 120,
+				"numDefence" : 20,
+				"numAttack" : 20,
+				"numAttackRange" : 3,
+				"numMoveRange" : 2,
+				"numPopulation" : 20
 			},
 			"consumption" :
 			{
-				"numFixedResource" : "100",
-				"numRandomResource" : "50",
-				"absProductivity" : "200"
+				"numFixedResource" : 100,
+				"numRandomResource" : 50,
+				"absProductivity" : 200
 			}
 		}
 	]	
