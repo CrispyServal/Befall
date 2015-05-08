@@ -34,6 +34,15 @@ MyPointStruct TiledMapLayer::tiledCoorForPostion(const Vec2 & position)
 	return MyPointStruct{ x, y };
 }
 
+Vec2 TiledMapLayer::floatCoorForPosition(const MyPointStruct & position)
+{
+	Size mapSize = mTiledMap->getMapSize();
+	Size tileSize = mTiledMap->getTileSize();
+	float x = (position.x + 0.5) * tileSize.width;
+	float y = (mapSize.height - position.y - 0.5) * tileSize.width;
+	return mTiledMap->convertToWorldSpace(Vec2(x, y));
+}
+
 bool TiledMapLayer::containPoint(const Vec2 & mousePoint)
 {
 	/*

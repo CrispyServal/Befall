@@ -35,6 +35,20 @@ struct UnitInitDataStruct
 	ResourcesStruct consumption;
 };
 
+struct ResourceTextureStruct
+{
+	Texture2D * abundant;
+	Texture2D * middle;
+	Texture2D * dried;
+};
+
+struct UnitTextureStruct
+{
+	Texture2D * front;
+	Texture2D * back;
+	Texture2D * side;
+};
+
 class GameScene : public Scene
 {
 public:
@@ -67,6 +81,8 @@ private:
 	//methods----------------------------------------------------------
 	void initWelcomeLayer();
 	void initYypNet();
+	void initResourceTexture();
+	void initUnitTexture();
 	//updates
 	void acceptConnect(float delta);
 	void startConnecting(float delta);
@@ -98,6 +114,10 @@ private:
 	//num of random resource
 	const int mNumOfRandomResource = 30;
 	int mHitPointOfRandomResource = 0;
+	//resource->texture. each resource -> 3 texture
+	std::map<UnitEnum, ResourceTextureStruct> mResourceTextureMap;
+	//unit->texture. each unit->3 texture
+	std::map<UnitEnum, UnitTextureStruct> mUnitTextureMap[2];
 	//basePosition. 0 for server, 1 for client
 	std::vector<MyPointStruct> mBasePosition;
 

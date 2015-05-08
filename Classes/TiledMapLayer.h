@@ -33,10 +33,12 @@ public:
 	const int mGidNull = 1;
 	const int mGidBlue = 2;
 	const int mGidRed = 3;
+	//coordinate methods
+	MyPointStruct tiledCoorForPostion(const Vec2 & position);
+	Vec2 floatCoorForPosition(const MyPointStruct & position);
 private:
 	TMXTiledMap * mTiledMap;
 	//get coordinate in tiledmap from Vec2
-	MyPointStruct tiledCoorForPostion(const Vec2 & position);
 };
 
 #endif // !TILEDMAPLAYER_H

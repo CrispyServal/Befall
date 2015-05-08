@@ -91,6 +91,9 @@ bool GameScene::init()
 	mDispatcher = mDirector->getEventDispatcher();
 	mWinHeight = mDirector->getWinSize().height;
 	mWinWidth = mDirector->getWinSize().width;
+	//texture
+	initResourceTexture();
+	initUnitTexture();
 	//srand
 	srand(static_cast<unsigned>(time(NULL)));
 	//gamemode
@@ -110,6 +113,11 @@ bool GameScene::init()
 		initWelcomeLayer();
 	}
 	initYypNet();
+	//place resources
+	for (const auto & i : mResourceMap)
+	{
+
+	}
 	//scheduleUpdate();
 	//listeners
 	mMouseListener = EventListenerMouse::create();
@@ -273,7 +281,9 @@ void GameScene::initResourceMap()
 				Unit unit = {
 					UnitEnum::base,
 					mUnitInitDataMap[base].property,
-					UnitStateEnum::attacked
+					UnitStateEnum::attacked,
+					Sprite::create("item1.png")
+					//sprite
 				};
 				//
 				//CCLOG("reM,add base:%d,%d,%d,%d,%d,%d", unit.property.numHitPoint, unit.property.numDefence, unit.property.numAttack, unit.property.numRangeAttack, unit.property.numRangeMove, unit.property.numPopulation);
@@ -286,7 +296,8 @@ void GameScene::initResourceMap()
 				Unit unit = {
 					UnitEnum::fixedResource,
 					UnitPropertyStruct{ item["numHitPoint"].GetInt(), 0, 0, 0, 0, 0 },
-					UnitStateEnum::attacked
+					UnitStateEnum::attacked,
+					Sprite::createWithTexture(mResourceTextureMap[fixedResource].abundant)
 				};
 				mResourceMap[point] = unit;
 				continue;
@@ -297,7 +308,8 @@ void GameScene::initResourceMap()
 				Unit unit = {
 					UnitEnum::randomResource,
 					UnitPropertyStruct{ item["numHitPoint"].GetInt(), 0, 0, 0, 0, 0 },
-					UnitStateEnum::attacked
+					UnitStateEnum::attacked,
+					Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
 				};
 				//save HP of randomR
 				mHitPointOfRandomResource = item["numHitPoint"].GetInt();
@@ -308,11 +320,6 @@ void GameScene::initResourceMap()
 		}
 	}
 	//random: random
-	Unit unitR = {
-		UnitEnum::randomResource,
-		UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
-		UnitStateEnum::attacked
-	};
 	if (mGameMode != client)
 	{
 		int i = 0;
@@ -351,7 +358,12 @@ void GameScene::initResourceMap()
 					while (!mNet.sendOnePoint(ranP));
 					CCLOG("sended. %d,%d", ranP.x, ranP.y);
 				}
-				mResourceMap[ranP] = unitR;
+				mResourceMap[ranP] = Unit{
+					UnitEnum::randomResource,
+					UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
+					UnitStateEnum::attacked,
+					Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
+				};
 				++i;
 			}
 		}
@@ -369,7 +381,12 @@ void GameScene::initResourceMap()
 			while (!mNet.read());
 			if (mNet.getWhich() == onePoint)
 			{
-				mResourceMap[mNet.getOnePoint()] = unitR;
+				mResourceMap[mNet.getOnePoint()] = Unit{
+					UnitEnum::randomResource,
+					UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
+					UnitStateEnum::attacked,
+					Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
+				};
 				CCLOG("read: %d,%d", mNet.getOnePoint().x, mNet.getOnePoint().y);
 			}
 			if (mNet.getWhich() == end)
@@ -377,7 +394,12 @@ void GameScene::initResourceMap()
 		}
 		CCLOG("read end");
 	}
-
+	//place them
+	for (const auto & i : mResourceMap)
+	{
+		i.second.sprite->setPosition(mTiledMapLayer->floatCoorForPosition(i.first));
+		addChild(i.second.sprite, 2);
+	}
 }
 
 void GameScene::initTechData()
@@ -572,4 +594,56 @@ void GameScene::initYypNet()
 		CCLOG("default?");
 		break;
 	}
+}
+
+
+void GameScene::initResourceTexture()
+{
+	mResourceTextureMap[fixedResource] = {
+		mDirector->getTextureCache()->addImage("uiComponent/resource_fixed_abundant.png"),
+		mDirector->getTextureCache()->addImage("uiComponent/resource_fixed_middle.png"),
+		mDirector->getTextureCache()->addImage("uiComponent/resource_fixed_dried.png")
+	};
+	mResourceTextureMap[randomResource] = {
+		mDirector->getTextureCache()->addImage("uiComponent/resource_random_abundant.png"),
+		mDirector->getTextureCache()->addImage("uiComponent/resource_random_middle.png"),
+		mDirector->getTextureCache()->addImage("uiComponent/resource_random_dried.png")
+	};
+}
+void GameScene::initUnitTexture()
+{
+	for (int i = 0; i < 2; ++i)
+	{
+		mUnitTextureMap[i][farmer] = {
+			mDirector->getTextureCache()->addImage("unitIcon/farmer_front_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/farmer_back_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/farmer_side_" + std::string{ (char)('0' + i) }+".png")
+		};
+		mUnitTextureMap[i][longrangeunit1] = {
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_front_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_back_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_side_" + std::string{ (char)('0' + i) }+".png")
+		};
+		mUnitTextureMap[i][longrangeunit2] = {
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_front_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_back_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_side_" + std::string{ (char)('0' + i) }+".png")
+		};
+		mUnitTextureMap[i][longrangeunit3] = {
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_front_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_back_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_side_" + std::string{ (char)('0' + i) }+".png")
+		};
+		mUnitTextureMap[i][shortrangeunit1] = {
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_front_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_back_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_side_" + std::string{ (char)('0' + i) }+".png")
+		};
+		mUnitTextureMap[i][shortrangeunit2] = {
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_front_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_back_" + std::string{ (char)('0' + i) }+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_side_" + std::string{ (char)('0' + i) }+".png")
+		};
+	}
+	CCLOG("munittexturemap size: %d", mUnitTextureMap[0].size());
 }

@@ -2,6 +2,7 @@
 #define MYSTRUCTS_H
 #include "MyEnums.h"
 
+#include "cocos2d.h"
 #include <set>
 #include <vector>
 #include <map>
@@ -68,6 +69,7 @@ struct Unit
 	UnitEnum type;
 	UnitPropertyStruct property;
 	UnitStateEnum state;
+	cocos2d::Sprite * sprite;
 };
 
 #endif // !MYSTRUCTS_H
