@@ -17,6 +17,7 @@ public:
 	//method
 	//传入左下角为（0,0）的鼠标坐标，如果本层中的有效区域包含此坐标，返回true
 	//小地图中，几乎所有区域都是有效区域
+	void setPointSize(float size);
 	void setMapSize(int width, int height);
 	void setViewBoxSize(float ViewBoxScalarX, float ViewBoxScalarY);
 	bool containPoint(Vec2 mousePoint);
