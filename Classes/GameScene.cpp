@@ -122,6 +122,7 @@ bool GameScene::init()
 	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(mWinWidth - 250, 50), Vec2(mWinWidth,240+10),Color4F(0.607, 0.607, 0.607, 0.75));
 	addChild(mGrayBar, 3);
 	//resources icon
 	initResourcesIcons();
@@ -159,15 +160,22 @@ bool GameScene::init()
 	mInfoMapLayer = InfoMapLayer::create();
 	mInfoMapLayer->setPosition(-mWinWidth / 2 + 100, -mWinHeight / 2 + 120);
 	addChild(mInfoMapLayer, 5);
+	//miniMapLayer
+	mMiniMapLayer = MiniMapLayer::create();
+	mMiniMapLayer->setMapSize(mTiledMapLayer->getMapSize().width, mTiledMapLayer->getMapSize().height);
+	mMiniMapLayer->setPosition(Vec2(mWinWidth / 2 - 100 - 20,0 - mWinHeight / 2 + 56.25 + 70));
+	addChild(mMiniMapLayer, 5);
 	//unitcamplayer
 	mUnitCampLayer = UnitCampLayer::create();
 	//mUnitCampLayer->setPosition(0, 50);
 	mUnitCampLayer->setUnlocked(farmer,true);
+	/*
 	mUnitCampLayer->setUnlocked(shortrangeunit1,true);
 	mUnitCampLayer->setUnlocked(shortrangeunit2,true);
 	mUnitCampLayer->setUnlocked(longrangeunit1,true);
 	mUnitCampLayer->setUnlocked(longrangeunit2,true);
 	mUnitCampLayer->setUnlocked(longrangeunit3,true);
+	*/
 	mUnitCampLayer->setVisible(false);
 	addChild(mUnitCampLayer, 2);
 	//2 botton
@@ -311,12 +319,14 @@ void GameScene::update(float delta)
 	mTimer->refresh(delta);
 	if (mTimer->isEnded())
 	{
-		mMyTurn = !mMyTurn;
-		if (mGameMode == vsPlayer)
-		{
-			mTimer->start();
-		}
+		switchTurn();
 	}
+}
+
+void GameScene::switchTurn()
+{
+	mMyTurn = !mMyTurn;
+	//
 }
 
 void GameScene::backToMainScene(Ref * sender)
@@ -328,6 +338,7 @@ void GameScene::backToMainScene(Ref * sender)
 bool GameScene::onTouchBegan(Touch * touch, Event * event)
 {
 	mMouseCoordinateTouch = mMouseCoordinate;
+	mMouseCoordinateP = mMouseCoordinate;
 	return true;
 }
 
@@ -388,7 +399,18 @@ void GameScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 void GameScene::onTouchMoved(Touch * touch, Event * event)
 {
 	//do something here
-
+	do
+	{
+		//minimap
+		if (mMiniMapLayer->containPoint(mMouseCoordinate))
+		{
+			mMiniMapLayer->moveView(mMouseCoordinate);
+			Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
+			CCLOG("pF: %f,%f", pF.x, pF.y);
+			Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
+			mTiledMapLayer->setPosition(mWinWidth / 2 - pOfM.x, mWinHeight / 2 - pOfM.y);
+		}
+	} while (0);
 
 	mMouseCoordinateP = mMouseCoordinate;
 }
@@ -433,6 +455,8 @@ void GameScene::startGame()
 	{
 		mMyTurn = false;
 	}
+	//refresh minimap
+	refreshMiniMap();
 	//update
 	mTimer->start();
 	scheduleUpdate();
@@ -441,6 +465,40 @@ void GameScene::startGame()
 	{
 		schedule(schedule_selector(GameScene::NetUpdate), 0.5, CC_REPEAT_FOREVER, 0);
 	}
+}
+
+void GameScene::refreshMiniMap()
+{
+	std::set<MyPointStruct> unitSet[2];
+	for (int k = 0; k < 2; ++ k)
+	{
+		for (const auto & i : mGameState[k].unitMap)
+		{
+			unitSet[k].insert(i.first);
+		}
+		//base
+		unitSet[k].insert(mBasePosition[k]);
+		for (auto i : getNearPoint(mBasePosition[k]))
+		{
+			unitSet[k].insert(i);
+		}
+	}
+	std::set<MyPointStruct> fixedRSet;
+	std::set<MyPointStruct> randomRSet;
+	for (const auto & i : mResourceMap)
+	{
+		if (i.second.type == fixedResource)
+		{
+			fixedRSet.insert(i.first);
+			continue;
+		}
+		if (i.second.type == randomResource)
+		{
+			randomRSet.insert(i.first);
+			continue;
+		}
+	}
+	mMiniMapLayer->refresh(unitSet[0], unitSet[1], fixedRSet, randomRSet);
 }
 
 void GameScene::checkBackToMainSceneItemOnMouseMoved()
@@ -625,7 +683,7 @@ void GameScene::initResourceMap()
 				continue;
 			}
 			if (element == "base1")
-			{
+			{	
 				//CCLOG("a base!");
 				mBasePosition.push_back(point);
 				Unit unit = {
