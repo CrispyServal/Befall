@@ -27,11 +27,11 @@ bool InfoMapLayer::init()
 	addChild(mBackground, 1);
 	//sprite intialize
 	// pic
-	mUnitSprite = Sprite::create("UnitText.png");//100 * 100
+	mUnitSprite = Sprite::create("1pixel.png");//100 * 100
 	mUnitSprite->setPosition(width / 2 - 25, height / 2 -10);
 	addChild(mUnitSprite, 2);
 	//unitname
-	mUnitNameLabel = Label::createWithSystemFont("", "Arial", 20);
+	mUnitNameLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
 	mUnitNameLabel->setPosition(width / 2, height / 2 + 80);
 	addChild(mUnitNameLabel, 3);
 	//

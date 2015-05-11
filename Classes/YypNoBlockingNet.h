@@ -29,7 +29,8 @@ enum whichEnum
 	newSoldier,
 	twoPoints,
 	onePoint,
-	end
+	end,
+	youwin
 };
 
 class YypNoBlockingNet
@@ -61,6 +62,7 @@ public:
 	bool sendTwoPoint(twoPointStruct points);
 	bool sendOnePoint(MyPointStruct onePoint);
 	bool sendEnd();
+	bool sendYouWin();
 	bool read();
 	bool startServer(int pot);
 	bool acceptConnect();

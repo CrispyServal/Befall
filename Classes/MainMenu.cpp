@@ -282,7 +282,7 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 			}
             if (nowStr == std::string{""})
             {
-                nowStr = getDicValue("inputPort");
+                nowStr = getDicValue("inputIp");
             }
 		}
 		if (keyCode == static_cast<EventKeyboard::KeyCode>(35) )
@@ -433,9 +433,9 @@ void MainMenu::enterGameCallback(GameModeEnum gamemode)
 			userDefault->setIntegerForKey("gamemode", GameModeEnum::vsPlayer);
 		}
 		//enter game!
-		auto gameScene = GameScene::create();
+		//auto gameScene = GameScene::create();
 		//Director::getInstance()->pushScene(Director::getInstance()->getRunningScene());
-		Director::getInstance()->pushScene(TransitionFade::create(0.7,gameScene));
+		Director::getInstance()->pushScene(TransitionFade::create(0.7,GameScene::create()));
 	}
 }
 

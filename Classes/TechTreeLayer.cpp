@@ -94,7 +94,7 @@ bool TechTreeLayer::init()
 		{
 			imageName[i] = "/techTreeIcon/";
 			imageName[i] += techs[i]["imagename"].GetString();
-			CCLOG("this:  %s", imageName[i]);
+			CCLOG("this:  %s", imageName[i].c_str());
 		}
 	}
 	for (int i = 0; i < 32; i++)

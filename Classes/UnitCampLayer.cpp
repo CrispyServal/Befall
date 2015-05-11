@@ -72,13 +72,14 @@ bool UnitCampLayer::init()
 		);
 		mUnitUnlockMap[mUnitsList[i]] = false;
 	}
-	mCloseTexture = Director::getInstance()->getTextureCache()->addImage(std::string{ "uiComponent/unit_image_off.png" });
+	//mCloseTexture = Director::getInstance()->getTextureCache()->addImage(std::string{ "uiComponent/unit_image_off.png" });
 	CCLOG("%d", mItemsList.size());
 	
 	//big image
 	mUnitImage = Sprite::createWithTexture(mItemsList[0].texture);
+	mUnitImage->setScale(0.8);
 	mUnitImage->setPosition(
-		mUnitImage->getContentSize().width / 2 + 100,
+		(mUnitImage->getBoundingBox().getMaxX() - mUnitImage->getBoundingBox().getMinX()) / 2 - 50,
 		Director::getInstance()->getWinSize().height / 2
 		);
 	mUnitImage->setOpacity(0);
@@ -98,7 +99,8 @@ bool UnitCampLayer::init()
 	}
 	unitsNode->setPosition(
 		Director::getInstance()->getWinSize().width / 2 - (mItemsList.size() - 1) / 2.0 * (mItemsList[0].sprite->getContentSize().width + unitIn),
-		mUnitImage->getBoundingBox().getMinY() - mItemsList[0].sprite->getContentSize().height - unitIn 
+		//mUnitImage->getBoundingBox().getMinY() - mItemsList[0].sprite->getContentSize().height - unitIn 
+		130
 		);
 	addChild(unitsNode, 0);
 	//words
@@ -133,6 +135,7 @@ bool UnitCampLayer::init()
 
 void UnitCampLayer::onMouseMoved(Vec2 mousePoint)
 {
+	CCLOG("called!!");
 	for (auto item : mItemsList)
 	{
 		Point point = Point(item.sprite->boundingBox().getMinX(), item.sprite->boundingBox().getMinY());
@@ -150,10 +153,10 @@ void UnitCampLayer::onMouseMoved(Vec2 mousePoint)
 		//dR->cleanup();
 		if (rect.containsPoint(mousePoint))
 		{
-			mUnitImage->setOpacity(255);
 			if (item.unlocked)
 			//if (mUnitUnlockMap[item.unit])
 			{
+				mUnitImage->setOpacity(255);
 				mUnitName->setOpacity(255);
 				mUnitIntroduction->setOpacity(255);
 				CCLOG("in onMouseMoved: unlock");
@@ -168,14 +171,15 @@ void UnitCampLayer::onMouseMoved(Vec2 mousePoint)
 			{
 				CCLOG("in onMouseMoved: locked");
 				//big close Image
-				mUnitImage->setTexture(mCloseTexture);
+				//mUnitImage->setTexture(mCloseTexture);
+				mUnitImage->setOpacity(0);
 			}
 			break;
 		}
 		else
 		{
-			item.sprite->setScale(1);
 			mUnitImage->setOpacity(0);
+			item.sprite->setScale(1);
 			mUnitName->setOpacity(0);
 			mUnitIntroduction->setOpacity(0);
 		}
@@ -208,14 +212,21 @@ const UnitEnum UnitCampLayer::getunitMouseOn()
 	return mNowItem.unit;
 }
 
-void UnitCampLayer::unLockUnit(UnitEnum unit)
+void UnitCampLayer::setUnlocked(UnitEnum unit, bool unlock)
 {
 	for (auto & item : mItemsList)
 	{
 		if (item.unit == unit)
 		{
-			item.unlocked = true;
-			item.sprite->setColor(Color3B(255, 255, 255));
+			item.unlocked = unlock;
+			if (!unlock)
+			{
+				item.sprite->setColor(Color3B(100, 100, 100));
+			}
+			else
+			{
+				item.sprite->setColor(Color3B(255, 255, 255));
+			}
 			return;
 		}
 	}

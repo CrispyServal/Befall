@@ -46,4 +46,12 @@
 	<string>等待对方接入。。。</string>
 	<key>connecting</key>
 	<string>连接中。。。</string>
+	<key>endTurn</key>
+	<string>结束回合</string>
+	<key>GG</key>
+	<string>强退</string>
+	<key>youWin</key>
+	<string>投降</string>
+	<key>menu</key>
+	<string>菜单</string>
 </dict>
