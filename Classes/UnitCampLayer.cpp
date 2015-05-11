@@ -16,6 +16,12 @@ UnitCampLayer::~UnitCampLayer()
 {
 }
 
+std::string UnitCampLayer::getDicValue(char * str)
+{
+	 CCLOG("getdicValue: result: %s",mDictionary->valueForKey(str)->getCString());
+	 return std::string{mDictionary->valueForKey(str)->getCString()};
+}
+
 bool UnitCampLayer::init()
 {
 	if (!Layer::init())
@@ -23,6 +29,8 @@ bool UnitCampLayer::init()
 		return false;
 	}
 	//read a json to get units' name and introduction
+    mDictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" +UserDefault::getInstance()->getStringForKey("language") + ".xml" }.c_str());
+	mDictionary->retain();
 	auto jsonFile = FileUtils::getInstance()->fullPathForFilename("dictionary/unitdisplay.json");
 	ssize_t size = 0;
 	unsigned char * loadStr = FileUtils::getInstance()->getFileData(jsonFile, "r", &size);
@@ -68,6 +76,8 @@ bool UnitCampLayer::init()
 			tmpTexture,
 			units[i]["name"].GetString(),
 			units[i]["introduction"].GetString(),
+			ResourcesStruct{ 0, 0, 0, 0 },
+			UnitPropertyStruct{0,0,0,0,0,0}
 		}
 		);
 		mUnitUnlockMap[mUnitsList[i]] = false;
@@ -130,7 +140,34 @@ bool UnitCampLayer::init()
 	);
 	mUnitIntroduction->setOpacity(0);
 	addChild(mUnitIntroduction, 0);
+	//re and pro
+	mUnitResourcesAndProperty = Label::createWithTTF("no name", "fonts/STXIHEI.TTF", 20);
+	mUnitResourcesAndProperty->setColor(Color3B( 255, 255, 255 ));
+	mUnitResourcesAndProperty->setMaxLineWidth(Director::getInstance()->getWinSize().width / 2 - 100);
+	mUnitResourcesAndProperty->setPosition
+	(
+		Vec2
+		(
+		Director::getInstance()->getWinSize().width * 3 / 4,
+		240
+		//mUnitIntroduction->getBoundingBox().getMinY() - 3 * mUnitResourcesAndProperty->getContentSize().height
+		)
+	);
+	mUnitResourcesAndProperty->setOpacity(0);
+	addChild(mUnitResourcesAndProperty, 0);
 	return true;
+}
+
+void UnitCampLayer::setUnitResourceAndProperty(UnitEnum unit, const ResourcesStruct & unitResources, const UnitPropertyStruct & unitProperty)
+{
+	for (auto & item : mItemsList)
+	{
+		if (item.unit == unit)
+		{
+			item.resources = unitResources;
+			item.property = unitProperty;
+		}
+	}
 }
 
 void UnitCampLayer::onMouseMoved(Vec2 mousePoint)
@@ -159,11 +196,24 @@ void UnitCampLayer::onMouseMoved(Vec2 mousePoint)
 				mUnitImage->setOpacity(255);
 				mUnitName->setOpacity(255);
 				mUnitIntroduction->setOpacity(255);
+				mUnitResourcesAndProperty->setOpacity(255);
 				CCLOG("in onMouseMoved: unlock");
 				//show big image
 				mUnitImage->setTexture(item.texture);
 				mUnitName->setString(item.name);
 				mUnitIntroduction->setString(item.introduction);
+				std::stringstream ss;
+				ss << getDicValue("HP") << item.property.numHitPoint << "\n";
+				ss << getDicValue("DEF") << item.property.numDefence << "\n";
+				ss << getDicValue("ATK") << item.property.numAttack<< "\n";
+				ss << getDicValue("RATK") << item.property.numRangeAttack<< "\n";
+				ss << getDicValue("RMOV") << item.property.numRangeMove<< "\n";
+				ss << getDicValue("CPU") << item.property.numPopulation<< "\n";
+				ss << "\n";
+				ss << getDicValue("FIXR") << item.resources.numFixedResource<< "\n";
+				ss << getDicValue("RANR") << item.resources.numRandomResource<< "\n";
+				ss << getDicValue("PROD") << item.resources.numProductivity<< "\n";
+				mUnitResourcesAndProperty->setString(ss.str());
 				//sprite effect(tmp)
 				item.sprite->setScale(1.3);
 			}
@@ -182,6 +232,7 @@ void UnitCampLayer::onMouseMoved(Vec2 mousePoint)
 			item.sprite->setScale(1);
 			mUnitName->setOpacity(0);
 			mUnitIntroduction->setOpacity(0);
+			mUnitResourcesAndProperty->setOpacity(0);
 		}
 	}
 }

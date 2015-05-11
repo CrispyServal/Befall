@@ -181,6 +181,8 @@ private:
 
 	//all game states,0 for this
 	GameStateStruct mGameState[2];
+	//spawn
+	MyPointStruct mSpawn[2];
 
 	//单边
 
@@ -198,3 +200,17 @@ private:
 };
 
 #endif // !GAMESCENE_H
+
+/*
+	点科技时候，把追加属性设置到兵营层去
+	net Example:
+	while (!mNet.sendOnePoint(ranP))
+	{
+		auto err = WSAGetLastError();
+		if (err != WSAEWOULDBLOCK)
+		{
+			CCLOG("he GGed so fast!!!");
+			mDirector->popScene();
+		}
+	}
+*/

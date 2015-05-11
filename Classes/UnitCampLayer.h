@@ -4,8 +4,11 @@
 #include "cocos2d.h"
 #include <vector>
 #include <map>
+#include <sstream>
 #include "MyEnums.h"
+#include "MyStructs.h"
 #include "json\document.h"
+
 
 using namespace cocos2d;
 
@@ -19,6 +22,8 @@ namespace UnitCamp
 		Texture2D * texture;
 		std::string name;
 		std::string introduction;
+		ResourcesStruct resources;
+		UnitPropertyStruct property;
 	};
 }
 
@@ -41,9 +46,13 @@ public:
 	void onMouseMoved(Vec2 mousePoint);
 	//lock on or lock off
 	void setUnlocked(UnitEnum unit,bool unlock);
+	//set resource and property
+	void setUnitResourceAndProperty(UnitEnum unit, const ResourcesStruct & unitResources, const UnitPropertyStruct & unitProperty);
 	//每个单位的数据存储
 	std::vector<UnitCamp::ItemInCampStruct> mItemsList;
 private:
+	std::string UnitCampLayer::getDicValue(char * str);
+	Dictionary * mDictionary;
 	std::vector<UnitEnum> mUnitsList;
 	std::map<UnitEnum, bool> mUnitUnlockMap;
 	//展示单位的大图
@@ -51,6 +60,8 @@ private:
 	//展示单位名称和详细信息的标签
 	Label * mUnitName;
 	Label * mUnitIntroduction;
+	//resources and property
+	Label * mUnitResourcesAndProperty;
 	//半透明总背景
 	Sprite * mBg;
 	//当前鼠标位置上的按钮

@@ -54,4 +54,24 @@
 	<string>投降</string>
 	<key>menu</key>
 	<string>菜单</string>
+	<key>HP</key>
+	<string>生命值:    </string>
+	<key>DEF</key>
+	<string>防御力:    </string>
+	<key>ATK</key>
+	<string>攻击力:    </string>
+	<key>RATK</key>
+	<string>攻范围:    </string>
+	<key>RMOV</key>
+	<string>移范围:    </string>
+	<key>CPU</key>
+	<string>主控数:    </string>
+	<key>FIXR</key>
+	<string>核聚氢:    </string>
+	<key>RANR</key>
+	<string>引力能:    </string>
+	<key>PROD</key>
+	<string>生产力:    </string>
+	<key>TECH</key>
+	<string>科技值:    </string>
 </dict>

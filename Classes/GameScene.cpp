@@ -119,9 +119,9 @@ bool GameScene::init()
 	addChild(mTiledMapLayer,1);
 	//gray bar
 	mGrayBar = DrawNode::create();
-	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 1));
-	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-50), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 1));
-	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 1));
+	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
 	addChild(mGrayBar, 3);
 	//resources icon
 	initResourcesIcons();
@@ -129,7 +129,7 @@ bool GameScene::init()
 	initGameMenu();
 	auto startMenu = Menu::create(MenuItemLabel::create( 
 	[&]()->Label*{
-		auto label = Label::create(getDicValue("menu"), "fonts/STXIHEI.TTF", 30);
+		auto label = Label::create(getDicValue("menu"), "fonts/STXIHEI.TTF", 24);
 		label->setColor(Color3B(0, 0, 0));
 		return label;
 	}(),
@@ -163,6 +163,11 @@ bool GameScene::init()
 	mUnitCampLayer = UnitCampLayer::create();
 	//mUnitCampLayer->setPosition(0, 50);
 	mUnitCampLayer->setUnlocked(farmer,true);
+	mUnitCampLayer->setUnlocked(shortrangeunit1,true);
+	mUnitCampLayer->setUnlocked(shortrangeunit2,true);
+	mUnitCampLayer->setUnlocked(longrangeunit1,true);
+	mUnitCampLayer->setUnlocked(longrangeunit2,true);
+	mUnitCampLayer->setUnlocked(longrangeunit3,true);
 	mUnitCampLayer->setVisible(false);
 	addChild(mUnitCampLayer, 2);
 	//2 botton
@@ -281,22 +286,22 @@ void GameScene::update(float delta)
 	//CCLOG("mapP %f,%f", mapP.x, mapP.y);
 	Size mapS = mTiledMapLayer->getMapSizeF();
 	//CCLOG("mapS %f,%f", mapS.width, mapS.height);
-	if ( mKeyStruct.w && (mapP.y >= mWinHeight - mapS.height + moveDis - 50) )
+	if ( mKeyStruct.w && (mapP.y >= mWinHeight - mapS.height - mWinHeight / 2 + moveDis /* - mapS.height + moveDis - 50*/) )
 	{
 		mTiledMapLayer->setPosition(mapP.x, mapP.y - moveDis);
 		mapP = mTiledMapLayer->getPosition();
 	}
-	if ( mKeyStruct.s && (mapP.y <= 0 - moveDis + 280) )
+	if ( mKeyStruct.s && (mapP.y <= 0 + mWinHeight / 2 - moveDis /* - moveDis + 280*/) )
 	{
 		mTiledMapLayer->setPosition(mapP.x, mapP.y + moveDis);
 		mapP = mTiledMapLayer->getPosition();
 	}
-	if ( mKeyStruct.a && (mapP.x <= 0 - moveDis) )
+	if ( mKeyStruct.a && (mapP.x <= 0 + mWinHeight / 2 - moveDis/* - moveDis*/) )
 	{
 		mTiledMapLayer->setPosition(mapP.x + moveDis, mapP.y);
 		mapP = mTiledMapLayer->getPosition();
 	}
-	if ( mKeyStruct.d && (mapP.x >= mWinWidth - mapS.width + moveDis) )
+	if ( mKeyStruct.d && (mapP.x >= mWinWidth - mapS.width - mWinHeight / 2 + moveDis/* - mapS.width + moveDis*/) )
 	{
 		mTiledMapLayer->setPosition(mapP.x - moveDis, mapP.y);
 		mapP = mTiledMapLayer->getPosition();
@@ -328,19 +333,19 @@ bool GameScene::onTouchBegan(Touch * touch, Event * event)
 
 void GameScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
 {
-	if (keyCode == EventKeyboard::KeyCode::KEY_W)
+	if (keyCode == EventKeyboard::KeyCode::KEY_W || keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW)
 	{
 		mKeyStruct.w = true;
 	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_S)
+	if (keyCode == EventKeyboard::KeyCode::KEY_S || keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW)
 	{
 		mKeyStruct.s = true;
 	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_A)
+	if (keyCode == EventKeyboard::KeyCode::KEY_A || keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW)
 	{
 		mKeyStruct.a = true;
 	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_D)
+	if (keyCode == EventKeyboard::KeyCode::KEY_D || keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW)
 	{
 		mKeyStruct.d = true;
 	}
@@ -350,19 +355,19 @@ void GameScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
 
 void GameScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
-	if (keyCode == EventKeyboard::KeyCode::KEY_W)
+	if (keyCode == EventKeyboard::KeyCode::KEY_W || keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW)
 	{
 		mKeyStruct.w = false;
 	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_S)
+	if (keyCode == EventKeyboard::KeyCode::KEY_S || keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW)
 	{
 		mKeyStruct.s = false;
 	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_A)
+	if (keyCode == EventKeyboard::KeyCode::KEY_A || keyCode == EventKeyboard::KeyCode::KEY_LEFT_ARROW)
 	{
 		mKeyStruct.a = false;
 	}
-	if (keyCode == EventKeyboard::KeyCode::KEY_D)
+	if (keyCode == EventKeyboard::KeyCode::KEY_D || keyCode == EventKeyboard::KeyCode::KEY_RIGHT_ARROW)
 	{
 		mKeyStruct.d = false;
 	}
@@ -487,11 +492,10 @@ void GameScene::checkTechAndUnitButton()
 	{
 		if (!mTechTreeLayer->isVisible())
 		{
-			if (!mUnitCampLayer->isVisible())
-			{
-				mTechTreeLayer->setVisible(true);
-				mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.on);
-			}
+			mTechTreeLayer->setVisible(true);
+			mUnitCampLayer->setVisible(false);
+			mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.off);
+			mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.on);
 		}
 		else
 		{
@@ -503,11 +507,10 @@ void GameScene::checkTechAndUnitButton()
 	{
 		if (!mUnitCampLayer->isVisible())
 		{
-			if (!mTechTreeLayer->isVisible())
-			{
-				mUnitCampLayer->setVisible(true);
-				mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.on);
-			}
+			mUnitCampLayer->setVisible(true);
+			mTechTreeLayer->setVisible(false);
+			mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.off);
+			mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.on);
 		}
 		else
 		{
@@ -519,10 +522,18 @@ void GameScene::checkTechAndUnitButton()
 
 void GameScene::initGameState()
 {
+	//spawn
+	mSpawn[0] = MyPointStruct{ 4, 17 };
+	mSpawn[1] = MyPointStruct{ 17, 4 };
 	//¹²Í¨
 	initUnitData();
 	initTechData();
 	initResourceMap();
+	//set unit resources and property in campLayer
+	for (const auto & i : mUnitInitDataMap)
+	{
+		mUnitCampLayer->setUnitResourceAndProperty(i.first, i.second.consumption, i.second.property);
+	}
 	//mResources
 	mResources = ResourcesStruct{ 100, 100, 10, 10 };
 	//set Label value
@@ -592,7 +603,7 @@ void GameScene::initResourceMap()
 			//CCLOG("point: %d,%d; num: %d", point.x, point.y, item["numHitPoint"].GetInt());
 			std::string element{ item["element"].GetString() };
 			//CCLOG("element: %s", element.c_str());
-			if (element == "base")
+			if (element == "base0")
 			{
 				//CCLOG("a base!");
 				mBasePosition.push_back(point);
@@ -601,8 +612,29 @@ void GameScene::initResourceMap()
 					mUnitInitDataMap[base].property,
 					UnitStateEnum::attacked,
 					[&]()->Sprite*{
-						auto sprite = Sprite::create("item1.png");
-						sprite->setScale(0.3);
+						auto sprite = Sprite::create("uiComponent/base_blue.png");
+						sprite->setScale(0.75);
+						return sprite;
+					}()
+					//Sprite::create("item1.png")
+					//sprite
+				};
+				//
+				//CCLOG("reM,add base:%d,%d,%d,%d,%d,%d", unit.property.numHitPoint, unit.property.numDefence, unit.property.numAttack, unit.property.numRangeAttack, unit.property.numRangeMove, unit.property.numPopulation);
+				mResourceMap[point] = unit;
+				continue;
+			}
+			if (element == "base1")
+			{
+				//CCLOG("a base!");
+				mBasePosition.push_back(point);
+				Unit unit = {
+					UnitEnum::base,
+					mUnitInitDataMap[base].property,
+					UnitStateEnum::attacked,
+					[&]()->Sprite*{
+						auto sprite = Sprite::create("uiComponent/base_red.png");
+						sprite->setScale(0.75);
 						return sprite;
 					}()
 					//Sprite::create("item1.png")
@@ -664,6 +696,23 @@ void GameScene::initResourceMap()
 			};
 			CCLOG("i = %d, ranP: %d,%d",i, ranP.x, ranP.y);
 			bool occupied = false;
+			//near spawn
+			for (const auto & spawn : mSpawn)
+			{
+				if ((spawn.x == ranP.x) && (spawn.y == ranP.y))
+				{
+					occupied = true;
+					break;
+				}
+				for (auto p : getNearPoint(spawn))
+				{
+					if ((p.x == ranP.x) && (p.y == ranP.y))
+					{
+						occupied = true;
+						break;
+					}
+				}
+			}
 			for (const auto & i : mResourceMap)
 			{
 				if ((i.first.x == ranP.x) && (i.first.y == ranP.y))
@@ -671,6 +720,7 @@ void GameScene::initResourceMap()
 					occupied = true;
 					break;
 				}
+				//near base
 				if (i.second.type == base)
 				{
 					for (auto p : getNearPoint(i.first))
@@ -887,49 +937,52 @@ void GameScene::initUnitData()
 
 void GameScene::initResourcesIcons()
 {
-	const float iconsFontSize = 20;
+	const float iconsFontSize = 30;
+	const float offset = 200;
+	const float offset2 = 30;
 	auto resourcesIcons = Node::create();
 	auto fixedResourceIcon = Sprite::create("uiComponent/icon_gravity.png");
 	fixedResourceIcon->setPosition(0, 0);
 	resourcesIcons->addChild(fixedResourceIcon);
 	mFixedResourceLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
 	mFixedResourceLabel->setColor(Color3B(0, 0, 0));
-	mFixedResourceLabel->setPosition(fixedResourceIcon->boundingBox().getMaxX() + 35, 0);
+	mFixedResourceLabel->setPosition(fixedResourceIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mFixedResourceLabel);
 
 	auto randomResourceIcon = Sprite::create("uiComponent/icon_hydrogen.png");
-	randomResourceIcon->setPosition(150, 0);
+	randomResourceIcon->setPosition(offset, 0);
 	resourcesIcons->addChild(randomResourceIcon);
 	mRandomResourceLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
 	mRandomResourceLabel->setColor(Color3B(0, 0, 0));
-	mRandomResourceLabel->setPosition(randomResourceIcon->boundingBox().getMaxX() + 35, 0);
+	mRandomResourceLabel->setPosition(randomResourceIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mRandomResourceLabel);
 
 	auto productivityIcon= Sprite::create("uiComponent/icon_productivity.png");
-	productivityIcon->setPosition(300, 0);
+	productivityIcon->setPosition(offset * 2, 0);
 	resourcesIcons->addChild(productivityIcon);
 	mProductivityLabel = Label::createWithTTF("","fonts/STXIHEI.TTF", iconsFontSize);
 	mProductivityLabel->setColor(Color3B(0, 0, 0));
-	mProductivityLabel->setPosition(productivityIcon->boundingBox().getMaxX() + 35, 0);
+	mProductivityLabel->setPosition(productivityIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mProductivityLabel);
 
 	auto researchIcon= Sprite::create("uiComponent/icon_researchlevel.png");
-	researchIcon->setPosition(450, 0);
+	researchIcon->setPosition(offset * 3, 0);
 	resourcesIcons->addChild(researchIcon);
 	mResearchLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
 	mResearchLabel->setColor(Color3B(0, 0, 0));
-	mResearchLabel->setPosition(researchIcon->boundingBox().getMaxX() + 35, 0);
+	mResearchLabel->setPosition(researchIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mResearchLabel);
 
 	auto populationIcon= Sprite::create("uiComponent/icon_cpu.png");
-	populationIcon->setPosition(600, 0);
+	populationIcon->setPosition(offset * 4, 0);
 	resourcesIcons->addChild(populationIcon);
 	mPopulationLabel = Label::createWithTTF("0/100", "fonts/STXIHEI.TTF", iconsFontSize);
 	mPopulationLabel->setColor(Color3B(0, 0, 0));
-	mPopulationLabel->setPosition(populationIcon->boundingBox().getMaxX() + 35, 0);
+	mPopulationLabel->setPosition(populationIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mPopulationLabel);
 
-	resourcesIcons->setPosition(mWinWidth / 2 - 325, mWinHeight - (fixedResourceIcon->boundingBox().getMaxY() - fixedResourceIcon->boundingBox().getMinY())/2);
+	resourcesIcons->setScale(0.6);
+	resourcesIcons->setPosition(mWinWidth / 2 - 2.5 * offset * resourcesIcons->getScale(), mWinHeight - (fixedResourceIcon->boundingBox().getMaxY() - fixedResourceIcon->boundingBox().getMinY())/2);
 	addChild(resourcesIcons, 3);
 }
 
@@ -958,7 +1011,7 @@ void GameScene::initGameMenu()
 		//autorelease();
 	});
 	auto menuBg = DrawNode::create();
-	menuBg->drawSolidRect(Vec2(mWinWidth / 2 - 100, mWinHeight / 2 - 150), Vec2(mWinWidth / 2 + 100, mWinHeight / 2 + 150), Color4F(1, 1, 1, 0.6));
+	menuBg->drawSolidRect(Vec2(mWinWidth / 2 - 100, mWinHeight / 2 - 150), Vec2(mWinWidth / 2 + 100, mWinHeight / 2 + 150), Color4F(0.607, 0.607, 0.607, 0.75));
 	auto menu = Menu::create(/*bgItem,*/ youWinItem, GGItem, NULL);
 	menu->alignItemsVerticallyWithPadding(20);
 	mGameMenu = Node::create();

@@ -2,7 +2,7 @@
 	"mapelement" :
 	[
 	{
-		"element" : "base",
+		"element" : "base0",
 		"position" : 
 		{
 			"X" : 3,
@@ -11,7 +11,7 @@
 		"numHitPoint" : 400
 	},
 	{
-		"element" : "base",
+		"element" : "base1",
 		"position" : 
 		{
 			"X" : 18,
@@ -68,8 +68,8 @@
 		"element" : "resourceRandom",
 		"position" : 
 		{
-			"X" : 20,
-			"Y" : 5 
+			"X" : 16,
+			"Y" : 1 
 		},
 		"numHitPoint" : 150
 	}

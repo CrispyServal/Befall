@@ -22,7 +22,7 @@ bool InfoMapLayer::init()
 	height = director->getWinSize().height;
 	//background sprite
 	mBackground = DrawNode::create();
-	mBackground->drawSolidRect(Vec2(-100, -120), Vec2(100, 120), Color4F(0.75, 0.75, 0.75, 0.4));
+	mBackground->drawSolidRect(Vec2(-100, -120), Vec2(100, 120), Color4F(0.75, 0.75, 0.75, 1));
 	mBackground->setPosition(width / 2, height / 2);
 	addChild(mBackground, 1);
 	//sprite intialize
