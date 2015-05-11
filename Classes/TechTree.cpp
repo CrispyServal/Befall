@@ -106,6 +106,8 @@ bool TechTree::unlockable(TechEnum tech)
 	{
 		return false;
 	}
+	if (isUnlocked(tech))
+		return false;
 	for (auto i : mTechTree)
 	{
 		if (i.techName == tech)

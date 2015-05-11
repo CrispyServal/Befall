@@ -451,6 +451,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 
 				if (mGameState[flagGameState].techTree.unlockable(tech))
 				{
+					//CCLOG("sadoa");
 					if (mGameMode == server || mGameMode == client)
 					{
 						while (!mNet.sendTech(tech))
@@ -465,7 +466,8 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 					}
 					else if (mGameMode == vsPlayer)
 					{
-						unlockTechTree(flagGameState, tech);
+						//add to factory
+						//unlockTechTree(flagGameState, tech);
 					}
 				}
 			}
@@ -480,6 +482,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 void GameScene::unlockTechTree(const int & flag, TechEnum tech)
 {
 	mGameState[flag].techTree.unlock(tech);
+	CCLOG("ssss: %d", mGameState[flag].techTree.isUnlocked(tech));
 	setTechInfluence(flag,tech);
 	refreshTechTree(flag);
 }
