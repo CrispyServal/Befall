@@ -101,10 +101,6 @@ void MiniMapLayer::moveView(Vec2 mousePoint)
 	{
 		distenceX = distenceX - (DirectX + maxX);
 	}
-	if ( DirectY > maxY )
-	{
-		distenceY = distenceY - (DirectY - maxY);
-	}
 	mViewBox->setPositionX(mViewBox->getPositionX() + distenceX);
 	mViewBox->setPositionY(mViewBox->getPositionY() + distenceY);
 }
@@ -125,17 +121,9 @@ Vec2 MiniMapLayer::getViewPosition(Vec2 mousePoint)
 	{
 		DirectX = -maxX;
 	}
-	if (DirectY > maxY)
-	{
-		DirectY = maxY;
-	}
-	else if (DirectY < -maxY)
-	{
-		DirectY = -maxY;
-	}
 	Vec2 scalar;
-	scalar.x = DirectX / mSizeX * pointSize + 0.5;
-	scalar.y = DirectY / mSizeY * pointSize + 0.5;
+	scalar.x = DirectX / ( mSizeX * pointSize ) + 0.5;
+	scalar.y = DirectY / ( mSizeY * pointSize )+ 0.5;
 	return scalar;
 }
 //传入4个集合，刷新小地图中的小方块，即重画一遍
