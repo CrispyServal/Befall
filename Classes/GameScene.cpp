@@ -628,6 +628,7 @@ void GameScene::initGameState()
 		unitMap,
 		extraProperty
 	};
+	gameState.techTree.unlock(techroot);
 	mGameState[0] = mGameState[1] = gameState;
 }
 

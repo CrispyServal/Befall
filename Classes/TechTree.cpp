@@ -4,13 +4,16 @@ using namespace cocos2d;
 using techTree::mTechStringEnumMap;
 void TechTree::addTechInit(TechEnum tech, const std::vector<TechEnum> & fathers)
 {
+	//CCLOG("add tech: %d", tech);
 	std::vector<int> indexFather;
 	for (auto father : fathers)
 	{
+		//CCLOG("father: %d", father);
 		for (int i = 0; i < mTechTree.size(); ++i)
 		{
 			if (mTechTree[i].techName == father)
 			{
+				//CCLOG("added father index: %d", i);
 				indexFather.push_back(i);
 			}
 		}
@@ -26,7 +29,7 @@ TechTree::TechTree()
 {
 	//init here
 	mTechTree.clear();
-	mTechTree.push_back(TechTreeNodeStruct{ techroot, std::vector<int>{0}, false });
+	//mTechTree.push_back(TechTreeNodeStruct{ techroot, std::vector<int>{0}, false });
 	//get json file
 	auto jsonFile = FileUtils::getInstance()->fullPathForFilename("dictionary/techtree.json");
     CCLOG("%s",jsonFile.c_str());
