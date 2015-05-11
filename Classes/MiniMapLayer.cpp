@@ -41,16 +41,29 @@ bool MiniMapLayer::init()
 	return true;
 }
 //method
+void MiniMapLayer::setPointSize(float size)
+{
+	pointSize = size;
+	mViewBoxSizeX = 10 * pointSize;
+	mViewBoxSizeY = 5.625 * pointSize;
+	//mBg
+	mBg->clear();
+	mBg->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), Color4F(0, 0, 0, 0.4));
+	//
+	//viewbox
+	mViewBox->clear();
+	mViewBox->drawRect(Vec2(-mViewBoxSizeX / 2, -mViewBoxSizeY / 2), Vec2(mViewBoxSizeX / 2, mViewBoxSizeY / 2), Color4F(1, 1, 1, 1));
+}
 void MiniMapLayer::setMapSize(int width, int height)
 {
-	mMiniMap->cleanup();
+	mMiniMap->clear();
 	mSizeX = width;
 	mSizeY = height;
 	mMiniMap->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), Color4F(0, 0, 0, 0.4));
 }
 void MiniMapLayer::setViewBoxSize(float ViewBoxScalarX, float ViewBoxScalarY)
 {
-	mViewBox->cleanup();
+	mViewBox->clear();
 	mViewBoxSizeX = ViewBoxScalarX * pointSize;
 	mViewBoxSizeY = ViewBoxScalarY * pointSize;	
 	mViewBox->drawRect(Vec2(-mViewBoxSizeX / 2, -mViewBoxSizeY / 2), Vec2(mViewBoxSizeX / 2, mViewBoxSizeY / 2), Color4F(1, 1, 1, 1));
@@ -91,10 +104,6 @@ void MiniMapLayer::moveView(Vec2 mousePoint)
 	if ( DirectY > maxY )
 	{
 		distenceY = distenceY - (DirectY - maxY);
-	}
-	else if (DirectY < -maxY)
-	{
-		distenceY = distenceY - (DirectY + maxY);
 	}
 	mViewBox->setPositionX(mViewBox->getPositionX() + distenceX);
 	mViewBox->setPositionY(mViewBox->getPositionY() + distenceY);
@@ -137,7 +146,7 @@ void MiniMapLayer::refresh(
 	std::set<MyPointStruct> randomResourceSet//green
 	)
 {
-	mMiniMap->cleanup();
+	mMiniMap->clear();
 	float red, green, blue;
 	int x, y;
 	for (auto point : fixedResourceSet)
