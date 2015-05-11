@@ -19,6 +19,7 @@
 #include "UnitCampLayer.h"
 #include "TechTreeLayer.h"
 #include "GameTimer.h"
+#include "MiniMapLayer.h"
 //using namespace cocos2d;
 USING_NS_CC;
 
@@ -152,6 +153,7 @@ private:
 	void initGameMenu();
 	//Layers
 	GameTimer * mTimer;
+	void switchTurn();
 	TechTreeLayer * mTechTreeLayer;
 	UnitCampLayer * mUnitCampLayer;
 	TiledMapLayer * mTiledMapLayer;
@@ -161,6 +163,8 @@ private:
 	buttonTextureStruct mUnitCampLayerButtonTexture;
 	void checkTechAndUnitButton();
 	InfoMapLayer * mInfoMapLayer;
+	MiniMapLayer * mMiniMapLayer;
+	void refreshMiniMap();
 	//factory
 	UnitFactory mUnitFactory;
 	TechFactory mTechFactory;
@@ -225,7 +229,7 @@ private:
 
 	//Ë«±ß
 
-	//all game states,0 for this
+	//all game states,0 for server
 	GameStateStruct mGameState[2];
 	//spawn
 	MyPointStruct mSpawn[2];
