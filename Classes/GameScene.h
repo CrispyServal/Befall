@@ -68,6 +68,51 @@ struct keyStruct
 	bool d;
 };
 
+const std::map<std::string, UnitEnum> mUnitStringEnumMap =
+{
+	{ "shortRangeUnit1", shortrangeunit1 },
+	{ "shortRangeUnit2", shortrangeunit2 },
+	{ "longRangeUnit1", longrangeunit1 },
+	{ "longRangeUnit2", longrangeunit2 },
+	{ "longRangeUnit3", longrangeunit3 }
+};
+
+const std::vector<TechEnum> mTechEnumList =
+{
+	techroot,
+	techtree1,
+	techtree2,
+	techtree3,
+	unlocklongrangeunit1,
+	unlocklongrangeunit2,
+	unlockshortrangeunit1,
+	unlockshortrangeunit2,
+	unlocklongrangeunit3,
+	productivity1,
+	productivity2,
+	productivity3,
+	resourcefixed1,
+	resourcefixed2,
+	resourcefixed3,
+	resourcerandom1,
+	resourcerandom2,
+	resourcerandom3,
+	hplongrange1,
+	hplongrange2,
+	arglongrange1,
+	arglongrange2,
+	atklongrange1,
+	atklongrange2,
+	atkshortrange1,
+	atkshortrange2,
+	defshortrange1,
+	defshortrange2,
+	mrgshortrange1,
+	mrgshortrange2,
+	defbase1,
+	defbase2
+};
+
 class GameScene : public Scene
 {
 public:
@@ -161,6 +206,7 @@ private:
 	//tech->initial comsumption
 	//init this map from json file
 	std::map<TechEnum, ResourcesStruct> mTechInitDataMap;
+	std::map<TechEnum, InfluenceStruct> mTechInitInfluenceMap;
 	//init tech->comsumption map
 	void initTechData();
 	//矿藏的数据，只需要一份，两边会分别减少
@@ -188,6 +234,9 @@ private:
 
 	//resourses
 	ResourcesStruct mResources;
+	//effective resoures
+	//e.g. productivity += numFarmer * (Farmer.numAttack + mExtraResources);
+	ResourcesStruct mExtraResources;
 	//effeciency of collection
 	ResourcesStruct mCollectionEffeciency;
 	//sign whether it is my turn
@@ -197,6 +246,11 @@ private:
 	void initGameState();
 	std::vector<MyPointStruct> getNearPoint(const MyPointStruct & point);
 	std::vector<PathNodeStruct> getPathTree(MyPointStruct point, int range, const std::set<MyPointStruct> & barrier);
+
+	//Tech Influence
+	void setTechInfluence(const int & flag, TechEnum tech);
+	void unlockTechTree(const int & flag, TechEnum tech);
+	void refreshTechTree(const int & flag);
 };
 
 #endif // !GAMESCENE_H

@@ -264,6 +264,17 @@ void GameScene::NetUpdate(float delta)
 			if (!mNet.isLocked())
 			{
 				//read something
+				if (mNet.getTech())
+				{
+					if (mGameMode == server)
+					{
+						unlockTechTree(1, mNet.getTech());
+					}
+					else if (mGameMode == client)
+					{
+						unlockTechTree(0, mNet.getTech());
+					}
+				}
 				mNet.lockOn();
 			}
 		}
@@ -399,7 +410,177 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 	if ((abs(mMouseCoordinate.x - mMouseCoordinateTouch.x) <= offset) && (abs(mMouseCoordinate.y - mMouseCoordinateTouch.y) <= offset))
 	{
 		checkTechAndUnitButton();
+		do
+		{
+			//techLayer
+			if (mTechTreeLayer->containPoint(mMouseCoordinateTouch))
+			{
+				auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinateTouch);
+				int flagGameState = 0;
+
+				if (mMyTurn)
+				{
+					flagGameState = 0;
+				}
+				else
+				{
+					flagGameState = 1;
+				}
+
+				if (mGameState[flagGameState].techTree.unlockable(tech))
+				{
+					if (mGameMode == server || mGameMode == client)
+					{
+						while (!mNet.sendTech(tech))
+						{
+							auto err = WSAGetLastError();
+							if (err != WSAEWOULDBLOCK)
+							{
+								CCLOG("he GG!!");
+								mDirector->popScene();
+							}
+						}
+					}
+					else if (mGameMode == vsPlayer)
+					{
+						unlockTechTree(flagGameState, tech);
+					}
+				}
+			}
+			else if (mTechTreeLayer->blockClick())
+			{
+				break;
+			}
+		} while (0);
 	}
+}
+
+void GameScene::unlockTechTree(const int & flag, TechEnum tech)
+{
+	mGameState[flag].techTree.unlock(tech);
+	setTechInfluence(flag,tech);
+	refreshTechTree(flag);
+}
+
+void GameScene::setTechInfluence(const int & flag, TechEnum tech)
+{
+	string mType = mTechInitInfluenceMap[tech].type;
+	string mTarget = mTechInitInfluenceMap[tech].target;
+	int mValue = mTechInitInfluenceMap[tech].value;
+	for (const auto & unit : mUnitStringEnumMap)
+	{
+		if (unit.first == mType)
+		{
+			mGameState[flag].unitLockMap[mUnitStringEnumMap.at(mType)] = true;
+			return;
+		}
+	}
+	if (mTarget != "")
+	{
+		if (mTarget == "longRange")
+		{
+			if (mType == "numHitPoint")
+			{
+				mGameState[flag].extraProperty[longrangeunit1].numHitPoint += mValue;
+				mGameState[flag].extraProperty[longrangeunit2].numHitPoint += mValue;
+				mGameState[flag].extraProperty[longrangeunit3].numHitPoint += mValue;
+			}
+			if (mType == "numDefence")
+			{
+				mGameState[flag].extraProperty[longrangeunit1].numDefence += mValue;
+				mGameState[flag].extraProperty[longrangeunit2].numDefence += mValue;
+				mGameState[flag].extraProperty[longrangeunit3].numDefence += mValue;
+			}
+			if (mType == "numAttack")
+			{
+				mGameState[flag].extraProperty[longrangeunit1].numAttack += mValue;
+				mGameState[flag].extraProperty[longrangeunit2].numAttack += mValue;
+				mGameState[flag].extraProperty[longrangeunit3].numAttack += mValue;
+			}
+			if (mType == "numRangeAttack")
+			{
+				mGameState[flag].extraProperty[longrangeunit1].numRangeAttack += mValue;
+				mGameState[flag].extraProperty[longrangeunit2].numRangeAttack += mValue;
+				mGameState[flag].extraProperty[longrangeunit3].numRangeAttack += mValue;
+			}
+			if (mType == "numRangeMove")
+			{
+				mGameState[flag].extraProperty[longrangeunit1].numRangeMove += mValue;
+				mGameState[flag].extraProperty[longrangeunit2].numRangeMove += mValue;
+				mGameState[flag].extraProperty[longrangeunit3].numRangeMove += mValue;
+			}
+			if (mType == "numPopulation")
+			{
+				mGameState[flag].extraProperty[longrangeunit1].numPopulation += mValue;
+				mGameState[flag].extraProperty[longrangeunit2].numPopulation += mValue;
+				mGameState[flag].extraProperty[longrangeunit3].numPopulation += mValue;
+			}
+		}
+		if (mTarget == "shortRange")
+		{
+			if (mType == "numHitPoint")
+			{
+				mGameState[flag].extraProperty[shortrangeunit1].numHitPoint += mValue;
+				mGameState[flag].extraProperty[shortrangeunit2].numHitPoint += mValue;
+			}
+			if (mType == "numDefence")
+			{
+				mGameState[flag].extraProperty[shortrangeunit1].numDefence += mValue;
+				mGameState[flag].extraProperty[shortrangeunit2].numDefence += mValue;
+			}
+			if (mType == "numAttack")
+			{
+				mGameState[flag].extraProperty[shortrangeunit1].numAttack += mValue;
+				mGameState[flag].extraProperty[shortrangeunit2].numAttack += mValue;
+			}
+			if (mType == "numRangeAttack")
+			{
+				mGameState[flag].extraProperty[shortrangeunit1].numRangeAttack += mValue;
+				mGameState[flag].extraProperty[shortrangeunit2].numRangeAttack += mValue;
+			}
+			if (mType == "numRangeMove")
+			{
+				mGameState[flag].extraProperty[shortrangeunit1].numRangeMove += mValue;
+				mGameState[flag].extraProperty[shortrangeunit2].numRangeMove += mValue;
+			}
+			if (mType == "numPopulation")
+			{
+				mGameState[flag].extraProperty[shortrangeunit1].numPopulation += mValue;
+				mGameState[flag].extraProperty[shortrangeunit2].numPopulation += mValue;
+			}
+		}
+		return;
+	}
+	else
+	{
+		if (mType == "numResearchLevel")
+		{
+			mExtraResources.numResearchLevel += mValue;
+		}
+		if (mType == "numProductivity")
+		{
+			mExtraResources.numProductivity += mValue;
+		}
+	}
+	return;
+}
+
+void GameScene::refreshTechTree(const int & flag)
+{
+	for (const auto & i : mTechEnumList)
+	{
+		if (mGameState[flag].techTree.unlockable(i))
+		{
+			CCLOG("tech a: %d", i);
+			mTechTreeLayer->setTechState(i, available);
+		}
+		else if(mGameState[flag].techTree.isUnlocked(i))
+		{
+			CCLOG("tech un: %d", i);
+			mTechTreeLayer->setTechState(i, unlocked);
+		}
+	}
+	//waiting for factory coming soon~
 }
 
 void GameScene::onMouseMoved(Event * event)
@@ -436,6 +617,17 @@ void GameScene::startGame()
 	//update
 	mTimer->start();
 	scheduleUpdate();
+
+	//TechTreeLayerRefreshing
+	if (mGameMode == server || mGameMode == vsPlayer)
+	{
+		refreshTechTree(0);
+	}
+	else if (mGameMode == client)
+	{
+		refreshTechTree(1);
+	}
+
 	//net update, 0.5s
 	if (mGameMode == server || mGameMode == client)
 	{
@@ -851,6 +1043,14 @@ void GameScene::initTechData()
 				tech["consumption"]["absResearchLevel"].GetInt()
 			};
 			mTechInitDataMap[techE] = consumption;
+
+			//Get Influence
+			InfluenceStruct influence = {
+				tech["influence"]["type"].GetString(),
+				tech["influence"]["target"].GetString(),
+				tech["influence"]["value"].GetInt()
+			};
+			mTechInitInfluenceMap[techE] = influence;
 		}
 	}
 }
@@ -1151,3 +1351,4 @@ void GameScene::initUnitTexture()
 	}
 	CCLOG("munittexturemap size: %d", mUnitTextureMap[0].size());
 }
+

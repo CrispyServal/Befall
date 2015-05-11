@@ -13,6 +13,12 @@ struct MyPointStruct
 	int y;
 };
 
+struct InfluenceStruct
+{
+	std::string type;
+	std::string target;
+	int value;
+};
 
 bool operator < (const MyPointStruct & thisOne, const MyPointStruct & another);
 

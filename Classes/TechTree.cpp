@@ -26,7 +26,7 @@ TechTree::TechTree()
 {
 	//init here
 	mTechTree.clear();
-	mTechTree.push_back(TechTreeNodeStruct{ techroot, std::vector<int>{0}, false });
+	mTechTree.push_back(TechTreeNodeStruct{ techroot, std::vector<int>{0}, true });
 	//get json file
 	auto jsonFile = FileUtils::getInstance()->fullPathForFilename("dictionary/techtree.json");
     CCLOG("%s",jsonFile.c_str());
@@ -98,12 +98,19 @@ bool TechTree::isUnlocked(TechEnum tech)
 
 bool TechTree::unlockable(TechEnum tech)
 {
+	CCLOG("\n");
+	if (tech == techroot)
+	{
+		return false;
+	}
 	for (auto i : mTechTree)
 	{
 		if (i.techName == tech)
 		{
+			CCLOG("checked %d", tech);
 			for (auto f : i.indexParents)
 			{
+				CCLOG("check father: %d,unlock? %d", f, mTechTree[f].isUnclocked);
 				if (mTechTree[f].isUnclocked == false)
 					return false;
 			}
