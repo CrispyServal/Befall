@@ -9,6 +9,13 @@ GameScene::~GameScene()
 {
 }
 
+
+std::string GameScene::getDicValue(char * str)
+{
+	 CCLOG("getdicValue: result: %s",mDictionary->valueForKey(str)->getCString());
+	 return std::string{mDictionary->valueForKey(str)->getCString()};
+}
+
 std::vector<MyPointStruct> GameScene::getNearPoint(const MyPointStruct & point)
 {
 	std::vector<MyPointStruct> result;
@@ -87,6 +94,12 @@ bool GameScene::init()
 	mDirector = Director::getInstance();
 	mUserDefault = UserDefault::getInstance();
     mDictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + mUserDefault->getStringForKey("language") + ".xml" }.c_str());
+	mKeyStruct = {
+		false,
+		false,
+		false,
+		false
+	};
     //mDictionary->retain();
 	mDispatcher = mDirector->getEventDispatcher();
 	mWinHeight = mDirector->getWinSize().height;
@@ -101,8 +114,75 @@ bool GameScene::init()
 	CCLOG("gameMode: %d", mGameMode);
 	//tiledMapLayer
 	mTiledMapLayer = TiledMapLayer::create();
+	//init MapSize
 	mMapSize = mTiledMapLayer->getMapSize();
 	addChild(mTiledMapLayer,1);
+	//gray bar
+	mGrayBar = DrawNode::create();
+	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 1));
+	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-50), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 1));
+	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 1));
+	addChild(mGrayBar, 3);
+	//resources icon
+	initResourcesIcons();
+	//menu
+	initGameMenu();
+	auto startMenu = Menu::create(MenuItemLabel::create( 
+	[&]()->Label*{
+		auto label = Label::create(getDicValue("menu"), "fonts/STXIHEI.TTF", 30);
+		label->setColor(Color3B(0, 0, 0));
+		return label;
+	}(),
+		[&](Ref * sender)->void{
+		if (!mGameMenu->isVisible()) 
+		{ 
+			mGameMenu->setVisible(true); 
+		}
+		else 
+		{ 
+			mGameMenu->setVisible(false); 
+		} 
+	} ), NULL );
+	startMenu->setPosition(startMenu->getPosition().x - mWinWidth / 2 + 40, startMenu->getPosition().y + mWinHeight / 2 - 20);
+	addChild(startMenu,5);
+	//timer
+	mTimer = GameTimer::create();
+	mTimer->setPosition(0, - mWinHeight / 2);
+	mTimer->setMaxTime(60);
+	mTimer->setEndName(getDicValue("endTurn"));
+	addChild(mTimer, 5);
+	//techtreelayer
+	mTechTreeLayer = TechTreeLayer::create();
+	mTechTreeLayer->setVisible(false);
+	addChild(mTechTreeLayer, 2);
+	//InfoMapLayer
+	mInfoMapLayer = InfoMapLayer::create();
+	mInfoMapLayer->setPosition(-mWinWidth / 2 + 100, -mWinHeight / 2 + 120);
+	addChild(mInfoMapLayer, 5);
+	//unitcamplayer
+	mUnitCampLayer = UnitCampLayer::create();
+	//mUnitCampLayer->setPosition(0, 50);
+	mUnitCampLayer->setUnlocked(farmer,true);
+	mUnitCampLayer->setVisible(false);
+	addChild(mUnitCampLayer, 2);
+	//2 botton
+	mTechTreeLayerButtonTexture = {
+		mDirector->getTextureCache()->addImage("uiComponent/icon_researchtab_black.png"),
+		mDirector->getTextureCache()->addImage("uiComponent/icon_researchtab_white.png")
+	};
+	mTechTreeLayerButton = Sprite::createWithTexture(mTechTreeLayerButtonTexture.off);
+	mTechTreeLayerButton->setPosition(mWinWidth / 2 - 150, (mTechTreeLayerButton->getBoundingBox().getMaxY() - mTechTreeLayerButton->getBoundingBox().getMinY())/2 - 3);
+	mTechTreeLayerButton->setScale(0.9);
+	addChild(mTechTreeLayerButton, 8);
+
+	mUnitCampLayerButtonTexture = {
+		mDirector->getTextureCache()->addImage("uiComponent/icon_militarycamp_black.png"),
+		mDirector->getTextureCache()->addImage("uiComponent/icon_militarycamp_white.png")
+	};
+	mUnitCampLayerButton = Sprite::createWithTexture(mUnitCampLayerButtonTexture.off);
+	mUnitCampLayerButton->setPosition(mWinWidth / 2 + 150, (mUnitCampLayerButton->getBoundingBox().getMaxY() - mUnitCampLayerButton->getBoundingBox().getMinY())/2 - 3);
+	mUnitCampLayerButton->setScale(0.9);
+	addChild(mUnitCampLayerButton, 8);
 	
 	if (mGameMode == vsPlayer)
 	{
@@ -113,16 +193,20 @@ bool GameScene::init()
 		initWelcomeLayer();
 	}
 	initYypNet();
-	//place resources
-	for (const auto & i : mResourceMap)
-	{
-
-	}
 	//scheduleUpdate();
 	//listeners
 	mMouseListener = EventListenerMouse::create();
 	mMouseListener->onMouseMove = CC_CALLBACK_1(GameScene::onMouseMoved, this);
 	mDispatcher->addEventListenerWithSceneGraphPriority(GameScene::mMouseListener, this);
+	mTouchListener = EventListenerTouchOneByOne::create();
+	mTouchListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+	mTouchListener->onTouchMoved= CC_CALLBACK_2(GameScene::onTouchMoved, this);
+	mTouchListener->onTouchEnded= CC_CALLBACK_2(GameScene::onTouchEnded, this);
+	mDispatcher->addEventListenerWithSceneGraphPriority(GameScene::mTouchListener, this);
+	mKeyboardListener = EventListenerKeyboard::create();
+	mKeyboardListener->onKeyPressed = CC_CALLBACK_2(GameScene::onKeyPressed, this);
+	mKeyboardListener->onKeyReleased= CC_CALLBACK_2(GameScene::onKeyReleased, this);
+	mDispatcher->addEventListenerWithSceneGraphPriority(mKeyboardListener,this);
 	return true;
 }
 
@@ -163,15 +247,154 @@ void GameScene::startConnecting(float delta)
 	}
 }
 
+void GameScene::NetUpdate(float delta)
+{
+	CCLOG("net update");
+	//test
+	if (mGameMode == server || mGameMode == client)
+	{
+		if ( mNet.read())
+		{
+			CCLOG("read!");
+			if (!mNet.isLocked())
+			{
+				//read something
+				mNet.lockOn();
+			}
+		}
+		else
+		{
+			CCLOG("read error");
+			auto err = WSAGetLastError();
+			if (err != WSAEWOULDBLOCK)
+			{
+				CCLOG("he GGed!!!");
+			}
+		}
+	}
+}
+
 void GameScene::update(float delta)
 {
-	CCLOG("update");
+	//move
+	Vec2 mapP = mTiledMapLayer->getPosition();
+	//CCLOG("mapP %f,%f", mapP.x, mapP.y);
+	Size mapS = mTiledMapLayer->getMapSizeF();
+	//CCLOG("mapS %f,%f", mapS.width, mapS.height);
+	if ( mKeyStruct.w && (mapP.y >= mWinHeight - mapS.height + moveDis - 50) )
+	{
+		mTiledMapLayer->setPosition(mapP.x, mapP.y - moveDis);
+		mapP = mTiledMapLayer->getPosition();
+	}
+	if ( mKeyStruct.s && (mapP.y <= 0 - moveDis + 280) )
+	{
+		mTiledMapLayer->setPosition(mapP.x, mapP.y + moveDis);
+		mapP = mTiledMapLayer->getPosition();
+	}
+	if ( mKeyStruct.a && (mapP.x <= 0 - moveDis) )
+	{
+		mTiledMapLayer->setPosition(mapP.x + moveDis, mapP.y);
+		mapP = mTiledMapLayer->getPosition();
+	}
+	if ( mKeyStruct.d && (mapP.x >= mWinWidth - mapS.width + moveDis) )
+	{
+		mTiledMapLayer->setPosition(mapP.x - moveDis, mapP.y);
+		mapP = mTiledMapLayer->getPosition();
+	}
+
+	//timer
+	mTimer->refresh(delta);
+	if (mTimer->isEnded())
+	{
+		mMyTurn = !mMyTurn;
+		if (mGameMode == vsPlayer)
+		{
+			mTimer->start();
+		}
+	}
 }
 
 void GameScene::backToMainScene(Ref * sender)
 {
 	mDirector->popScene();
 	//mDirector->popToRootScene();
+}
+
+bool GameScene::onTouchBegan(Touch * touch, Event * event)
+{
+	mMouseCoordinateTouch = mMouseCoordinate;
+	return true;
+}
+
+void GameScene::onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event)
+{
+	if (keyCode == EventKeyboard::KeyCode::KEY_W)
+	{
+		mKeyStruct.w = true;
+	}
+	if (keyCode == EventKeyboard::KeyCode::KEY_S)
+	{
+		mKeyStruct.s = true;
+	}
+	if (keyCode == EventKeyboard::KeyCode::KEY_A)
+	{
+		mKeyStruct.a = true;
+	}
+	if (keyCode == EventKeyboard::KeyCode::KEY_D)
+	{
+		mKeyStruct.d = true;
+	}
+	//refresh miniMap
+
+}
+
+void GameScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
+{
+	if (keyCode == EventKeyboard::KeyCode::KEY_W)
+	{
+		mKeyStruct.w = false;
+	}
+	if (keyCode == EventKeyboard::KeyCode::KEY_S)
+	{
+		mKeyStruct.s = false;
+	}
+	if (keyCode == EventKeyboard::KeyCode::KEY_A)
+	{
+		mKeyStruct.a = false;
+	}
+	if (keyCode == EventKeyboard::KeyCode::KEY_D)
+	{
+		mKeyStruct.d = false;
+	}
+	//open/close gameMenu
+	if (keyCode == EventKeyboard::KeyCode::KEY_ESCAPE)
+	{
+		if (!mGameMenu->isVisible())
+		{
+			mGameMenu->setVisible(true);
+		}
+		else
+		{
+			mGameMenu->setVisible(false);
+		}
+	}
+}
+
+void GameScene::onTouchMoved(Touch * touch, Event * event)
+{
+	//do something here
+
+
+	mMouseCoordinateP = mMouseCoordinate;
+}
+
+void GameScene::onTouchEnded(Touch * touch, Event * event)
+{
+	const int offset = 5;
+	if ((abs(mMouseCoordinate.x - mMouseCoordinateTouch.x) <= offset) && (abs(mMouseCoordinate.y - mMouseCoordinateTouch.y) <= offset))
+	{
+		checkTechAndUnitButton();
+	}
 }
 
 void GameScene::onMouseMoved(Event * event)
@@ -183,8 +406,9 @@ void GameScene::onMouseMoved(Event * event)
 	//CCLOG("%f,%f", mMouseCoordinate.x, mMouseCoordinate.y);
 	if ((mGameMode == GameModeEnum::client) || (mGameMode == GameModeEnum::server))
 	{
-		checkBackToMainSceneItem();
+		checkBackToMainSceneItemOnMouseMoved();
 	}
+	checkLayersOnMouseMoved();
 }
 
 void GameScene::startGame()
@@ -195,9 +419,26 @@ void GameScene::startGame()
 		mWelcomeLayer->setVisible(false);
 	}
 	initGameState();
+	//turn
+	if (mGameMode != client)
+	{
+		mMyTurn = true;
+	}
+	else
+	{
+		mMyTurn = false;
+	}
+	//update
+	mTimer->start();
+	scheduleUpdate();
+	//net update, 0.5s
+	if (mGameMode == server || mGameMode == client)
+	{
+		schedule(schedule_selector(GameScene::NetUpdate), 0.5, CC_REPEAT_FOREVER, 0);
+	}
 }
 
-void GameScene::checkBackToMainSceneItem()
+void GameScene::checkBackToMainSceneItemOnMouseMoved()
 {
 	//cancel's scale effect
 	auto box = mBackToMainSceneItem->boundingBox();
@@ -224,6 +465,58 @@ void GameScene::checkBackToMainSceneItem()
 	}
 }
 
+void GameScene::checkLayersOnMouseMoved()
+{
+	do
+	{
+		//UI(timer,buttons,minimap)
+		//Tech/Unit layer
+		if (mUnitCampLayer->isVisible())
+		{
+			CCLOG("to call!!");
+			mUnitCampLayer->onMouseMoved(mMouseCoordinate);
+		}
+		//
+	} while (0);
+}
+
+void GameScene::checkTechAndUnitButton()
+{
+	//open/close techTreeLayer/UnitCampLayer
+	if (mTechTreeLayerButton->boundingBox().containsPoint(mMouseCoordinate))
+	{
+		if (!mTechTreeLayer->isVisible())
+		{
+			if (!mUnitCampLayer->isVisible())
+			{
+				mTechTreeLayer->setVisible(true);
+				mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.on);
+			}
+		}
+		else
+		{
+			mTechTreeLayer->setVisible(false);
+			mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.off);
+		}
+	}
+	if (mUnitCampLayerButton->boundingBox().containsPoint(mMouseCoordinate))
+	{
+		if (!mUnitCampLayer->isVisible())
+		{
+			if (!mTechTreeLayer->isVisible())
+			{
+				mUnitCampLayer->setVisible(true);
+				mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.on);
+			}
+		}
+		else
+		{
+			mUnitCampLayer->setVisible(false);
+			mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.off);
+		}
+	}
+}
+
 void GameScene::initGameState()
 {
 	//¹²Í¨
@@ -232,14 +525,37 @@ void GameScene::initGameState()
 	initResourceMap();
 	//mResources
 	mResources = ResourcesStruct{ 100, 100, 10, 10 };
+	//set Label value
+	std::stringstream ssFixed;
+	ssFixed << mResources.numFixedResource;
+	mFixedResourceLabel->setString(ssFixed.str());
+	std::stringstream ssRandom;
+	ssRandom << mResources.numRandomResource;
+	mRandomResourceLabel->setString(ssRandom.str());
+	std::stringstream ssProductivity;
+	ssProductivity << mResources.numProductivity;
+	mProductivityLabel->setString(ssProductivity.str());
+	std::stringstream ssResearch;
+	ssResearch << mResources.numResearchLevel;
+	mResearchLabel->setString(ssResearch.str());
+
 	mCollectionEffeciency = ResourcesStruct{ 0, 0, 0, 0 };
 	//Ë«±ß
 	TechTree techTree;
 	CCLOG("techroot? %d",techTree.isUnlocked(techroot));
 	std::map<MyPointStruct, Unit> unitMap;
 	std::map<UnitEnum, UnitPropertyStruct> extraProperty;
+	std::map<UnitEnum, bool> unitLockMap = {
+		{farmer, false},
+		{shortrangeunit1, true},
+		{shortrangeunit2, true},
+		{longrangeunit1, true},
+		{longrangeunit2, true},
+		{longrangeunit3, true},
+	};
 	GameStateStruct  gameState = {
 		techTree,
+		unitLockMap,
 		unitMap,
 		extraProperty
 	};
@@ -248,6 +564,8 @@ void GameScene::initGameState()
 
 void GameScene::initResourceMap()
 {
+	//const float ranScale = 0.5;
+	//const float fixScale = 0.5;
 	//fixed: json
 	auto jsonFile = FileUtils::getInstance()->fullPathForFilename("dictionary/mapinitialize.json");
 	ssize_t size = 0;
@@ -282,7 +600,12 @@ void GameScene::initResourceMap()
 					UnitEnum::base,
 					mUnitInitDataMap[base].property,
 					UnitStateEnum::attacked,
-					Sprite::create("item1.png")
+					[&]()->Sprite*{
+						auto sprite = Sprite::create("item1.png");
+						sprite->setScale(0.3);
+						return sprite;
+					}()
+					//Sprite::create("item1.png")
 					//sprite
 				};
 				//
@@ -297,7 +620,12 @@ void GameScene::initResourceMap()
 					UnitEnum::fixedResource,
 					UnitPropertyStruct{ item["numHitPoint"].GetInt(), 0, 0, 0, 0, 0 },
 					UnitStateEnum::attacked,
-					Sprite::createWithTexture(mResourceTextureMap[fixedResource].abundant)
+					[&]()->Sprite*{
+						auto sprite = Sprite::createWithTexture(mResourceTextureMap[fixedResource].abundant);
+						//sprite->setScale(fixScale);
+						return sprite;
+					}()
+					//Sprite::createWithTexture(mResourceTextureMap[fixedResource].abundant)
 				};
 				mResourceMap[point] = unit;
 				continue;
@@ -309,7 +637,12 @@ void GameScene::initResourceMap()
 					UnitEnum::randomResource,
 					UnitPropertyStruct{ item["numHitPoint"].GetInt(), 0, 0, 0, 0, 0 },
 					UnitStateEnum::attacked,
-					Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
+					[&]()->Sprite*{
+						auto sprite = Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant);
+						//sprite->setScale(ranScale);
+						return sprite;
+					}()
+					//Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
 				};
 				//save HP of randomR
 				mHitPointOfRandomResource = item["numHitPoint"].GetInt();
@@ -355,14 +688,27 @@ void GameScene::initResourceMap()
 				//send ranP to client
 				if (mGameMode == server)
 				{
-					while (!mNet.sendOnePoint(ranP));
+					while (!mNet.sendOnePoint(ranP))
+					{
+						auto err = WSAGetLastError();
+						if (err != WSAEWOULDBLOCK)
+						{
+							CCLOG("he GGed so fast!!!");
+							mDirector->popScene();
+						}
+					}
 					CCLOG("sended. %d,%d", ranP.x, ranP.y);
 				}
 				mResourceMap[ranP] = Unit{
 					UnitEnum::randomResource,
 					UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
 					UnitStateEnum::attacked,
-					Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
+					[&]()->Sprite*{
+						auto sprite = Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant);
+						//sprite->setScale(ranScale);
+						return sprite;
+					}()
+					//Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
 				};
 				++i;
 			}
@@ -370,6 +716,14 @@ void GameScene::initResourceMap()
 		if (mGameMode == server)
 		{
 			while (!mNet.sendEnd());
+			{
+				auto err = WSAGetLastError();
+				if (err != WSAEWOULDBLOCK)
+				{
+					CCLOG("he GGed so fast!!!");
+					mDirector->popScene();
+				}
+			}
 			CCLOG("sended end");
 		}
 	}
@@ -378,14 +732,27 @@ void GameScene::initResourceMap()
 		//client: read ranP
 		while (true)
 		{
-			while (!mNet.read());
+			while (!mNet.read())
+			{
+				auto err = WSAGetLastError();
+				if (err != WSAEWOULDBLOCK)
+				{
+					CCLOG("he GGed so fast!!!");
+					mDirector->popScene();
+				}
+			}
 			if (mNet.getWhich() == onePoint)
 			{
 				mResourceMap[mNet.getOnePoint()] = Unit{
 					UnitEnum::randomResource,
 					UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
 					UnitStateEnum::attacked,
-					Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
+					[&]()->Sprite*{
+						auto sprite = Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant);
+						//sprite->setScale(ranScale);
+						return sprite;
+					}()
+					//Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
 				};
 				CCLOG("read: %d,%d", mNet.getOnePoint().x, mNet.getOnePoint().y);
 			}
@@ -397,8 +764,8 @@ void GameScene::initResourceMap()
 	//place them
 	for (const auto & i : mResourceMap)
 	{
-		i.second.sprite->setPosition(mTiledMapLayer->floatCoorForPosition(i.first));
-		addChild(i.second.sprite, 2);
+		i.second.sprite->setPosition(mTiledMapLayer->floatNodeCoorForPosition(i.first));
+		mTiledMapLayer->addChild(i.second.sprite, 2);
 	}
 }
 
@@ -518,6 +885,89 @@ void GameScene::initUnitData()
 	}
 }
 
+void GameScene::initResourcesIcons()
+{
+	const float iconsFontSize = 20;
+	auto resourcesIcons = Node::create();
+	auto fixedResourceIcon = Sprite::create("uiComponent/icon_gravity.png");
+	fixedResourceIcon->setPosition(0, 0);
+	resourcesIcons->addChild(fixedResourceIcon);
+	mFixedResourceLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
+	mFixedResourceLabel->setColor(Color3B(0, 0, 0));
+	mFixedResourceLabel->setPosition(fixedResourceIcon->boundingBox().getMaxX() + 35, 0);
+	resourcesIcons->addChild(mFixedResourceLabel);
+
+	auto randomResourceIcon = Sprite::create("uiComponent/icon_hydrogen.png");
+	randomResourceIcon->setPosition(150, 0);
+	resourcesIcons->addChild(randomResourceIcon);
+	mRandomResourceLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
+	mRandomResourceLabel->setColor(Color3B(0, 0, 0));
+	mRandomResourceLabel->setPosition(randomResourceIcon->boundingBox().getMaxX() + 35, 0);
+	resourcesIcons->addChild(mRandomResourceLabel);
+
+	auto productivityIcon= Sprite::create("uiComponent/icon_productivity.png");
+	productivityIcon->setPosition(300, 0);
+	resourcesIcons->addChild(productivityIcon);
+	mProductivityLabel = Label::createWithTTF("","fonts/STXIHEI.TTF", iconsFontSize);
+	mProductivityLabel->setColor(Color3B(0, 0, 0));
+	mProductivityLabel->setPosition(productivityIcon->boundingBox().getMaxX() + 35, 0);
+	resourcesIcons->addChild(mProductivityLabel);
+
+	auto researchIcon= Sprite::create("uiComponent/icon_researchlevel.png");
+	researchIcon->setPosition(450, 0);
+	resourcesIcons->addChild(researchIcon);
+	mResearchLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
+	mResearchLabel->setColor(Color3B(0, 0, 0));
+	mResearchLabel->setPosition(researchIcon->boundingBox().getMaxX() + 35, 0);
+	resourcesIcons->addChild(mResearchLabel);
+
+	auto populationIcon= Sprite::create("uiComponent/icon_cpu.png");
+	populationIcon->setPosition(600, 0);
+	resourcesIcons->addChild(populationIcon);
+	mPopulationLabel = Label::createWithTTF("0/100", "fonts/STXIHEI.TTF", iconsFontSize);
+	mPopulationLabel->setColor(Color3B(0, 0, 0));
+	mPopulationLabel->setPosition(populationIcon->boundingBox().getMaxX() + 35, 0);
+	resourcesIcons->addChild(mPopulationLabel);
+
+	resourcesIcons->setPosition(mWinWidth / 2 - 325, mWinHeight - (fixedResourceIcon->boundingBox().getMaxY() - fixedResourceIcon->boundingBox().getMinY())/2);
+	addChild(resourcesIcons, 3);
+}
+
+void GameScene::initGameMenu()
+{
+	auto youWinLabel = Label::createWithTTF(getDicValue("youWin"), "fonts/STXIHEI.TTF", 30);
+	auto GGLabel = Label::createWithTTF(getDicValue("GG"), "fonts/STXIHEI.TTF", 30);
+	auto youWinItem = MenuItemLabel::create(youWinLabel, [&](Ref * sender)->void{
+		if (mGameMode == server || mGameMode == client)
+		{
+			while (!mNet.sendYouWin())
+			{
+				auto err = WSAGetLastError();
+				if (err != WSAEWOULDBLOCK)
+				{
+					CCLOG("he GG!!");
+					mDirector->popScene();
+				}
+			}
+		}
+		//lose
+		CCLOG("i lose!");
+	});
+	auto GGItem = MenuItemLabel::create(GGLabel, [&](Ref * sender)->void{
+		mDirector->popScene();
+		//autorelease();
+	});
+	auto menuBg = DrawNode::create();
+	menuBg->drawSolidRect(Vec2(mWinWidth / 2 - 100, mWinHeight / 2 - 150), Vec2(mWinWidth / 2 + 100, mWinHeight / 2 + 150), Color4F(1, 1, 1, 0.6));
+	auto menu = Menu::create(/*bgItem,*/ youWinItem, GGItem, NULL);
+	menu->alignItemsVerticallyWithPadding(20);
+	mGameMenu = Node::create();
+	mGameMenu->addChild(menuBg);
+	mGameMenu->addChild(menu);
+	mGameMenu->setVisible(false);
+	addChild(mGameMenu, 8);
+}
+
 void GameScene::initWelcomeLayer()
 {
 	//welcome layer : waiting and connecting
@@ -571,7 +1021,7 @@ void GameScene::initWelcomeLayer()
 	mWelcomeLayer->addChild(welcomeMenu);
 	mWelcomeLayer->addChild(juFlower[0]);
 	mWelcomeLayer->addChild(juFlower[1]);
-	addChild(mWelcomeLayer, 3);
+	addChild(mWelcomeLayer, 6);
 }
 
 void GameScene::initYypNet()
@@ -610,6 +1060,7 @@ void GameScene::initResourceTexture()
 		mDirector->getTextureCache()->addImage("uiComponent/resource_random_dried.png")
 	};
 }
+
 void GameScene::initUnitTexture()
 {
 	for (int i = 0; i < 2; ++i)

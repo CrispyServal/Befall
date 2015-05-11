@@ -34,13 +34,22 @@ MyPointStruct TiledMapLayer::tiledCoorForPostion(const Vec2 & position)
 	return MyPointStruct{ x, y };
 }
 
-Vec2 TiledMapLayer::floatCoorForPosition(const MyPointStruct & position)
+Vec2 TiledMapLayer::floatWorldCoorForPosition(const MyPointStruct & position)
 {
 	Size mapSize = mTiledMap->getMapSize();
 	Size tileSize = mTiledMap->getTileSize();
 	float x = (position.x + 0.5) * tileSize.width;
 	float y = (mapSize.height - position.y - 0.5) * tileSize.width;
 	return mTiledMap->convertToWorldSpace(Vec2(x, y));
+}
+
+Vec2 TiledMapLayer::floatNodeCoorForPosition(const MyPointStruct & position)
+{
+	Size mapSize = mTiledMap->getMapSize();
+	Size tileSize = mTiledMap->getTileSize();
+	float x = (position.x + 0.5) * tileSize.width;
+	float y = (mapSize.height - position.y - 0.5) * tileSize.width;
+	return Vec2(x, y);
 }
 
 bool TiledMapLayer::containPoint(const Vec2 & mousePoint)
@@ -76,10 +85,12 @@ bool TiledMapLayer::containPoint(const Vec2 & mousePoint)
 	}
 }
 
+/*
 MyPointStruct TiledMapLayer::getMyPointMouseOn(const Vec2 & mousePoint)
 {
 	return tiledCoorForPostion(mousePoint);
 }
+*/
 
 
 void TiledMapLayer::setFocusPoint(Vec2 focus)

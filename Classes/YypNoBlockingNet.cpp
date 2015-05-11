@@ -4,33 +4,41 @@
 YypNoBlockingNet::YypNoBlockingNet()
 {
 }
+
 YypNoBlockingNet::~YypNoBlockingNet()
 {
 }
+
 TechEnum YypNoBlockingNet::getTech()
 {
 	return mTech;
 }
+
 newSoldierStruct YypNoBlockingNet::getNewSoldier()
 {
 	return mNewSoldier;
 }
+
 twoPointStruct YypNoBlockingNet::getPoints()
 {
 	return mPoints;
 }
+
 MyPointStruct YypNoBlockingNet::getOnePoint()
 {
 	return mOnePoint;
 }
+
 whichEnum YypNoBlockingNet::getWhich()
 {
 	return which;
 }
+
 bool YypNoBlockingNet::isLocked()
 {
 	return lock;
 }
+
 bool YypNoBlockingNet::sendTech(TechEnum tech)
 {
 	int sendData[6];
@@ -47,6 +55,7 @@ bool YypNoBlockingNet::sendTech(TechEnum tech)
 		return true;
 
 }
+
 bool YypNoBlockingNet::sendNewSoldier(newSoldierStruct newSoldier)
 {
 	int sendData[6];
@@ -62,6 +71,7 @@ bool YypNoBlockingNet::sendNewSoldier(newSoldierStruct newSoldier)
 	else
 		return true;
 }
+
 bool YypNoBlockingNet::sendTwoPoint(twoPointStruct points)
 {
 	int sendData[6];
@@ -77,6 +87,7 @@ bool YypNoBlockingNet::sendTwoPoint(twoPointStruct points)
 	else
 		return true;
 }
+
 bool YypNoBlockingNet::sendOnePoint(MyPointStruct onePoint)
 {
 	int sendData[6];
@@ -92,6 +103,7 @@ bool YypNoBlockingNet::sendOnePoint(MyPointStruct onePoint)
 	else
 		return true;
 }
+
 bool YypNoBlockingNet::sendEnd()
 {
 	int sendData[6];
@@ -107,6 +119,23 @@ bool YypNoBlockingNet::sendEnd()
 	else
 		return true;
 }
+
+bool YypNoBlockingNet::sendYouWin()
+{
+	int sendData[6];
+	sendData[0] = 5;
+	sendData[1] = 0;
+	sendData[2] = 0;
+	sendData[3] = 0;
+	sendData[4] = 0;
+	sendData[5] = 0;
+	int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
+	if (ret == SOCKET_ERROR)
+		return false;
+	else
+		return true;
+}
+
 bool YypNoBlockingNet::read()
 {
 	char revData[255];// need to adjust size
@@ -139,6 +168,7 @@ bool YypNoBlockingNet::read()
 		return true;
 	}
 }
+
 bool YypNoBlockingNet::startServer(int pot)
 {
 	//初始化WSA
@@ -182,6 +212,7 @@ bool YypNoBlockingNet::startServer(int pot)
 	//循环接收数据
 	return true;
 }
+
 bool YypNoBlockingNet::acceptConnect()
 {
 	nAddrlen = sizeof(remoteAddr);
@@ -199,6 +230,7 @@ bool YypNoBlockingNet::endServer()
 	else
 		return false;;
 }
+
 bool YypNoBlockingNet::makeConnect(char *IP, int pot)
 {
 	WORD sockVersion = MAKEWORD(2, 2);
@@ -225,6 +257,7 @@ bool YypNoBlockingNet::makeConnect(char *IP, int pot)
 	}
 	return true;
 }
+
 bool YypNoBlockingNet::deleteConnect()
 {
 	if (!closesocket(sclient) && !WSACleanup())

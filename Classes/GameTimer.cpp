@@ -24,7 +24,7 @@ bool GameTimer::init()
 	mBgCircle->setPosition(width / 2, height / 2);
 	addChild(mBgCircle, 1);
 	//EndLabel
-	mEndLabel = Label::createWithSystemFont("END", "Arial", 30);
+	mEndLabel = Label::createWithTTF("END", "fonts/STXIHEI.TTF", 30);
 	mEndLabel->setPosition(mBgCircle->getPositionX(), mBgCircle->getPositionY()+30);
 	addChild(mEndLabel, 2);
 	radius = 600 * mBgCircle->getScaleX() * this->getScaleX();
@@ -39,7 +39,7 @@ bool GameTimer::init()
 	//visible
 	mBgCircle->setVisible(true);
 	mEndLabel->setVisible(true);
-	mVitualCircle->setVisible(true);
+	mVitualCircle->setVisible(false);
 	mCoverCircle->setVisible(false);
 	return true;
 }

@@ -39,8 +39,8 @@ public:
 	const UnitEnum getunitMouseOn();
 	//用于在悬停时候改变按钮图片
 	void onMouseMoved(Vec2 mousePoint);
-	//解锁
-	void unLockUnit(UnitEnum unit);
+	//lock on or lock off
+	void setUnlocked(UnitEnum unit,bool unlock);
 	//每个单位的数据存储
 	std::vector<UnitCamp::ItemInCampStruct> mItemsList;
 private:
@@ -56,7 +56,7 @@ private:
 	//当前鼠标位置上的按钮
 	UnitCamp::ItemInCampStruct mNowItem;
 	//特殊的一张texture, 未解锁的单位的大图
-	Texture2D * mCloseTexture;
+	//Texture2D * mCloseTexture;
 };
 
 

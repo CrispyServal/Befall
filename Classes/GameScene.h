@@ -6,6 +6,7 @@
 
 #include <map>
 #include <vector>
+#include <sstream>
 
 #include "MyEnums.h"
 #include "MyStructs.h"
@@ -16,6 +17,8 @@
 #include "TechFactory.h"
 #include "UnitFactory.h"
 #include "UnitCampLayer.h"
+#include "TechTreeLayer.h"
+#include "GameTimer.h"
 //using namespace cocos2d;
 USING_NS_CC;
 
@@ -23,6 +26,8 @@ struct GameStateStruct
 {
 	//一颗科技树
 	TechTree techTree;
+	//unit lock state
+	std::map<UnitEnum, bool> unitLockMap;
 	//坐标到单位的map
 	std::map<MyPointStruct, Unit> unitMap;
 	//extra property
@@ -49,6 +54,20 @@ struct UnitTextureStruct
 	Texture2D * side;
 };
 
+struct buttonTextureStruct
+{
+	Texture2D * off;
+	Texture2D * on;
+};
+
+struct keyStruct
+{
+	bool w;
+	bool s;
+	bool a;
+	bool d;
+};
+
 class GameScene : public Scene
 {
 public:
@@ -62,22 +81,52 @@ private:
 	UserDefault * mUserDefault;
 	GameModeEnum mGameMode;
 	Dictionary * mDictionary;
+	std::string getDicValue(char * str);
 	EventDispatcher * mDispatcher;
 	float mWinHeight;
 	float mWinWidth;
 	Vec2 mMouseCoordinate;
+	//position for clicked
+	Vec2 mMouseCoordinateTouch;
+	//last position when mouse moving
+	Vec2 mMouseCoordinateP;
 	//need to change to tilemap size
 	Size mMapSize;
 	//m
 	YypNoBlockingNet mNet;
 	MenuItemLabel * mBackToMainSceneItem;
+	DrawNode * mGrayBar;
+	Label * mFixedResourceLabel;
+	Label * mRandomResourceLabel;
+	Label * mProductivityLabel;
+	Label * mResearchLabel;
+	Label * mPopulationLabel;
+	void initResourcesIcons();
+	//a menu
+	Node * mGameMenu;
+	void initGameMenu();
 	//Layers
+	GameTimer * mTimer;
+	TechTreeLayer * mTechTreeLayer;
+	UnitCampLayer * mUnitCampLayer;
 	TiledMapLayer * mTiledMapLayer;
+	Sprite * mTechTreeLayerButton;
+	buttonTextureStruct mTechTreeLayerButtonTexture;
+	Sprite * mUnitCampLayerButton;
+	buttonTextureStruct mUnitCampLayerButtonTexture;
+	void checkTechAndUnitButton();
+	InfoMapLayer * mInfoMapLayer;
+	//factory
+	UnitFactory mUnitFactory;
+	TechFactory mTechFactory;
 	//when connecting or listening, display juFlower or something else
 	Layer * mWelcomeLayer;
 	Layer * mTouchLayer;
 	EventListenerMouse * mMouseListener;
-	EventListenerTouch * mTouchListener;
+	EventListenerTouchOneByOne * mTouchListener;
+	EventListenerKeyboard * mKeyboardListener;
+	const float moveDis = 20;
+	keyStruct mKeyStruct;
 	//methods----------------------------------------------------------
 	void initWelcomeLayer();
 	void initYypNet();
@@ -89,11 +138,18 @@ private:
 	void startGame();
 	//1、检查计时器是否结束
 	void update(float delta);
+	void NetUpdate(float delta);
 
 	//callback
 	void backToMainScene(Ref * sender);
 	void onMouseMoved(Event * event);
-	void checkBackToMainSceneItem();
+	bool onTouchBegan(Touch * touch, Event * event);
+	void onTouchMoved(Touch * touch, Event * event);
+	void onTouchEnded(Touch * touch, Event * event);
+	void onKeyPressed(EventKeyboard::KeyCode keyCode, Event * event);
+	void onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event);
+	void checkBackToMainSceneItemOnMouseMoved();
+	void checkLayersOnMouseMoved();
 	//abstract things--------------------
 
 	//共通
