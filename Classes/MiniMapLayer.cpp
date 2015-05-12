@@ -72,8 +72,8 @@ void MiniMapLayer::setViewBoxSize(float ViewBoxScalarX, float ViewBoxScalarY)
 //小地图中，几乎所有区域都是有效区域
 bool MiniMapLayer::containPoint(Vec2 mousePoint)// need  to update
 {
-	float distenceX = mSizeX * pointSize / 2.0;
-	float distenceY = mSizeY * pointSize / 2.0;
+	float distenceX = ( mSizeX * pointSize + mViewBoxSizeX ) / 2.0;
+	float distenceY = ( mSizeY * pointSize + mViewBoxSizeY ) / 2.0;
 	Point wpoint = mBg->getParent()->convertToWorldSpace(mBg->getPosition());
 	if (abs(wpoint.x - mousePoint.x) <= distenceX && abs(wpoint.y-mousePoint.y) <= distenceY)
 		return true;
@@ -85,8 +85,8 @@ bool MiniMapLayer::containPoint(Vec2 mousePoint)// need  to update
 //如果视野框与边框相切，函数应当不再改变位置防止出界。
 void MiniMapLayer::moveView(Vec2 mousePoint)
 {
-	float maxX = ( mSizeX * pointSize - mViewBoxSizeX ) / 2.0;
-	float maxY = ( mSizeY * pointSize - mViewBoxSizeY ) / 2.0;
+	float maxX = ( mSizeX * pointSize ) / 2.0;
+	float maxY = ( mSizeY * pointSize ) / 2.0;
 	Point wBgpoint = mBg->getParent()->convertToWorldSpace(mBg->getPosition());	
 	Point wVBpoint = mViewBox->getParent()->convertToWorldSpace(mViewBox->getPosition());
 	float DirectX = mousePoint.x - wBgpoint.x;
@@ -101,6 +101,14 @@ void MiniMapLayer::moveView(Vec2 mousePoint)
 	{
 		distenceX = distenceX - (DirectX + maxX);
 	}
+	if (DirectY > maxY)
+	{
+		distenceY = distenceY - (DirectY - maxY);
+	}
+	else if (DirectY < -maxY)
+	{
+		distenceY = distenceY - (DirectY + maxY);
+	}
 	mViewBox->setPositionX(mViewBox->getPositionX() + distenceX);
 	mViewBox->setPositionY(mViewBox->getPositionY() + distenceY);
 }
@@ -108,8 +116,8 @@ void MiniMapLayer::moveView(Vec2 mousePoint)
 //由于视野框在moveView函数中维护，且不会让视野框出界，因此返回的值范围不会到[0,1]
 Vec2 MiniMapLayer::getViewPosition(Vec2 mousePoint)
 {
-	float maxX = (mSizeX * pointSize - mViewBoxSizeX) / 2.0;
-	float maxY = (mSizeY * pointSize - mViewBoxSizeY) / 2.0;
+	float maxX = (mSizeX * pointSize ) / 2.0;
+	float maxY = (mSizeY * pointSize ) / 2.0;
 	Point wBgpoint = mBg->getParent()->convertToWorldSpace(mBg->getPosition());
 	float DirectX = mousePoint.x - wBgpoint.x;
 	float DirectY = mousePoint.y - wBgpoint.y;
@@ -120,6 +128,14 @@ Vec2 MiniMapLayer::getViewPosition(Vec2 mousePoint)
 	else if (DirectX < -maxX)
 	{
 		DirectX = -maxX;
+	}
+	if (DirectY > maxY)
+	{
+		DirectY = maxY;
+	}
+	else if (DirectY < -maxY)
+	{
+		DirectY = -maxY;
 	}
 	Vec2 scalar;
 	scalar.x = DirectX / ( mSizeX * pointSize ) + 0.5;
