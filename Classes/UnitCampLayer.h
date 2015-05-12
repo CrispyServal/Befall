@@ -50,6 +50,18 @@ public:
 	void setUnitResourceAndProperty(UnitEnum unit, const ResourcesStruct & unitResources, const UnitPropertyStruct & unitProperty);
 	//每个单位的数据存储
 	std::vector<UnitCamp::ItemInCampStruct> mItemsList;
+
+	Texture2D * getUnitTexture(UnitEnum unit)
+	{
+		if (unit < mUnitTexture.size())
+		{
+			return mUnitTexture[unit];
+		}
+		else
+		{
+			CCLOG("error: invalid unit");
+		}
+	}
 private:
 	std::string UnitCampLayer::getDicValue(char * str);
 	Dictionary * mDictionary;
@@ -68,6 +80,8 @@ private:
 	UnitCamp::ItemInCampStruct mNowItem;
 	//特殊的一张texture, 未解锁的单位的大图
 	//Texture2D * mCloseTexture;
+	//textures
+	std::vector<Texture2D *> mUnitTexture;
 };
 
 

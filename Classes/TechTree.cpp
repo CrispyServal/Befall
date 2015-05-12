@@ -101,7 +101,7 @@ bool TechTree::isUnlocked(TechEnum tech)
 
 bool TechTree::unlockable(TechEnum tech)
 {
-	CCLOG("\n");
+	//CCLOG("\n");
 	if (tech == techroot)
 	{
 		return false;
@@ -112,10 +112,10 @@ bool TechTree::unlockable(TechEnum tech)
 	{
 		if (i.techName == tech)
 		{
-			CCLOG("checked %d", tech);
+			//CCLOG("checked %d", tech);
 			for (auto f : i.indexParents)
 			{
-				CCLOG("check father: %d,unlock? %d", f, mTechTree[f].isUnclocked);
+				//CCLOG("check father: %d,unlock? %d", f, mTechTree[f].isUnclocked);
 				if (mTechTree[f].isUnclocked == false)
 					return false;
 			}

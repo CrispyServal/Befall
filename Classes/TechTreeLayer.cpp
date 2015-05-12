@@ -99,8 +99,10 @@ bool TechTreeLayer::init()
 	}
 	for (int i = 0; i < 32; i++)
 	{
-		mTechSpriteMap[(TechEnum)i] = Sprite::create(imageName[i]);
-		mTechSpriteMap[(TechEnum)i]->setScale(0.1, 0.1);
+		mTechTexture[i] = director->getTextureCache()->addImage(imageName[i]);
+		//mTechSpriteMap[(TechEnum)i] = Sprite::create(imageName[i]);
+		mTechSpriteMap[(TechEnum)i] = Sprite::createWithTexture(mTechTexture[i]);
+		//mTechSpriteMap[(TechEnum)i]->setScale(0.1, 0.1);
 		mTechSpriteMap[(TechEnum)i]->setPosition(mClickAreaMap[(TechEnum)i]->getPosition());
 		addChild(mTechSpriteMap[(TechEnum)i]);
 		mTechSpriteMap[(TechEnum)i]->setVisible(!(bool)i);

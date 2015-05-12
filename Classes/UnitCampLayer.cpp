@@ -18,7 +18,7 @@ UnitCampLayer::~UnitCampLayer()
 
 std::string UnitCampLayer::getDicValue(char * str)
 {
-	 CCLOG("getdicValue: result: %s",mDictionary->valueForKey(str)->getCString());
+	 //CCLOG("getdicValue: result: %s",mDictionary->valueForKey(str)->getCString());
 	 return std::string{mDictionary->valueForKey(str)->getCString()};
 }
 
@@ -65,7 +65,10 @@ bool UnitCampLayer::init()
 	{
 		CCLOG("sprite: %s", std::string{ "uiComponent/unit" + std::string{ (char)('0' + i) } +std::string{ ".png" } }.c_str());
 		CCLOG("texture: %s", std::string{ "uiComponent/unit_image_" + std::string{ (char)('0' + i) } +std::string{ ".png" } }.c_str());
-		auto tmpSprite = Sprite::create(std::string{ "uiComponent/unit" + std::string{ (char)('0' + i) } +std::string{ ".png" } });
+		auto texture = Director::getInstance()->getTextureCache()->addImage(std::string{ "uiComponent/unit" + std::string{ (char)('0' + i) } +std::string{ ".png" } });
+		mUnitTexture.push_back(texture);
+		//auto tmpSprite = Sprite::create(std::string{ "uiComponent/unit" + std::string{ (char)('0' + i) } +std::string{ ".png" } });
+		auto tmpSprite = Sprite::createWithTexture(texture);
 		auto tmpTexture = Director::getInstance()->getTextureCache()->addImage(std::string{ "uiComponent/unit_image_" + std::string{ (char)('0' + i) } +std::string{ ".png" } });
 		mItemsList.push_back(
 			ItemInCampStruct{
@@ -172,7 +175,7 @@ void UnitCampLayer::setUnitResourceAndProperty(UnitEnum unit, const ResourcesStr
 
 void UnitCampLayer::onMouseMoved(Vec2 mousePoint)
 {
-	CCLOG("called!!");
+	//CCLOG("called!!");
 	for (auto item : mItemsList)
 	{
 		Point point = Point(item.sprite->boundingBox().getMinX(), item.sprite->boundingBox().getMinY());
@@ -197,7 +200,7 @@ void UnitCampLayer::onMouseMoved(Vec2 mousePoint)
 				mUnitName->setOpacity(255);
 				mUnitIntroduction->setOpacity(255);
 				mUnitResourcesAndProperty->setOpacity(255);
-				CCLOG("in onMouseMoved: unlock");
+				//CCLOG("in onMouseMoved: unlock");
 				//show big image
 				mUnitImage->setTexture(item.texture);
 				mUnitName->setString(item.name);
@@ -219,7 +222,7 @@ void UnitCampLayer::onMouseMoved(Vec2 mousePoint)
 			}
 			else
 			{
-				CCLOG("in onMouseMoved: locked");
+				//CCLOG("in onMouseMoved: locked");
 				//big close Image
 				//mUnitImage->setTexture(mCloseTexture);
 				mUnitImage->setOpacity(0);

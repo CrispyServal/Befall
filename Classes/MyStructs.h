@@ -68,6 +68,26 @@ struct ResourcesStruct
 	int numRandomResource;
 	int numProductivity;
 	int numResearchLevel;
+	ResourcesStruct operator += (const ResourcesStruct & another)
+	{
+		this->numFixedResource += another.numFixedResource;
+		this->numRandomResource += another.numRandomResource;
+		//this->numProductivity += another.numProductivity;
+		//this->numResearchLevel += another.numResearchLevel;
+		return (*this);
+	}
+	ResourcesStruct operator -= (const ResourcesStruct & another)
+	{
+		this->numFixedResource -= another.numFixedResource;
+		this->numRandomResource -= another.numRandomResource;
+		//this->numProductivity -= another.numProductivity;
+		//this->numResearchLevel -= another.numResearchLevel;
+		return (*this);
+	}
+	bool operator >= (const ResourcesStruct & another)
+	{
+		return ( (this->numFixedResource >= another.numFixedResource) && (this->numRandomResource >= another.numRandomResource)/* && (this->numProductivity >= another.numProductivity) && (this->numResearchLevel >= another.numResearchLevel)*/ );
+	}
 };
 
 struct Unit

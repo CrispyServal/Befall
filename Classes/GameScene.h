@@ -71,6 +71,7 @@ struct keyStruct
 
 const std::map<std::string, UnitEnum> mUnitStringEnumMap =
 {
+	{ "farmer", farmer},
 	{ "shortRangeUnit1", shortrangeunit1 },
 	{ "shortRangeUnit2", shortrangeunit2 },
 	{ "longRangeUnit1", longrangeunit1 },
@@ -148,6 +149,8 @@ private:
 	Label * mResearchLabel;
 	Label * mPopulationLabel;
 	void initResourcesIcons();
+	void refreshResourcesIcons(const ResourcesStruct & resources);
+	void refreshPopulationIcons(const int & population);
 	//a menu
 	Node * mGameMenu;
 	void initGameMenu();
@@ -162,12 +165,19 @@ private:
 	Sprite * mUnitCampLayerButton;
 	buttonTextureStruct mUnitCampLayerButtonTexture;
 	void checkTechAndUnitButton();
+	//waiting ding to finish resources
+	Sprite * mTechMakingButton;
+	buttonTextureStruct mTechMakingButtonTexture;
+	Sprite * mUnitMakingButton;
+	buttonTextureStruct mUnitMakingButtonTexture;
+	void checkMakingButton();
+
 	InfoMapLayer * mInfoMapLayer;
 	MiniMapLayer * mMiniMapLayer;
 	void refreshMiniMap();
 	//factory
-	UnitFactory mUnitFactory;
-	TechFactory mTechFactory;
+	UnitFactory mUnitFactory[2];
+	TechFactory mTechFactory[2];
 	//when connecting or listening, display juFlower or something else
 	Layer * mWelcomeLayer;
 	Layer * mTouchLayer;
@@ -233,18 +243,24 @@ private:
 	GameStateStruct mGameState[2];
 	//spawn
 	MyPointStruct mSpawn[2];
+	//population
+	int mPopulation[2];
 
-	//单边
+	const int mPopulationLimit = 100;
+
+	//单边（误
 
 	//resourses
-	ResourcesStruct mResources;
+	ResourcesStruct mResources[2];
 	//effective resoures
 	//e.g. productivity += numFarmer * (Farmer.numAttack + mExtraResources);
 	ResourcesStruct mExtraResources;
 	//effeciency of collection
 	ResourcesStruct mCollectionEffeciency;
 	//sign whether it is my turn
-	bool mMyTurn;
+	bool mBlueTurn;
+	//if false, cannot do any thing about data
+	bool mOperateEnable;
 	//method
 	//初始静态数据在这里面。此函数初始化双方的GameState。可能会读字典。
 	void initGameState();
@@ -255,6 +271,9 @@ private:
 	void setTechInfluence(const int & flag, TechEnum tech);
 	void unlockTechTree(const int & flag, TechEnum tech);
 	void refreshTechTree(const int & flag);
+
+	//
+	void refreshUnitCamp(const int & flag);
 };
 
 #endif // !GAMESCENE_H
@@ -267,7 +286,6 @@ private:
 		auto err = WSAGetLastError();
 		if (err != WSAEWOULDBLOCK)
 		{
-			CCLOG("he GGed so fast!!!");
 			mDirector->popScene();
 		}
 	}

@@ -24,7 +24,7 @@ public:
 	//这个不用动
 	bool blockClick()
 	{
-		return true;
+		return false;
 	}
 	//改变小地图中的视野框的位置
 	//如果视野框与边框相切，函数应当不再改变位置防止出界。
