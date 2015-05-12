@@ -39,14 +39,14 @@ bool TechTreeLayer::init()
 	mClickAreaMap[(TechEnum)0]->setPosition(width / 2, height / 2);
 	mClickAreaMap[(TechEnum)1]->setPosition(mClickAreaMap[(TechEnum)0]->getPositionX(), mClickAreaMap[(TechEnum)0]->getPositionY() - directLength);
 	mClickAreaMap[(TechEnum)2]->setPosition(mClickAreaMap[(TechEnum)1]->getPositionX(), mClickAreaMap[(TechEnum)1]->getPositionY() - directLength);
-	mClickAreaMap[(TechEnum)3]->setPosition(mClickAreaMap[(TechEnum)2]->getPositionX(), mClickAreaMap[(TechEnum)2]->getPositionY() - directLength);
+	mClickAreaMap[(TechEnum)3]->setPosition(mClickAreaMap[(TechEnum)2]->getPositionX() - triLength, mClickAreaMap[(TechEnum)2]->getPositionY() - halfLength);
 	mClickAreaMap[(TechEnum)4]->setPosition(mClickAreaMap[(TechEnum)0]->getPositionX() + triLength, mClickAreaMap[(TechEnum)0]->getPositionY() - halfLength);
 	mClickAreaMap[(TechEnum)5]->setPosition(mClickAreaMap[(TechEnum)4]->getPositionX(), mClickAreaMap[(TechEnum)4]->getPositionY() - directLength);
 	mClickAreaMap[(TechEnum)6]->setPosition(mClickAreaMap[(TechEnum)0]->getPositionX() - triLength, mClickAreaMap[(TechEnum)0]->getPositionY() + halfLength);
 	mClickAreaMap[(TechEnum)7]->setPosition(mClickAreaMap[(TechEnum)6]->getPositionX(), mClickAreaMap[(TechEnum)6]->getPositionY() + directLength);
 	mClickAreaMap[(TechEnum)9]->setPosition(mClickAreaMap[(TechEnum)0]->getPositionX(), mClickAreaMap[(TechEnum)0]->getPositionY() + directLength);
 	mClickAreaMap[(TechEnum)10]->setPosition(mClickAreaMap[(TechEnum)9]->getPositionX(), mClickAreaMap[(TechEnum)9]->getPositionY() + directLength);
-	mClickAreaMap[(TechEnum)11]->setPosition(mClickAreaMap[(TechEnum)10]->getPositionX(), mClickAreaMap[(TechEnum)10]->getPositionY() + directLength);
+	mClickAreaMap[(TechEnum)11]->setPosition(mClickAreaMap[(TechEnum)10]->getPositionX() + triLength, mClickAreaMap[(TechEnum)10]->getPositionY() + halfLength);
 	mClickAreaMap[(TechEnum)12]->setPosition(mClickAreaMap[(TechEnum)0]->getPositionX() + triLength, mClickAreaMap[(TechEnum)0]->getPositionY() + halfLength);
 	mClickAreaMap[(TechEnum)13]->setPosition(mClickAreaMap[(TechEnum)12]->getPositionX(), mClickAreaMap[(TechEnum)12]->getPositionY() + directLength);
 	mClickAreaMap[(TechEnum)14]->setPosition(mClickAreaMap[(TechEnum)13]->getPositionX() + triLength, mClickAreaMap[(TechEnum)13]->getPositionY() + halfLength);
