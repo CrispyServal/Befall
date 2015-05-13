@@ -271,7 +271,7 @@ private:
 	std::vector<PathNodeStruct> getPathTree(MyPointStruct point, int range, const std::set<MyPointStruct> & barrier);
 	std::vector<MyPointStruct> getPath(const std::vector<PathNodeStruct> & pathTree, MyPointStruct pointTo);
 	//unit moving
-	void moveUnit(std::vector<MyPointStruct> path);
+	void moveUnit(std::vector<MyPointStruct> path, int turnFlag);
 
 	//Tech Influence
 	void setTechInfluence(const int & flag, TechEnum tech);
