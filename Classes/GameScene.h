@@ -270,6 +270,8 @@ private:
 	std::vector<MyPointStruct> getNearPoint(const MyPointStruct & point);
 	std::vector<PathNodeStruct> getPathTree(MyPointStruct point, int range, const std::set<MyPointStruct> & barrier);
 	std::vector<MyPointStruct> getPath(const std::vector<PathNodeStruct> & pathTree, MyPointStruct pointTo);
+	//unit moving
+	void moveUnit(std::vector<MyPointStruct> path);
 
 	//Tech Influence
 	void setTechInfluence(const int & flag, TechEnum tech);

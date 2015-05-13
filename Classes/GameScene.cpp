@@ -453,6 +453,86 @@ void GameScene::switchTurn()
 	}
 }
 
+//need to be tested
+void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
+{
+	if (path.size() < 2)
+	{
+		CCLOG("invalid path");
+		return;
+	}
+	bool oeBak = mOperateEnable;
+	mOperateEnable = false;
+	const float duration = 0.3;
+	float disX = mTiledMapLayer->getTileSize().width;
+	float disY = mTiledMapLayer->getTileSize().height;
+	//actions
+	auto moveUp = MoveBy::create(duration, Vec2(disY, 0));
+	auto moveDown = MoveBy::create(duration, Vec2(- disY, 0));
+	auto moveLeft = MoveBy::create(duration, Vec2(- disX, 0));
+	auto moveRight = MoveBy::create(duration, Vec2(disX, 0));
+	auto rotateRight = RotateBy::create(0, 90);
+	auto rotateLeft = RotateBy::create(0, -90);
+	//get unit sprite;
+	Sprite * unit;
+	bool found = false;
+	for (auto & i : mGameState[turnFlag].unitMap)
+	{
+		if (i.first == path[0])
+		{
+			unit = i.second.sprite;
+			found = true;
+		}
+	}
+	//error
+	if (!found)
+	{
+		CCLOG("error, unit not found!");
+		return;
+	}
+	//final position in Node
+	Vec2 finalP = mTiledMapLayer->floatNodeCoorForPosition(path[path.size() - 1]);
+	//sequence vector
+	Vector<FiniteTimeAction*> actionVector;
+	for (int i = 0; i < path.size() - 1; ++i)
+	{
+		auto & thisP = path[i];
+		auto & nextP = path[i + 1];
+		//check direction
+		if ( (thisP.x == nextP.x) && (thisP.y < nextP.y) )
+		{
+			//move up
+			actionVector.pushBack(moveUp);
+			continue;
+		}
+		else if ((thisP.x == nextP.x) && (thisP.y > nextP.y))
+		{
+			//move down
+			actionVector.pushBack(moveDown);
+			continue;
+		}
+		else if ((thisP.y == nextP.y) && (thisP.x > nextP.x))
+		{
+			//move left
+			actionVector.pushBack(moveLeft);
+			continue;
+		}
+		else if ((thisP.y == nextP.y) && (thisP.x < nextP.x))
+		{
+			//move left
+			actionVector.pushBack(moveRight);
+			continue;
+		}
+	}
+	//sequence
+	auto fixPosition = CallFunc::create([&]()->void{unit->setPosition(finalP); });
+	auto unLockOE = CallFunc::create([&]()->void{mOperateEnable = true; });
+	actionVector.pushBack(fixPosition);
+	actionVector.pushBack(unLockOE);
+	auto sequence = Sequence::create(actionVector);
+	unit->runAction(sequence);
+}
+
 void GameScene::backToMainScene(Ref * sender)
 {
 	mDirector->popScene();
