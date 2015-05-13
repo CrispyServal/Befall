@@ -118,13 +118,6 @@ bool GameScene::init()
 	//init MapSize
 	mMapSize = mTiledMapLayer->getMapSize();
 	addChild(mTiledMapLayer,1);
-	//gray bar
-	mGrayBar = DrawNode::create();
-	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBar->drawSolidRect(Vec2(mWinWidth - 250, 50), Vec2(mWinWidth,240+10),Color4F(0.607, 0.607, 0.607, 0.75));
-	addChild(mGrayBar, 3);
 	//resources icon
 	initResourcesIcons();
 	//menu
@@ -163,9 +156,18 @@ bool GameScene::init()
 	addChild(mInfoMapLayer, 5);
 	//miniMapLayer
 	mMiniMapLayer = MiniMapLayer::create();
+	float miniPS = 8;
+	mMiniMapLayer->setPointSize(miniPS);
 	mMiniMapLayer->setMapSize(mTiledMapLayer->getMapSize().width, mTiledMapLayer->getMapSize().height);
-	mMiniMapLayer->setPosition(Vec2(mWinWidth / 2 - 100 - 20,0 - mWinHeight / 2 + 56.25 + 70));
+	mMiniMapLayer->setPosition(Vec2((mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS) / 2, (- mWinHeight +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS ) / 2));
 	addChild(mMiniMapLayer, 5);
+	//gray bar
+	mGrayBar = DrawNode::create();
+	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), Vec2(mWinWidth,50 +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ),Color4F(0.607, 0.607, 0.607, 0.75));
+	addChild(mGrayBar, 3);
 	//unitcamplayer
 	mUnitCampLayer = UnitCampLayer::create();
 	//mUnitCampLayer->setPosition(0, 50);

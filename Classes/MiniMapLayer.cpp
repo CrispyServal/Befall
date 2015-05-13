@@ -75,7 +75,7 @@ bool MiniMapLayer::containPoint(Vec2 mousePoint)// need  to update
 	float distenceX = ( mSizeX * pointSize + mViewBoxSizeX ) / 2.0;
 	float distenceY = ( mSizeY * pointSize + mViewBoxSizeY ) / 2.0;
 	Point wpoint = mBg->getParent()->convertToWorldSpace(mBg->getPosition());
-	if (abs(wpoint.x - mousePoint.x) <= distenceX && abs(wpoint.y-mousePoint.y) <= distenceY)
+	if (abs(wpoint.x - mousePoint.x) <= distenceY && abs(wpoint.y-mousePoint.y) <= distenceY)
 		return true;
 	else
 		return false;
@@ -85,7 +85,7 @@ bool MiniMapLayer::containPoint(Vec2 mousePoint)// need  to update
 //如果视野框与边框相切，函数应当不再改变位置防止出界。
 void MiniMapLayer::moveView(Vec2 mousePoint)
 {
-	float maxX = ( mSizeX * pointSize ) / 2.0;
+	float maxX = ( mSizeX * pointSize + mViewBoxSizeY - mViewBoxSizeX) / 2.0;
 	float maxY = ( mSizeY * pointSize ) / 2.0;
 	Point wBgpoint = mBg->getParent()->convertToWorldSpace(mBg->getPosition());	
 	Point wVBpoint = mViewBox->getParent()->convertToWorldSpace(mViewBox->getPosition());

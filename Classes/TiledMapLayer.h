@@ -26,6 +26,11 @@ public:
 	Size getMapSizeF();
 	//get number of tiles
 	Size getMapSize();
+	//get tile size
+	Size getTileSize()
+	{
+		return mTiledMap->getTileSize();
+	}
 	//set all tile to gid1
 	void cleanUp();
 	void setTileColor(const MyPointStruct & point, int tileID);
