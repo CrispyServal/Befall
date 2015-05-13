@@ -32,6 +32,7 @@ public:
 	//返回视野中心在小地图中的位置的比例，数值在[0+,1-]，用于外部地图把视野设置到对应位置
 	//由于视野框在moveView函数中维护，且不会让视野框出界，因此返回的值范围不会到[0,1]
 	Vec2 getViewPosition(Vec2 mousePoint);
+	void setViewPosition(Vec2 rate);
 	//传入4个集合，刷新小地图中的小方块，即重画一遍
 	void refresh(
 		std::set<MyPointStruct> unitSet0,

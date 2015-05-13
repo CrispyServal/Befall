@@ -142,6 +142,15 @@ Vec2 MiniMapLayer::getViewPosition(Vec2 mousePoint)
 	scalar.y = DirectY / ( mSizeY * pointSize )+ 0.5;
 	return scalar;
 }
+
+void MiniMapLayer::setViewPosition(Vec2 rate)
+{
+	Vec2 newPosition;
+	newPosition.x = mBg->getPositionX() + (rate.x - 0.5) * (mSizeX * pointSize);
+	newPosition.y = mBg->getPositionY() + (rate.y - 0.5) * (mSizeY * pointSize);
+	mViewBox->setPosition(newPosition);
+}
+
 //传入4个集合，刷新小地图中的小方块，即重画一遍
 void MiniMapLayer::refresh(
 	std::set<MyPointStruct> unitSet0,//blue
