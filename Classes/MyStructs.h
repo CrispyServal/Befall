@@ -11,7 +11,11 @@ struct MyPointStruct
 {
 	int x;
 	int y;
+	
 };
+bool operator < (const MyPointStruct & thisOne, const MyPointStruct & another);
+bool operator == (const MyPointStruct & thisOne, const MyPointStruct & another);
+bool operator != (const MyPointStruct & thisOne, const MyPointStruct & another);
 
 struct InfluenceStruct
 {
@@ -20,7 +24,6 @@ struct InfluenceStruct
 	int value;
 };
 
-bool operator < (const MyPointStruct & thisOne, const MyPointStruct & another);
 
 //use this in vector
 struct PathNodeStruct
@@ -29,6 +32,8 @@ struct PathNodeStruct
 	int indexParent;
 	int stepLeft;
 };
+bool operator == (const PathNodeStruct & thisOne, const PathNodeStruct & another);
+bool operator != (const PathNodeStruct & thisOne, const PathNodeStruct & another);
 
 /*
 bool operator < (const PathNodeStruct & thisOne, const PathNodeStruct & another)

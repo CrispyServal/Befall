@@ -85,6 +85,34 @@ std::vector<PathNodeStruct> GameScene::getPathTree(MyPointStruct point, int rang
 	return result;
 }
 
+std::vector<MyPointStruct> GameScene::getPath(const std::vector<PathNodeStruct> & pathTree, MyPointStruct pointTo)
+{
+	std::vector<MyPointStruct> result;
+	//check
+	bool findT = false;
+	PathNodeStruct opNode;
+	for (const auto & node : pathTree)
+	{
+		if (node.point == pointTo)
+		{
+			findT = true;
+			opNode = node;
+		}
+	}
+	if (!findT)
+	{
+		//error
+		return result;
+	}
+	//
+	while (opNode != pathTree[opNode.indexParent])
+	{
+		result.insert(result.begin(), opNode.point);
+		opNode = pathTree[opNode.indexParent];
+	}
+	return result;
+}
+
 bool GameScene::init()
 {
 	if (!Scene::init())
