@@ -197,6 +197,10 @@ bool GameScene::init()
 	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBar->drawSolidRect(Vec2(mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), Vec2(mWinWidth,50 +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ),Color4F(0.607, 0.607, 0.607, 0.75));
 	addChild(mGrayBar, 3);
+	//mTurnRect
+	mTurnRect = DrawNode::create();//yyp
+	mTurnRect->drawSolidRect(Vec2(mWinWidth - 45, mWinHeight - 45), Vec2(mWinWidth, mWinHeight), Color4F(0, 0, 1, 0.8));
+	addChild(mTurnRect, 8);
 	//resources icon
 	initResourcesIcons();
 	//unitcamplayer
@@ -450,6 +454,15 @@ void GameScene::switchTurn()
 		{
 			mTimer->shutDown();
 		}
+	}
+	mTurnRect->clear();//yyp
+	if (mBlueTurn)
+	{
+		mTurnRect->drawSolidRect(Vec2(mWinWidth - 45, mWinHeight - 45), Vec2(mWinWidth, mWinHeight), Color4F(0, 0, 1, 0.8));
+	}
+	else
+	{
+		mTurnRect->drawSolidRect(Vec2(mWinWidth - 45, mWinHeight - 45), Vec2(mWinWidth, mWinHeight), Color4F(1, 0, 0, 0.8));
 	}
 }
 
