@@ -118,8 +118,6 @@ bool GameScene::init()
 	//init MapSize
 	mMapSize = mTiledMapLayer->getMapSize();
 	addChild(mTiledMapLayer,1);
-	//resources icon
-	initResourcesIcons();
 	//menu
 	initGameMenu();
 	auto startMenu = Menu::create(MenuItemLabel::create( 
@@ -168,6 +166,8 @@ bool GameScene::init()
 	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBar->drawSolidRect(Vec2(mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), Vec2(mWinWidth,50 +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ),Color4F(0.607, 0.607, 0.607, 0.75));
 	addChild(mGrayBar, 3);
+	//resources icon
+	initResourcesIcons();
 	//unitcamplayer
 	mUnitCampLayer = UnitCampLayer::create();
 	//mUnitCampLayer->setPosition(0, 50);
@@ -337,6 +337,9 @@ void GameScene::update(float delta)
 		mTiledMapLayer->setPosition(mapP.x - moveDis, mapP.y);
 		mapP = mTiledMapLayer->getPosition();
 	}
+	Vec2 position = Vec2((mWinWidth / 2 - mTiledMapLayer->getPosition().x) / mTiledMapLayer->getMapSizeF().width,(mWinHeight / 2 - mTiledMapLayer->getPosition().y) / mTiledMapLayer->getMapSizeF().height);
+	//setViewPosition
+	mMiniMapLayer->setViewPosition(position);
 
 	//timer
 	mTimer->refresh(delta);
@@ -353,13 +356,15 @@ void GameScene::switchTurn()
 	//start turn
 	if (mGameMode == vsPlayer)
 	{
-		//refresh 2 layer display from gamestate
-		//start a new turn
 		int turnF = mBlueTurn ? 0 : 1;
+		CCLOG("vsPlayer,tF: %d", turnF);
 		refreshTechTree(turnF);
 		refreshUnitCamp(turnF);
+		refreshResourcesIcons(turnF);
 		mUnitFactory[turnF].refresh(mResources[turnF].numProductivity);
 		mTimer->start();
+		//refresh 2 layer display from gamestate
+		//start a new turn
 	}
 	else if (mGameMode == server || mGameMode == client)
 	{
@@ -373,7 +378,21 @@ void GameScene::switchTurn()
 			}
 		}
 		//set OE
-		mOperateEnable = mBlueTurn;
+		int tF = -1;
+		if (mGameMode == server)
+		{
+			mOperateEnable = mBlueTurn;
+			tF = 0;
+		}
+		else if (mGameMode == client)
+		{
+			mOperateEnable = !mBlueTurn;
+			tF = 1;
+		}
+		refreshTechTree(tF);
+		refreshUnitCamp(tF);
+		refreshResourcesIcons(tF);
+		mUnitFactory[tF].refresh(mResources[tF].numProductivity);
 		//timer
 		if (mOperateEnable)
 		{
@@ -573,7 +592,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 								mResources[tF] -= mUnitInitDataMap[unit].consumption;
 								//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
 								mUnitFactory[tF].addNewUnit(unit);
-								refreshResourcesIcons(mResources[tF]);
+								refreshResourcesIcons(tF);
 							}
 						}
 					}
@@ -589,7 +608,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 							CCLOG("after minus: r.F: %d", mResources[tF].numFixedResource);
 							//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
 							mUnitFactory[tF].addNewUnit(unit);
-							refreshResourcesIcons(mResources[tF]);
+							refreshResourcesIcons(tF);
 						}
 					}
 					break;
@@ -754,22 +773,29 @@ void GameScene::refreshUnitCamp(const int & flag)
 	}
 }
 
-void GameScene::refreshResourcesIcons(const ResourcesStruct & resources)
+void GameScene::refreshResourcesIcons(const int & turnFlag)
+//void GameScene::refreshResourcesIcons(const ResourcesStruct & resources)
 {
+	auto resources = mResources[turnFlag];
 	std::stringstream ss;
 	ss << resources.numFixedResource;
 	CCLOG("F: %s", ss.str().c_str());
 	mFixedResourceLabel->setString(ss.str());
 	ss.clear();
+	ss.str("");
 	ss << resources.numRandomResource;
+	CCLOG("R: %s", ss.str().c_str());
 	mRandomResourceLabel->setString(ss.str());
 	ss.clear();
+	ss.str("");
 	ss << resources.numProductivity;
 	mProductivityLabel->setString(ss.str());
 	ss.clear();
+	ss.str("");
 	ss << resources.numResearchLevel;
 	mResearchLabel->setString(ss.str());
 }
+
 void GameScene::refreshPopulationIcons(const int & population)
 {
 	std::stringstream ss;

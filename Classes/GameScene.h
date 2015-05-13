@@ -149,7 +149,7 @@ private:
 	Label * mResearchLabel;
 	Label * mPopulationLabel;
 	void initResourcesIcons();
-	void refreshResourcesIcons(const ResourcesStruct & resources);
+	void refreshResourcesIcons(const int & turnFlag);
 	void refreshPopulationIcons(const int & population);
 	//a menu
 	Node * mGameMenu;
