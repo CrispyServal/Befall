@@ -48,8 +48,6 @@ public:
 	void setUnlocked(UnitEnum unit,bool unlock);
 	//set resource and property
 	void setUnitResourceAndProperty(UnitEnum unit, const ResourcesStruct & unitResources, const UnitPropertyStruct & unitProperty);
-	//每个单位的数据存储
-	std::vector<UnitCamp::ItemInCampStruct> mItemsList;
 
 	Texture2D * getUnitTexture(UnitEnum unit)
 	{
@@ -62,7 +60,10 @@ public:
 			CCLOG("error: invalid unit");
 		}
 	}
+	const ResourcesStruct getUnitResources(UnitEnum unit) const;
 private:
+	//每个单位的数据存储
+	std::vector<UnitCamp::ItemInCampStruct> mItemsList;
 	std::string UnitCampLayer::getDicValue(char * str);
 	Dictionary * mDictionary;
 	std::vector<UnitEnum> mUnitsList;

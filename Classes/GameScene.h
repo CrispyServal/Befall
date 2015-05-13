@@ -167,10 +167,11 @@ private:
 	void checkTechAndUnitButton();
 	//waiting ding to finish resources
 	Sprite * mTechMakingButton;
-	buttonTextureStruct mTechMakingButtonTexture;
+	Texture2D * mTechMakingButtonTexture;
 	Sprite * mUnitMakingButton;
-	buttonTextureStruct mUnitMakingButtonTexture;
-	void checkMakingButton();
+	Texture2D * mUnitMakingButtonTexture;
+	void checkMakingButtonOnMouseMoved();
+	Texture2D * mMakingCancelTexture;
 
 	InfoMapLayer * mInfoMapLayer;
 	MiniMapLayer * mMiniMapLayer;
@@ -184,18 +185,20 @@ private:
 	EventListenerMouse * mMouseListener;
 	EventListenerTouchOneByOne * mTouchListener;
 	EventListenerKeyboard * mKeyboardListener;
+	//distance per press for map
 	const float moveDis = 20;
 	keyStruct mKeyStruct;
-	//methods----------------------------------------------------------
+
 	void initWelcomeLayer();
 	void initYypNet();
 	void initResourceTexture();
 	void initUnitTexture();
-	//updates
+	//net
 	void acceptConnect(float delta);
 	void startConnecting(float delta);
+	//start
 	void startGame();
-	//1、检查计时器是否结束
+	//update
 	void update(float delta);
 	void NetUpdate(float delta);
 

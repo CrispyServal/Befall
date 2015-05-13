@@ -266,6 +266,19 @@ const UnitEnum UnitCampLayer::getunitMouseOn()
 	return mNowItem.unit;
 }
 
+const ResourcesStruct UnitCampLayer::getUnitResources(UnitEnum unit) const
+{
+	for (const auto & item : mItemsList)
+	{
+		if (item.unit == unit)
+		{
+			return item.resources;
+		}
+	}
+	//error
+	return ResourcesStruct{ 0, 0, 0, 0 };
+}
+
 void UnitCampLayer::setUnlocked(UnitEnum unit, bool unlock)
 {
 	for (auto & item : mItemsList)

@@ -24,20 +24,22 @@ public:
 	void addNewUnit(UnitEnum unit);
 	//
 	bool unitExistence();
+	//set Time
+	void setUnitTime(UnitEnum unit, int time);
 private:
 	//等待中队列
 	UnitEnum mBuldingUnit;
 	//建造中的剩余量
 	int mTimer;
 	bool mUnitExistence;
-	map<UnitEnum, int> mUnitTimeTable = { { 
-			{ farmer, 10 }, 
-			{ longrangeunit1, 10 },
-			{ longrangeunit2, 10 },
-			{ longrangeunit3, 10 },
-			{ shortrangeunit1, 10},
-			{ shortrangeunit2, 10},
-			} };
+	map<UnitEnum, int> mUnitTimeTable = { {
+		{ farmer, 10 },
+		{ longrangeunit1, 10 },
+		{ longrangeunit2, 10 },
+		{ longrangeunit3, 10 },
+		{ shortrangeunit1, 10 },
+		{ shortrangeunit2, 10 },
+	} };
 };
 
 #endif // !UNITFACTORY_H

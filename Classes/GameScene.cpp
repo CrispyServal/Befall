@@ -85,6 +85,7 @@ std::vector<PathNodeStruct> GameScene::getPathTree(MyPointStruct point, int rang
 	return result;
 }
 
+//need to be tested
 std::vector<MyPointStruct> GameScene::getPath(const std::vector<PathNodeStruct> & pathTree, MyPointStruct pointTo)
 {
 	std::vector<MyPointStruct> result;
@@ -136,6 +137,8 @@ bool GameScene::init()
 	//texture
 	initResourceTexture();
 	initUnitTexture();
+	//making cancel texture
+	mMakingCancelTexture = mDirector->getTextureCache()->addImage("icon_close_circle.png");
 	//srand
 	srand(static_cast<unsigned>(time(NULL)));
 	//gamemode
@@ -228,13 +231,17 @@ bool GameScene::init()
 	mUnitCampLayerButton->setScale(0.9);
 	addChild(mUnitCampLayerButton, 8);
 	//2 working button
-	mTechMakingButton = Sprite::createWithTexture(mTechTreeLayer->getTechTexture(techroot));
+	mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(techroot);
+	mTechMakingButton = Sprite::createWithTexture(mTechMakingButtonTexture);
 	mTechMakingButton->setScale(0.8);
 	mTechMakingButton->setPosition(mTechTreeLayerButton->getPosition().x - 2 * (mTechMakingButton->boundingBox().getMaxX() - mTechMakingButton->boundingBox().getMinX()), mTechTreeLayerButton->getPosition().y);
+	mTechMakingButton->setVisible(false);
 	addChild(mTechMakingButton, 8);
-	mUnitMakingButton = Sprite::createWithTexture(mUnitCampLayer->getUnitTexture(farmer));
+	mUnitMakingButtonTexture = mUnitCampLayer->getUnitTexture(farmer);
+	mUnitMakingButton = Sprite::createWithTexture(mUnitMakingButtonTexture);
 	mUnitMakingButton->setScale(0.8);
 	mUnitMakingButton->setPosition(mUnitCampLayerButton->getPosition().x + 2 * (mUnitMakingButton->boundingBox().getMaxX() - mUnitMakingButton->boundingBox().getMinX()), mUnitCampLayerButton->getPosition().y);
+	mUnitMakingButton->setVisible(false);
 	addChild(mUnitMakingButton, 8);
 	
 	if (mGameMode == vsPlayer)
@@ -381,15 +388,22 @@ void GameScene::switchTurn()
 {
 	//end turn
 	mBlueTurn = !mBlueTurn;
+	CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
 	//start turn
 	if (mGameMode == vsPlayer)
 	{
-		int turnF = mBlueTurn ? 0 : 1;
-		CCLOG("vsPlayer,tF: %d", turnF);
-		refreshTechTree(turnF);
-		refreshUnitCamp(turnF);
-		refreshResourcesIcons(turnF);
-		mUnitFactory[turnF].refresh(mResources[turnF].numProductivity);
+		int tF = mBlueTurn ? 0 : 1;
+		CCLOG("vsPlayer,tF: %d", tF);
+		refreshTechTree(tF);
+		refreshUnitCamp(tF);
+		refreshResourcesIcons(tF);
+		mUnitFactory[tF].refresh(mResources[tF].numProductivity);
+		if (mUnitFactory[tF].finished())
+		{
+			//getUnit
+			auto newUnit = mUnitFactory[tF].getFinishedUnit();
+			CCLOG("finished! newUnit: %d", newUnit);
+		}
 		mTimer->start();
 		//refresh 2 layer display from gamestate
 		//start a new turn
@@ -421,6 +435,12 @@ void GameScene::switchTurn()
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
 		mUnitFactory[tF].refresh(mResources[tF].numProductivity);
+		if (mUnitFactory[tF].finished())
+		{
+			//getUnit
+			auto newUnit = mUnitFactory[tF].getFinishedUnit();
+			//CCLOG("finished! newUnit: %d", newUnit);
+		}
 		//timer
 		if (mOperateEnable)
 		{
@@ -614,29 +634,34 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 						int tF = (mGameMode == server) ? 0 : 1;
 						if (mOperateEnable)
 						{
-							//add to factory
-							if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
+							if (!mUnitFactory[tF].unitExistence())
 							{
-								mResources[tF] -= mUnitInitDataMap[unit].consumption;
-								//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
-								mUnitFactory[tF].addNewUnit(unit);
-								refreshResourcesIcons(tF);
+								//add to factory
+								if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
+								{
+									mResources[tF] -= mUnitInitDataMap[unit].consumption;
+									//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
+									mUnitFactory[tF].addNewUnit(unit);
+									mUnitMakingButton->setTexture(mUnitCampLayer->getUnitTexture(unit));
+									refreshResourcesIcons(tF);
+								}
 							}
 						}
 					}
 					else if (mGameMode == vsPlayer)
 					{
 						int tF = mBlueTurn ? 0 : 1;
-						CCLOG("tF: %d,now popu: %d,popuL: %d", tF,mPopulation[tF],mPopulationLimit);
-						CCLOG("%d", mResources[tF] >= mUnitInitDataMap[unit].consumption);
-						if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
+						if (!mUnitFactory[tF].unitExistence())
 						{
-							CCLOG("r.F: %d", mResources[tF].numFixedResource);
-							mResources[tF] -= mUnitInitDataMap[unit].consumption;
-							CCLOG("after minus: r.F: %d", mResources[tF].numFixedResource);
-							//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
-							mUnitFactory[tF].addNewUnit(unit);
-							refreshResourcesIcons(tF);
+							if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
+							{
+								mResources[tF] -= mUnitInitDataMap[unit].consumption;
+								//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
+								mUnitFactory[tF].addNewUnit(unit);
+								mUnitMakingButton->setTexture(mUnitCampLayer->getUnitTexture(unit));
+								CCLOG("vsPlayer; added new unit!");
+								refreshResourcesIcons(tF);
+							}
 						}
 					}
 					break;
@@ -921,6 +946,33 @@ void GameScene::refreshMiniMap()
 	mMiniMapLayer->refresh(unitSet[0], unitSet[1], fixedRSet, randomRSet);
 }
 
+void GameScene::checkMakingButtonOnMouseMoved()
+{
+	if (mUnitMakingButton->isVisible())
+	{
+		//unit
+		if (mUnitMakingButton->boundingBox().containsPoint(mMouseCoordinate))
+		{
+			mUnitMakingButton->setTexture(mMakingCancelTexture);
+		}
+		else
+		{
+			mUnitMakingButton->setTexture(mUnitMakingButtonTexture);
+		}
+	}
+	if (mTechMakingButton->isVisible())
+	{
+		if (mTechMakingButton->boundingBox().containsPoint(mMouseCoordinate))
+		{
+			mTechMakingButton->setTexture(mMakingCancelTexture);
+		}
+		else
+		{
+			mTechMakingButton->setTexture(mTechMakingButtonTexture);
+		}
+	}
+}
+
 void GameScene::checkBackToMainSceneItemOnMouseMoved()
 {
 	//cancel's scale effect
@@ -953,6 +1005,7 @@ void GameScene::checkLayersOnMouseMoved()
 	do
 	{
 		//UI(timer,buttons,minimap)
+		checkMakingButtonOnMouseMoved();
 		//Tech/Unit layer
 		if (mUnitCampLayer->isVisible())
 		{
@@ -1052,6 +1105,16 @@ void GameScene::initGameState()
 	};
 	gameState.techTree.unlock(techroot);
 	mGameState[0] = mGameState[1] = gameState;
+	//initUnitFactory
+	for (int i = 0; i < 2; ++i)
+	{
+		mUnitFactory[i].setUnitTime(farmer,mUnitCampLayer->getUnitResources(farmer).numProductivity);
+		mUnitFactory[i].setUnitTime(shortrangeunit1,mUnitCampLayer->getUnitResources(shortrangeunit1).numProductivity);
+		mUnitFactory[i].setUnitTime(shortrangeunit2,mUnitCampLayer->getUnitResources(shortrangeunit2).numProductivity);
+		mUnitFactory[i].setUnitTime(longrangeunit1,mUnitCampLayer->getUnitResources(longrangeunit1).numProductivity);
+		mUnitFactory[i].setUnitTime(longrangeunit2,mUnitCampLayer->getUnitResources(longrangeunit2).numProductivity);
+		mUnitFactory[i].setUnitTime(longrangeunit3,mUnitCampLayer->getUnitResources(longrangeunit3).numProductivity);
+	}
 }
 
 void GameScene::initResourceMap()
