@@ -18,6 +18,11 @@ public:
 	bool finished();
 	//返回当前建造的单位
 	UnitEnum getFinishedUnit();
+	//get making unit
+	UnitEnum getMakingUnit()
+	{
+		return mBuldingUnit;
+	}
 	//取消当前建造
 	void cancelNowUnit();
 	//开始一个建造, 去查需要的时间

@@ -3,7 +3,8 @@
 
 using std::map;
 
-TechFactory::TechFactory()
+TechFactory::TechFactory():
+mTechExistence(false)
 {
 };
 TechFactory::~TechFactory()

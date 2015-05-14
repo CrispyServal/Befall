@@ -408,6 +408,7 @@ void GameScene::switchTurn()
 			auto newUnit = mUnitFactory[tF].getFinishedUnit();
 			CCLOG("finished! newUnit: %d", newUnit);
 		}
+		refreshMakingButton(tF);
 		mTimer->start();
 		//refresh 2 layer display from gamestate
 		//start a new turn
@@ -444,7 +445,17 @@ void GameScene::switchTurn()
 			//getUnit
 			auto newUnit = mUnitFactory[tF].getFinishedUnit();
 			//CCLOG("finished! newUnit: %d", newUnit);
+			//send
+			while (!mNet.sendNewSoldier(newSoldierStruct{ newUnit, mSpawn[tF] }))
+			{
+				auto err = WSAGetLastError();
+				if (err != WSAEWOULDBLOCK)
+				{
+					mDirector->popScene();
+				}
+			}
 		}
+		refreshMakingButton(tF);
 		//timer
 		if (mOperateEnable)
 		{
@@ -621,7 +632,7 @@ void GameScene::onTouchMoved(Touch * touch, Event * event)
 		//minimap
 		if (mMiniMapLayer->containPoint(mMouseCoordinate))
 		{
-			//mMiniMapLayer->moveView(mMouseCoordinate);
+			mMiniMapLayer->moveView(mMouseCoordinate);
 			Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
 			//CCLOG("pF: %f,%f", pF.x, pF.y);
 			Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
@@ -648,7 +659,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			//minimap
 			if (mMiniMapLayer->containPoint(mMouseCoordinate))
 			{
-				//mMiniMapLayer->moveView(mMouseCoordinate);
+				mMiniMapLayer->moveView(mMouseCoordinate);
 				Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
 				//CCLOG("pF: %f,%f", pF.x, pF.y);
 				Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
@@ -735,7 +746,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 									mResources[tF] -= mUnitInitDataMap[unit].consumption;
 									//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
 									mUnitFactory[tF].addNewUnit(unit);
-									mUnitMakingButton->setTexture(mUnitCampLayer->getUnitTexture(unit));
+									refreshMakingButton(tF);
 									refreshResourcesIcons(tF);
 								}
 							}
@@ -751,7 +762,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 								mResources[tF] -= mUnitInitDataMap[unit].consumption;
 								//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
 								mUnitFactory[tF].addNewUnit(unit);
-								mUnitMakingButton->setTexture(mUnitCampLayer->getUnitTexture(unit));
+								refreshMakingButton(tF);
 								CCLOG("vsPlayer; added new unit!");
 								refreshResourcesIcons(tF);
 							}
@@ -947,6 +958,28 @@ void GameScene::refreshPopulationIcons(const int & population)
 	std::stringstream ss;
 	ss << population << "/" << mPopulationLimit;
 	mPopulationLabel->setString(ss.str());
+}
+
+void GameScene::refreshMakingButton(int turnF)
+{
+	if (mUnitFactory[turnF].unitExistence())
+	{
+		mUnitMakingButton->setVisible(true);
+		mUnitMakingButton->setTexture(mUnitCampLayer->getUnitTexture(mUnitFactory[turnF].getMakingUnit()));
+	}
+	else
+	{
+		mUnitMakingButton->setVisible(false);
+	}
+	if (mTechFactory[turnF].techExistence())
+	{
+		mTechMakingButton->setVisible(true);
+		mTechMakingButton->setTexture(mTechTreeLayer->getTechTexture(mTechFactory[turnF].getMakingTech()));
+	}
+	else
+	{
+		mTechMakingButton->setVisible(false);
+	}
 }
 
 void GameScene::onMouseMoved(Event * event)

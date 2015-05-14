@@ -51,6 +51,22 @@ public:
 
 	Texture2D * getUnitTexture(UnitEnum unit)
 	{
+		//find
+		bool found = false;
+		for (const auto & i : mUnitTexture)
+		{
+			if (i.first == unit)
+			{
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+		{
+			CCLOG("unit not found!");
+			return NULL;
+		}
+		//get
 		if (unit < mUnitTexture.size())
 		{
 			return mUnitTexture[unit];
@@ -82,7 +98,7 @@ private:
 	//特殊的一张texture, 未解锁的单位的大图
 	//Texture2D * mCloseTexture;
 	//textures
-	std::vector<Texture2D *> mUnitTexture;
+	std::map<UnitEnum,Texture2D *> mUnitTexture;
 };
 
 

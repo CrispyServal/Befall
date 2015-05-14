@@ -66,9 +66,10 @@ bool UnitCampLayer::init()
 		CCLOG("sprite: %s", std::string{ "uiComponent/unit" + std::string{ (char)('0' + i) } +std::string{ ".png" } }.c_str());
 		CCLOG("texture: %s", std::string{ "uiComponent/unit_image_" + std::string{ (char)('0' + i) } +std::string{ ".png" } }.c_str());
 		auto texture = Director::getInstance()->getTextureCache()->addImage(std::string{ "uiComponent/unit" + std::string{ (char)('0' + i) } +std::string{ ".png" } });
-		mUnitTexture.push_back(texture);
+		mUnitTexture[mUnitsList[i]] = texture;
 		//auto tmpSprite = Sprite::create(std::string{ "uiComponent/unit" + std::string{ (char)('0' + i) } +std::string{ ".png" } });
 		auto tmpSprite = Sprite::createWithTexture(texture);
+		//big image texture
 		auto tmpTexture = Director::getInstance()->getTextureCache()->addImage(std::string{ "uiComponent/unit_image_" + std::string{ (char)('0' + i) } +std::string{ ".png" } });
 		mItemsList.push_back(
 			ItemInCampStruct{

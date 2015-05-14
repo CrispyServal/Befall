@@ -1,7 +1,6 @@
 #include "UnitFactory.h"
 
 UnitFactory::UnitFactory():
-
 mUnitExistence(false)
 {
 }

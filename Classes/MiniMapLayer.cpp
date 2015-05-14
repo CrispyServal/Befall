@@ -85,18 +85,12 @@ bool MiniMapLayer::containPoint(Vec2 mousePoint)// need  to update
 //如果视野框与边框相切，函数应当不再改变位置防止出界。
 void MiniMapLayer::moveView(Vec2 mousePoint)
 {
-	/*
 	float maxX = (mSizeX * pointSize + (mViewBoxSizeY - mViewBoxSizeX)) / 2.0;
-	CCLOG("vBSize: %f,%f", mViewBoxSizeX, mViewBoxSizeY);
-	*/
 	//float maxX = ( mSizeX * pointSize /*+ mViewBoxSizeY - mViewBoxSizeX*/) / 2.0;
-	/*
-	CCLOG("maxX: %f", maxX);
 	float maxY = ( mSizeY * pointSize ) / 2.0;
 	Point wBgpoint = mBg->getParent()->convertToWorldSpace(mBg->getPosition());	
 	Point wVBpoint = mViewBox->getParent()->convertToWorldSpace(mViewBox->getPosition());
 	float DirectX = mousePoint.x - wBgpoint.x;
-	CCLOG("directX: %f", DirectX);
 	float DirectY = mousePoint.y - wBgpoint.y;
 	float distenceX = mousePoint.x - wVBpoint.x;
 	float distenceY = mousePoint.y - wVBpoint.y;
@@ -106,9 +100,7 @@ void MiniMapLayer::moveView(Vec2 mousePoint)
 	}
 	else if (DirectX < -maxX)
 	{
-		CCLOG("left fix: distenceX: %f",distenceX);
 		distenceX = distenceX - (DirectX + maxX);
-		CCLOG("\tafter fixing: %f", distenceX);
 	}
 	if (DirectY > maxY)
 	{
@@ -118,15 +110,14 @@ void MiniMapLayer::moveView(Vec2 mousePoint)
 	{
 		distenceY = distenceY - (DirectY + maxY);
 	}
-	//mViewBox->setPositionX(mViewBox->getPositionX() + distenceX);
-	//mViewBox->setPositionY(mViewBox->getPositionY() + distenceY);
-	*/
+	mViewBox->setPositionX(mViewBox->getPositionX() + distenceX);
+	mViewBox->setPositionY(mViewBox->getPositionY() + distenceY);
 }
 //返回视野中心在小地图中的位置的比例，数值在[0+,1-]，用于外部地图把视野设置到对应位置
 //由于视野框在moveView函数中维护，且不会让视野框出界，因此返回的值范围不会到[0,1]
 Vec2 MiniMapLayer::getViewPosition(Vec2 mousePoint)
 {
-	float maxX = (mSizeX * pointSize ) / 2.0;
+	float maxX = (mSizeX * pointSize + (mViewBoxSizeY - mViewBoxSizeX)) / 2.0;
 	float maxY = (mSizeY * pointSize ) / 2.0;
 	Point wBgpoint = mBg->getParent()->convertToWorldSpace(mBg->getPosition());
 	float DirectX = mousePoint.x - wBgpoint.x;

@@ -172,6 +172,7 @@ private:
 	Sprite * mUnitMakingButton;
 	Texture2D * mUnitMakingButtonTexture;
 	void checkMakingButtonOnMouseMoved();
+	void refreshMakingButton(int turnF);
 	Texture2D * mMakingCancelTexture;
 
 	InfoMapLayer * mInfoMapLayer;
