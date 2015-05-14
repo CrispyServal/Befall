@@ -35,6 +35,13 @@ struct GameStateStruct
 	std::map<UnitEnum, UnitPropertyStruct> extraProperty;
 };
 
+struct UnitNowDisplayStruct
+{
+	bool exist;
+	UnitEnum mUnitEnum;
+	UnitPropertyStruct property;
+};
+
 struct UnitInitDataStruct
 {
 	UnitPropertyStruct property;
@@ -73,6 +80,12 @@ struct techIntroductionStruct
 {
 	std::string techName;
 	std::string techIntroduction;
+};
+
+struct unitIntroductionStruct
+{
+	std::string unitName;
+	std::string unitIntroduction;
 };
 
 const std::map<std::string, UnitEnum> mUnitStringEnumMap =
@@ -240,6 +253,7 @@ private:
 	//unit->initial property and consumption
 	//init this map from json file
 	std::map<UnitEnum, UnitInitDataStruct> mUnitInitDataMap;
+	std::map<UnitEnum, unitIntroductionStruct> mUnitDisplayMap;
 	void initUnitData();
 	//tech->initial comsumption
 	//init this map from json file
@@ -308,6 +322,8 @@ private:
 	
 	//calc turn left
 	int calcInteger(int a, int b);
+
+	UnitNowDisplayStruct existUnitOnTiledMap(const MyPointStruct & mPos);
 };
 
 #endif // !GAMESCENE_H

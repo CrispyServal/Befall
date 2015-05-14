@@ -62,7 +62,7 @@
 			"X" : 5,
 			"Y" : 20 
 		},
-		"numHitPoint" : 150
+		"numHitPoint" : 120
 	},
 	{
 		"element" : "resourceRandom",
@@ -71,7 +71,7 @@
 			"X" : 16,
 			"Y" : 1 
 		},
-		"numHitPoint" : 150
+		"numHitPoint" : 120
 	}
 	
 	]

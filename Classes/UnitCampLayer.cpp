@@ -335,3 +335,14 @@ int UnitCampLayer::getUnitProductivity(UnitEnum mUnitEnum)
 		}
 	}
 }
+
+UnitPropertyStruct UnitCampLayer::getUnitProperty(UnitEnum mUnitEnum)
+{
+	for (auto i : mItemsList)
+	{
+		if (i.unit == mUnitEnum)
+		{
+			return i.property;
+		}
+	}
+}

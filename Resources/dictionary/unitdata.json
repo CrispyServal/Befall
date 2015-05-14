@@ -3,6 +3,8 @@
 	[
 		{
 			"unit" : "base",
+			"name" : "基地",
+			"introduction" : "己方大本营，摧毁对方基地为胜利标志",
 			"attributes" :
 			{
 				"numHitPoint" : 500,
@@ -21,6 +23,8 @@
 		},
 		{
 			"unit" : "farmer",
+			"name" :  "简单资源作业船",
+			"introduction" :  "用于资源的收集，可在聚能研究所中研究相应的科技以提高资源采集效率",
 			"attributes" :
 			{
 				"numHitPoint" : 30,
@@ -39,6 +43,8 @@
 		},
 		{
 			"unit" : "shortrangeunit1",
+			"name" :  "机械撞击装置",
+			"introduction" :  "纯物理的攻击手法，对敌人造成硬打击，少量的资源使得其拥有较高性价比",
 			"attributes" :
 			{
 				"numHitPoint" : 50,
@@ -57,6 +63,8 @@
 		},
 		{
 			"unit" : "shortrangeunit2",
+			"name" :  "原子爆破船",
+			"introduction" :  "原子聚变在近距离内产生大量伤害，坚固的船身也保证其拥有较高续航力",
 			"attributes" :
 			{
 				"numHitPoint" : 80,
@@ -75,6 +83,8 @@
 		},
 		{
 			"unit" : "longrangeunit1",
+			"name" :  "电磁聚能装置",
+			"introduction" :  "运用古典的电磁理论产生伤害，较大的攻击范围保证了自己不会被轻易打击",
 			"attributes" :
 			{
 				"numHitPoint" : 30,
@@ -93,6 +103,8 @@
 		},
 		{
 			"unit" : "longrangeunit2",
+			"name" :  "引力轰击船",
+			"introduction" :  "利用引力波发动远程打击，灵活的运动性，能在战场上发挥不小的优势",
 			"attributes" :
 			{
 				"numHitPoint" : 30,
@@ -111,6 +123,8 @@
 		},
 		{
 			"unit" : "longrangeunit3",
+			"name" :  "大型聚合航母",
+			"introduction" :  "最强大的装置，极高的防御力及强大的攻城能力，是终极对决的选择",
 			"attributes" :
 			{
 				"numHitPoint" : 120,
@@ -125,6 +139,46 @@
 				"numFixedResource" : 100,
 				"numRandomResource" : 50,
 				"absProductivity" : 200
+			}
+		},
+		{
+			"unit" : "fixedResource",
+			"name" : "核聚氢",
+			"introduction" : "重要的恒星资源，为近程单位提供原料",
+			"attributes" :
+			{
+				"numHitPoint" : 1500,
+				"numDefence" : 0,
+				"numAttack" : 0,
+				"numAttackRange" : 0,
+				"numMoveRange" : 0,
+				"numPopulation" : 0
+			},
+			"consumption" :
+			{
+				"numFixedResource" : 0,
+				"numRandomResource" : 0,
+				"absProductivity" : 0
+			}
+		},
+		{
+			"unit" : "randomResource",
+			"name" : "引力能",
+			"introduction" : "重要的空间资源，为远程单位提供原料",
+			"attributes" :
+			{
+				"numHitPoint" : 120,
+				"numDefence" : 0,
+				"numAttack" : 0,
+				"numAttackRange" : 0,
+				"numMoveRange" : 0,
+				"numPopulation" : 0
+			},
+			"consumption" :
+			{
+				"numFixedResource" : 0,
+				"numRandomResource" : 0,
+				"absProductivity" : 0
 			}
 		}
 	]	

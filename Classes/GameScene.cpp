@@ -1351,7 +1351,20 @@ void GameScene::checkLayersOnMouseMoved()
 		}
 		else if (mTiledMapLayer->containPoint(mMouseCoordinate))
 		{
-			//
+			auto mPos = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinate);
+			auto unitInfo = existUnitOnTiledMap(mPos);
+			if (unitInfo.exist)
+			{
+				mInfoMapLayer->displayUnitInfo(
+					mUnitDisplayMap[unitInfo.mUnitEnum].unitName, 
+					unitInfo.property.numHitPoint, 
+					mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint);
+			}
+			else
+			{
+				mInfoMapLayer->clearAllInfo();
+			}
+			//waiting for yyp
 		}
 		else
 		{
@@ -1359,6 +1372,29 @@ void GameScene::checkLayersOnMouseMoved()
 		}
 
 	} while (0);
+}
+
+UnitNowDisplayStruct GameScene::existUnitOnTiledMap(const MyPointStruct & mPos)
+{
+	//unitMap, mResourceMap
+	for (auto i : mResourceMap)
+	{
+		if (i.first == mPos)
+		{
+			return UnitNowDisplayStruct{ true, i.second.type, i.second.property };
+		}
+	}
+	for (int j = 0; j < 2; j++)
+	{
+		for (auto i : mGameState[j].unitMap)
+		{
+			if (i.first == mPos)
+			{
+				return UnitNowDisplayStruct{ true, i.second.type, i.second.property };
+			}
+		}
+	}
+	return  UnitNowDisplayStruct{ false, base, UnitPropertyStruct{0,0,0,0,0,0} };
 }
 
 int GameScene::calcInteger(int a, int b)
@@ -1802,7 +1838,7 @@ void GameScene::initUnitData()
 	jDocument.Parse<0>(jsonStr.c_str());
 	if (jDocument.HasParseError())
 	{
-		CCLOG("unitDisplay.json parse error!");
+		CCLOG("unitdata.json parse error!");
 	}
 	if (!jDocument.IsObject())
 	{
@@ -1830,41 +1866,64 @@ void GameScene::initUnitData()
 					0
 				}
 			};
+			unitIntroductionStruct introduction = {
+				unit["name"].GetString(),
+				unit["introduction"].GetString()
+			};
 			std::string type = unit["unit"].GetString();
 			//CCLOG("type: %s", type.c_str());
 			if (type == "base")
 			{
 				mUnitInitDataMap[base] = data;
+				mUnitDisplayMap[base] = introduction;
 				continue;
 			}
 			if (type == "farmer")
 			{
 				mUnitInitDataMap[farmer] = data;
+				mUnitDisplayMap[farmer] = introduction;
 				continue;
 			}
 			if (type == "shortrangeunit1")
 			{
 				mUnitInitDataMap[shortrangeunit1] = data;
+				mUnitDisplayMap[shortrangeunit1] = introduction;
 				continue;
 			}
 			if (type == "shortrangeunit2")
 			{
 				mUnitInitDataMap[shortrangeunit2] = data;
+				mUnitDisplayMap[shortrangeunit2] = introduction;
 				continue;
 			}
 			if (type == "longrangeunit1")
 			{
 				mUnitInitDataMap[longrangeunit1] = data;
+				mUnitDisplayMap[longrangeunit1] = introduction;
 				continue;
 			}
 			if (type == "longrangeunit2")
 			{
 				mUnitInitDataMap[longrangeunit2] = data;
+				mUnitDisplayMap[longrangeunit2] = introduction;
 				continue;
 			}
 			if (type == "longrangeunit3")
 			{
 				mUnitInitDataMap[longrangeunit3] = data;
+				mUnitDisplayMap[longrangeunit3] = introduction;
+				continue;
+			}
+			if (type == "fixedResource")
+			{
+				mUnitInitDataMap[fixedResource] = data;
+				mUnitDisplayMap[fixedResource] = introduction;
+				continue;
+			}
+			if (type == "randomResource")
+			{
+				mUnitInitDataMap[randomResource] = data;
+				mUnitDisplayMap[randomResource] = introduction;
 				continue;
 			}
 		}

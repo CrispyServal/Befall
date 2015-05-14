@@ -50,6 +50,7 @@ public:
 	void setUnitResourceAndProperty(UnitEnum unit, const ResourcesStruct & unitResources, const UnitPropertyStruct & unitProperty);
 	std::string getUnitName(UnitEnum mUnitEnum);
 	std::string getUnitIntroDuction(UnitEnum mUnitEnum);
+	UnitPropertyStruct getUnitProperty(UnitEnum mUnitEnum);
 	int getUnitProductivity(UnitEnum mUnitEnum);
 
 	Texture2D * getUnitTexture(UnitEnum unit)
