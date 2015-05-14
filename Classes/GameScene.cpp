@@ -417,12 +417,12 @@ void GameScene::switchTurn()
 		mTechTreeLayer->setVisible(false);
 		int tF = mBlueTurn ? 0 : 1;
 		CCLOG("vsPlayer,tF: %d", tF);
+		checkTechFactory(tF);
+		checkUnitFactory(tF);
 		refreshTechTree(tF);
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
 		refreshMakingButton(tF);
-		checkTechFactory(tF);
-		checkUnitFactory(tF);
 		mTimer->start();
 		mTimer->setTimerColor(tF);
 		//refresh 2 layer display from gamestate
@@ -451,11 +451,11 @@ void GameScene::switchTurn()
 			mOperateEnable = !mBlueTurn;
 			tF = 1;
 		}
+		checkTechFactory(tF);
+		checkUnitFactory(tF);
 		refreshTechTree(tF);
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
-		checkTechFactory(tF);
-		checkUnitFactory(tF);
 		refreshMakingButton(tF);
 		//timer
 		if (mOperateEnable)
@@ -817,7 +817,7 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 	{
 		if (unit.first == mType)
 		{
-			mGameState[flag].unitLockMap[mUnitStringEnumMap.at(mType)] = true;
+			mGameState[flag].unitLockMap[mUnitStringEnumMap.at(mType)] = false;
 			return;
 		}
 	}
@@ -931,6 +931,7 @@ void GameScene::refreshTechTree(const int & flag)
 
 void GameScene::refreshUnitCamp(const int & flag)
 {
+	//refresh resources
 	for (const auto & unit : mUnitStringEnumMap)
 	{
 		auto property = UnitPropertyStruct{
@@ -949,7 +950,13 @@ void GameScene::refreshUnitCamp(const int & flag)
 		};
 		mUnitCampLayer->setUnitResourceAndProperty(unit.second, resource, property);
 	}
+	//refresh lock
+	for (const auto & i : mGameState[flag].unitLockMap)
+	{
+		mUnitCampLayer->setUnlocked(i.first, !i.second);
+	}
 }
+
 
 void GameScene::refreshResourcesIcons(const int & turnFlag)
 //void GameScene::refreshResourcesIcons(const ResourcesStruct & resources)
