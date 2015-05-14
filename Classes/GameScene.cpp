@@ -138,7 +138,7 @@ bool GameScene::init()
 	initResourceTexture();
 	initUnitTexture();
 	//making cancel texture
-	mMakingCancelTexture = mDirector->getTextureCache()->addImage("icon_close_circle.png");
+	mMakingCancelTexture = mDirector->getTextureCache()->addImage("number/icon_close_circle.png");
 	//srand
 	srand(static_cast<unsigned>(time(NULL)));
 	//gamemode
@@ -462,6 +462,14 @@ void GameScene::checkFactory(int turnFlag)
 	{
 		//getUnit
 		auto newUnit = mUnitFactory[turnFlag].getFinishedUnit();
+		//spawn it 
+		spawnUnit(newUnit,turnFlag);
+		//add population
+		mPopulation[turnFlag] += (mUnitInitDataMap[newUnit].property.numPopulation + mGameState[turnFlag].extraProperty[newUnit].numPopulation);
+		mUnitFactory[turnFlag].setExistence(false);
+		//display
+		refreshPopulationIcons(turnFlag);
+		refreshMakingButton(turnFlag);
 		//set Existence
 		mUnitFactory[turnFlag].setExistence(false);
 		CCLOG("finished! newUnit: %d", newUnit);
@@ -687,6 +695,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 	if ((abs(mMouseCoordinate.x - mMouseCoordinateTouch.x) <= offset) && (abs(mMouseCoordinate.y - mMouseCoordinateTouch.y) <= offset))
 	{
 		checkTechAndUnitButton();
+		checkMakingButtonOnTouchEnded();
 		do
 		{
 			//minimap
@@ -947,10 +956,10 @@ void GameScene::refreshResourcesIcons(const int & turnFlag)
 	mResearchLabel->setString(ss.str());
 }
 
-void GameScene::refreshPopulationIcons(const int & population)
+void GameScene::refreshPopulationIcons(const int & turnFlag)
 {
 	std::stringstream ss;
-	ss << population << "/" << mPopulationLimit;
+	ss << mPopulation[turnFlag] << "/" << mPopulationLimit;
 	mPopulationLabel->setString(ss.str());
 }
 
@@ -1010,7 +1019,7 @@ void GameScene::startGame()
 		mOperateEnable = false;
 	}
 	//test
-	spawnUnit(farmer, 0);
+	//spawnUnit(farmer, 0);
 	spawnUnit(farmer, 1);
 	//refresh minimap
 	refreshMiniMap();
@@ -1141,6 +1150,28 @@ void GameScene::checkMakingButtonOnMouseMoved()
 		else
 		{
 			mTechMakingButton->setTexture(mTechMakingButtonTexture);
+		}
+	}
+}
+
+void GameScene::checkMakingButtonOnTouchEnded()
+{
+	int tF = mBlueTurn ? 0 : 1;
+	if (mUnitMakingButton->isVisible())
+	{
+		//unit
+		if (mUnitMakingButton->boundingBox().containsPoint(mMouseCoordinate))
+		{
+			mUnitMakingButton->setVisible(false);
+			mUnitFactory[tF].cancelNowUnit();
+		}
+	}
+	if (mTechMakingButton->isVisible())
+	{
+		if (mTechMakingButton->boundingBox().containsPoint(mMouseCoordinate))
+		{
+			mTechMakingButton->setVisible(false);
+			mTechFactory[tF].cancelNowTech();
 		}
 	}
 }

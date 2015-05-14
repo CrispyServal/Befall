@@ -150,7 +150,7 @@ private:
 	Label * mPopulationLabel;
 	void initResourcesIcons();
 	void refreshResourcesIcons(const int & turnFlag);
-	void refreshPopulationIcons(const int & population);
+	void refreshPopulationIcons(const int & turnFlag);
 	//a menu
 	Node * mGameMenu;
 	void initGameMenu();
@@ -172,6 +172,7 @@ private:
 	Sprite * mUnitMakingButton;
 	Texture2D * mUnitMakingButtonTexture;
 	void checkMakingButtonOnMouseMoved();
+	void checkMakingButtonOnTouchEnded();
 	void refreshMakingButton(int turnF);
 	Texture2D * mMakingCancelTexture;
 
