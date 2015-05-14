@@ -22,8 +22,14 @@ bool MainMenu::init()
 	menuOpen[0] = true;
 	userDefault = UserDefault::getInstance();
 	dictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + userDefault->getStringForKey("language") + ".xml" }.c_str());
-	//fuck you memory manager
 	dictionary->retain();
+	//title
+	mTitle = Label::createWithTTF(getDicValue("Befall"), "fonts/STXIHEI.TTF", 120);
+	mTitle->setPosition(Director::getInstance()->getWinSize().width / 2, Director::getInstance()->getWinSize().height - mTitle->getContentSize().height * 3 / 4);
+	mTitle->setColor(Color3B(0,0,0));
+	mTitle->setOpacity(0);
+	addChild(mTitle);
+	mTitle->runAction(EaseExponentialInOut::create(FadeIn::create(1)));
 	//菜单共两级，根菜单叫做root，以root中的选项命名二级菜单
 	//root
 	auto startLabel = createMenuLabel("start");
@@ -38,11 +44,8 @@ bool MainMenu::init()
 	rootMenu = Menu::create(start, setting, exit, NULL);
 	menuMap["root"] = rootMenu;
 	rootMenu->alignItemsVerticallyWithPadding(10);
-		//fade in effect
 	rootMenu->setOpacity(0);
-	auto menuFadeIn = FadeIn::create(2);
-	rootMenu->runAction(menuFadeIn);
-	rootMenu->setOpacity(255);
+	//rootMenu->setOpacity(255);
 	//start Menu
 	auto storyLabel = createMenuLabel("story");
 	auto story = MenuItemLabel::create(storyLabel, CC_CALLBACK_0(MainMenu::enterGameCallback, this, GameModeEnum::story));
@@ -208,6 +211,9 @@ bool MainMenu::init()
 	}
 	//addchildren
 	addChild(rootMenu);
+	//fade in effect
+	auto menuFadeIn = FadeIn::create(1);
+	rootMenu->runAction(EaseExponentialInOut::create(menuFadeIn));
 	//listener
 	mouseListener = EventListenerMouse::create();
 	mouseListener->onMouseMove = CC_CALLBACK_1(MainMenu::onMouseMove, this);
@@ -305,7 +311,7 @@ void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const s
 		auto moveLeft = MoveBy::create(0.3, Vec2(-100, 0));
 		auto fadeOutSpawn = Spawn::create(mainMenuFadeOut, moveLeft, NULL);
 		auto fadeOutSequence = Sequence::create(fadeOutSpawn, hide, NULL);
-		menuMap[thisMenu]->runAction(fadeOutSequence);
+		menuMap[thisMenu]->runAction(EaseExponentialInOut::create(fadeOutSequence));
 		//CCLOG("clicked!");
 		//2rd menu
 		Menu * menu;
@@ -315,7 +321,7 @@ void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const s
 		auto fadeIn = FadeIn::create(0.5);
 		auto moveLeft1 = MoveBy::create(0.3, Vec2(-100, 0));
 		auto fadeInSpawn = Spawn::create(fadeIn, moveLeft1, NULL);
-		menu->runAction(fadeInSpawn);
+		menu->runAction(EaseExponentialInOut::create(fadeInSpawn));
 		menuOpen[nowDeep + 1] = true;
 	}
 }
@@ -333,13 +339,13 @@ void MainMenu::backCallback(Ref * sender, const std::string & thisMenu, const st
 		auto fadeOutSpawn = Spawn::create(mainMenuFadeOut, moveRight, NULL);
 		auto hide = Hide::create();
 		auto fadeOutSequence = Sequence::create(fadeOutSpawn, hide, NULL);
-		menu->runAction(fadeOutSequence);
+		menu->runAction(EaseExponentialInOut::create(fadeOutSequence));
 		menuMap[leftMenu]->setVisible(true);
 		menuMap[leftMenu]->setOpacity(0);
 		auto fadeIn = FadeIn::create(0.5);
 		auto moveRight1 = MoveBy::create(0.3, Vec2(100, 0));
 		auto fadeInSpawn = Spawn::create(fadeIn, moveRight1, NULL);
-		menuMap[leftMenu]->runAction(fadeInSpawn);
+		menuMap[leftMenu]->runAction(EaseExponentialInOut::create(fadeInSpawn));
 		menuMap[leftMenu]->setOpacity(255);
 		menuMap[leftMenu]->setVisible(true);
 		menuOpen[nowDeep - 1] = true;

@@ -201,7 +201,7 @@ private:
 	EventListenerTouchOneByOne * mTouchListener;
 	EventListenerKeyboard * mKeyboardListener;
 	//distance per press for map
-	const float moveDis = 20;
+	const float moveDis = 40;
 	keyStruct mKeyStruct;
 
 	void initWelcomeLayer();

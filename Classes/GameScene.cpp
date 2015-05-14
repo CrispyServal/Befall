@@ -124,6 +124,7 @@ bool GameScene::init()
 	mDirector = Director::getInstance();
 	mUserDefault = UserDefault::getInstance();
     mDictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + mUserDefault->getStringForKey("language") + ".xml" }.c_str());
+	mDictionary->retain();
 	mKeyStruct = {
 		false,
 		false,
@@ -198,9 +199,9 @@ bool GameScene::init()
 	mGrayBar->drawSolidRect(Vec2(mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), Vec2(mWinWidth,50 +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ),Color4F(0.607, 0.607, 0.607, 0.75));
 	addChild(mGrayBar, 3);
 	//turn label
-	mTurnLabel = Label::createWithTTF("0", "fonts/STXIHEI.TTF", 30);
+	mTurnLabel = Label::createWithTTF(getDicValue("Going")+" 0 "+getDicValue("Turn"), "fonts/STXIHEI.TTF", 24);
 	mTurnLabel->setColor(Color3B(0, 0, 0));
-	mTurnLabel->setPosition(mWinWidth - 50, mWinHeight - mTurnLabel->getContentSize().height / 2);
+	mTurnLabel->setPosition(mWinWidth - 120, mWinHeight - mTurnLabel->getContentSize().height / 2 - 5);
 	addChild(mTurnLabel, 8);
 	//resources icon
 	initResourcesIcons();
@@ -405,9 +406,9 @@ void GameScene::switchTurn()
 	if (mBlueTurn)
 	{
 		++mNumTurn;
-		std::stringstream ss;
-		ss << mNumTurn;
-		mTurnLabel->setString(ss.str());
+		CCLOG("going : %s", getDicValue("Going").c_str());
+		CCLOG("turn : %s", getDicValue("Turn").c_str());
+		mTurnLabel->setString(getDicValue("Going") + " " + std::to_string(mNumTurn) + " " + getDicValue("Turn"));
 	}
 	CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
 	//start turn

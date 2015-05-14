@@ -38,6 +38,7 @@ private:
 	std::map<std::string, MenuItemLabel *> items;
 	std::map<std::string, Menu *> menuMap;
 	std::set<GameModeEnum> closeModeSet;
+	Label * mTitle;
 	//creates
 	Label * createMenuLabel(char * str);
 	//listener
