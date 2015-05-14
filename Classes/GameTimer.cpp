@@ -18,14 +18,19 @@ bool GameTimer::init()
 	auto director = Director::getInstance();
 	width = director->getWinSize().width;
 	height = director->getWinSize().height;
+	//
+	mbgTexture[0] = director->getTextureCache()->addImage("/uiComponent/timer_blue.png");
+	mbgTexture[1] = director->getTextureCache()->addImage("/uiComponent/timer_red.png");
 	//BgCircle
-	mBgCircle = Sprite::create("/uiComponent/timer.png");
-	mBgCircle->setScale(0.15, 0.15);	
+	//mBgCircle = Sprite::create("/uiComponent/timer.png");
+	mBgCircle = Sprite::createWithTexture(mbgTexture[0]);
+	//mBgCircle->setScale(0.15, 0.15);	
 	mBgCircle->setPosition(width / 2, height / 2);
 	addChild(mBgCircle, 1);
 	//EndLabel
 	mEndLabel = Label::createWithTTF("END", "fonts/STXIHEI.TTF", 30);
 	mEndLabel->setPosition(mBgCircle->getPositionX(), mBgCircle->getPositionY()+30);
+	mEndLabel->enableGlow(Color4B(255,255,255,155));
 	addChild(mEndLabel, 2);
 	radius = 600 * mBgCircle->getScaleX() * this->getScaleX();
 	mVitualCircle = DrawNode::create();
@@ -33,7 +38,7 @@ bool GameTimer::init()
 	addChild(mVitualCircle, 3);
 	//cover
 	mCoverCircle = Sprite::create("/uiComponent/time_locked.png");
-	mCoverCircle->setScale(mBgCircle->getScale());
+	//mCoverCircle->setScale(mBgCircle->getScale());
 	mCoverCircle->setPosition(mBgCircle->getPosition());
 	addChild(mCoverCircle, 4);
 	//visible

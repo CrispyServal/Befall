@@ -29,6 +29,10 @@ public:
 	//返回是否时间到，时间到为true。GameScene的update中检查，结束的话强制结束回合。
 	bool isEnded();
 	void refresh(float deltaTime);
+	void setTimerColor(int turnF)
+	{
+		mBgCircle->setTexture(mbgTexture[turnF]);
+	}
 private:
 	float width;
 	float  height;
@@ -40,6 +44,7 @@ private:
 	Sprite * mBgCircle;
 	Sprite * mCoverCircle;
 	Sprite * mEndTurnButton;
+	Texture2D * mbgTexture[2];
 	DrawNode * mVitualCircle;
 	bool mTimerState;
 	float radius;
