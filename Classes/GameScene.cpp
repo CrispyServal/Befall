@@ -468,6 +468,8 @@ void GameScene::switchTurn()
 			mTimer->shutDown();
 		}
 	}
+	mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.off);
+	mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.off);
 }
 
 void GameScene::checkTechFactory(int turnFlag)
