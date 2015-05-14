@@ -1052,7 +1052,7 @@ void GameScene::startGame()
 	//refresh minimap
 	refreshMiniMap();
 	//Test for info map
-	mInfoMapLayer->displayTech("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
+	mInfoMapLayer->displayText("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
 	//update
 	mTimer->start();
 	scheduleUpdate();
