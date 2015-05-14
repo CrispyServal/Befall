@@ -161,6 +161,7 @@ private:
 	int mNumTurn;
 	TechTreeLayer * mTechTreeLayer;
 	UnitCampLayer * mUnitCampLayer;
+	void checkTechTreeLayerOnTouchEnded();
 	void checkUnitCampLayerOnTouchEnded();
 	TiledMapLayer * mTiledMapLayer;
 	Sprite * mTechTreeLayerButton;
@@ -184,7 +185,8 @@ private:
 	void checkMiniMap();
 	//factory
 	UnitFactory mUnitFactory[2];
-	void checkFactory(int turnFlag);
+	void checkUnitFactory(int turnFlag);
+	void checkTechFactory(int turnFlag);
 	TechFactory mTechFactory[2];
 	//when connecting or listening, display juFlower or something else
 	Layer * mWelcomeLayer;
