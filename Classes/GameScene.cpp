@@ -405,6 +405,9 @@ void GameScene::switchTurn()
 	if (mBlueTurn)
 	{
 		++mNumTurn;
+		std::stringstream ss;
+		ss << mNumTurn;
+		mTurnLabel->setString(ss.str());
 	}
 	CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
 	//start turn
@@ -414,12 +417,12 @@ void GameScene::switchTurn()
 		mTechTreeLayer->setVisible(false);
 		int tF = mBlueTurn ? 0 : 1;
 		CCLOG("vsPlayer,tF: %d", tF);
+		checkTechFactory(tF);
+		checkUnitFactory(tF);
 		refreshTechTree(tF);
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
 		refreshMakingButton(tF);
-		checkTechFactory(tF);
-		checkUnitFactory(tF);
 		mTimer->start();
 		mTimer->setTimerColor(tF);
 		//refresh 2 layer display from gamestate
@@ -448,11 +451,11 @@ void GameScene::switchTurn()
 			mOperateEnable = !mBlueTurn;
 			tF = 1;
 		}
+		checkTechFactory(tF);
+		checkUnitFactory(tF);
 		refreshTechTree(tF);
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
-		checkTechFactory(tF);
-		checkUnitFactory(tF);
 		refreshMakingButton(tF);
 		//timer
 		if (mOperateEnable)
@@ -722,6 +725,15 @@ void GameScene::onTouchMoved(Touch * touch, Event * event)
 		{
 			break;
 		}
+		//tiledmap
+		if (mTiledMapLayer->containPoint(mMouseCoordinate))
+		{
+			checkTiledMapOnTouchMoved();
+		}
+		else if (mTiledMapLayer->blockClick())
+		{
+			break;
+		}
 	} while (0);
 
 	mMouseCoordinateP = mMouseCoordinate;
@@ -805,8 +817,7 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 	{
 		if (unit.first == mType)
 		{
-			mGameState[flag].unitLockMap[mUnitStringEnumMap.at(mType)] = true;
-			CCLOG("Unlocked");
+			mGameState[flag].unitLockMap[mUnitStringEnumMap.at(mType)] = false;
 			return;
 		}
 	}
@@ -923,6 +934,7 @@ void GameScene::refreshTechTree(const int & flag)
 
 void GameScene::refreshUnitCamp(const int & flag)
 {
+	//refresh resources
 	for (const auto & unit : mUnitStringEnumMap)
 	{
 		auto property = UnitPropertyStruct{
@@ -941,7 +953,13 @@ void GameScene::refreshUnitCamp(const int & flag)
 		};
 		mUnitCampLayer->setUnitResourceAndProperty(unit.second, resource, property);
 	}
+	//refresh lock
+	for (const auto & i : mGameState[flag].unitLockMap)
+	{
+		mUnitCampLayer->setUnlocked(i.first, !i.second);
+	}
 }
+
 
 void GameScene::refreshResourcesIcons(const int & turnFlag)
 //void GameScene::refreshResourcesIcons(const ResourcesStruct & resources)
@@ -1097,6 +1115,32 @@ void GameScene::checkMiniMap()
 	//CCLOG("pF: %f,%f", pF.x, pF.y);
 	Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
 	mTiledMapLayer->setPosition(mWinWidth / 2 - pOfM.x, mWinHeight / 2 - pOfM.y);
+}
+
+void GameScene::checkTiledMapOnTouchMoved()
+{
+	Vec2 mapP = mTiledMapLayer->getPosition();
+	//CCLOG("mapP %f,%f", mapP.x, mapP.y);
+	Size mapS = mTiledMapLayer->getMapSizeF();
+	Vec2 newP = Vec2(mapP.x + mMouseCoordinate.x - mMouseCoordinateP.x, mapP.y + mMouseCoordinate.y - mMouseCoordinateP.y);
+	Vec2 dis = Vec2(newP.x - mapP.x, newP.y - mapP.y);
+	if (mapP.y <= mWinHeight - mapS.height - mWinHeight / 2 - dis.y/* - mapS.height + moveDis - 50*/)
+	{
+		newP.y = mapP.y;
+	}
+	else if (mapP.y >= 0 + mWinHeight / 2 - dis.y/* - moveDis + 280*/)
+	{
+		newP.y = mapP.y;
+	}
+	if (mapP.x >= 0 + mWinHeight / 2 - dis.x/* - moveDis*/)
+	{
+		newP.x = mapP.x;
+	}
+	else if (mapP.x <= mWinWidth - mapS.width - mWinHeight / 2 - dis.x/* - mapS.width + moveDis*/)
+	{
+		newP.x = mapP.x;
+	}
+	mTiledMapLayer->setPosition(newP);
 }
 
 void GameScene::checkTechTreeLayerOnTouchEnded()
