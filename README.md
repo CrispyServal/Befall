@@ -18,4 +18,3 @@
 	//here
 	cocos官网：http://www.cocos2d-x.org/；中文官网：http://cn.cocos2d-x.org/.
 
-明明我已经提交了啊 fuck you！
