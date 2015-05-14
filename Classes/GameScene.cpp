@@ -396,6 +396,8 @@ void GameScene::switchTurn()
 	//start turn
 	if (mGameMode == vsPlayer)
 	{
+		mUnitCampLayer->setVisible(false);
+		mTechTreeLayer->setVisible(false);
 		int tF = mBlueTurn ? 0 : 1;
 		CCLOG("vsPlayer,tF: %d", tF);
 		refreshTechTree(tF);
@@ -632,11 +634,7 @@ void GameScene::onTouchMoved(Touch * touch, Event * event)
 		//minimap
 		if (mMiniMapLayer->containPoint(mMouseCoordinate))
 		{
-			mMiniMapLayer->moveView(mMouseCoordinate);
-			Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
-			//CCLOG("pF: %f,%f", pF.x, pF.y);
-			Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
-			mTiledMapLayer->setPosition(mWinWidth / 2 - pOfM.x, mWinHeight / 2 - pOfM.y);
+			checkMiniMap();
 			break;
 		}
 		else if (mMiniMapLayer->blockClick())
@@ -659,11 +657,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			//minimap
 			if (mMiniMapLayer->containPoint(mMouseCoordinate))
 			{
-				mMiniMapLayer->moveView(mMouseCoordinate);
-				Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
-				//CCLOG("pF: %f,%f", pF.x, pF.y);
-				Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
-				mTiledMapLayer->setPosition(mWinWidth / 2 - pOfM.x, mWinHeight / 2 - pOfM.y);
+				checkMiniMap();
 				break;
 			}
 			else if (mMiniMapLayer->blockClick())
@@ -732,42 +726,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			{
 				if (mUnitCampLayer->containPoint(mMouseCoordinateTouch))
 				{
-					auto unit = mUnitCampLayer->getunitMouseOn();
-					if (mGameMode == server || mGameMode == client)
-					{
-						int tF = (mGameMode == server) ? 0 : 1;
-						if (mOperateEnable)
-						{
-							if (!mUnitFactory[tF].unitExistence())
-							{
-								//add to factory
-								if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
-								{
-									mResources[tF] -= mUnitInitDataMap[unit].consumption;
-									//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
-									mUnitFactory[tF].addNewUnit(unit);
-									refreshMakingButton(tF);
-									refreshResourcesIcons(tF);
-								}
-							}
-						}
-					}
-					else if (mGameMode == vsPlayer)
-					{
-						int tF = mBlueTurn ? 0 : 1;
-						if (!mUnitFactory[tF].unitExistence())
-						{
-							if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
-							{
-								mResources[tF] -= mUnitInitDataMap[unit].consumption;
-								//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
-								mUnitFactory[tF].addNewUnit(unit);
-								refreshMakingButton(tF);
-								CCLOG("vsPlayer; added new unit!");
-								refreshResourcesIcons(tF);
-							}
-						}
-					}
+					checkUnitCampLayerOnTouchEnded();
 					break;
 				}
 				else if (mUnitCampLayer->blockClick())
@@ -1070,6 +1029,55 @@ void GameScene::refreshMiniMap()
 		}
 	}
 	mMiniMapLayer->refresh(unitSet[0], unitSet[1], fixedRSet, randomRSet);
+}
+
+void GameScene::checkMiniMap()
+{
+	mMiniMapLayer->moveView(mMouseCoordinate);
+	Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
+	//CCLOG("pF: %f,%f", pF.x, pF.y);
+	Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
+	mTiledMapLayer->setPosition(mWinWidth / 2 - pOfM.x, mWinHeight / 2 - pOfM.y);
+}
+
+void GameScene::checkUnitCampLayerOnTouchEnded()
+{
+	auto unit = mUnitCampLayer->getunitMouseOn();
+	if (mGameMode == server || mGameMode == client)
+	{
+		int tF = (mGameMode == server) ? 0 : 1;
+		if (mOperateEnable)
+		{
+			if (!mUnitFactory[tF].unitExistence())
+			{
+				//add to factory
+				if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
+				{
+					mResources[tF] -= mUnitInitDataMap[unit].consumption;
+					//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
+					mUnitFactory[tF].addNewUnit(unit);
+					refreshMakingButton(tF);
+					refreshResourcesIcons(tF);
+				}
+			}
+		}
+	}
+	else if (mGameMode == vsPlayer)
+	{
+		int tF = mBlueTurn ? 0 : 1;
+		if (!mUnitFactory[tF].unitExistence())
+		{
+			if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
+			{
+				mResources[tF] -= mUnitInitDataMap[unit].consumption;
+				//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
+				mUnitFactory[tF].addNewUnit(unit);
+				refreshMakingButton(tF);
+				CCLOG("vsPlayer; added new unit!");
+				refreshResourcesIcons(tF);
+			}
+		}
+	}
 }
 
 void GameScene::checkMakingButtonOnMouseMoved()

@@ -160,6 +160,7 @@ private:
 	void switchTurn();
 	TechTreeLayer * mTechTreeLayer;
 	UnitCampLayer * mUnitCampLayer;
+	void checkUnitCampLayerOnTouchEnded();
 	TiledMapLayer * mTiledMapLayer;
 	Sprite * mTechTreeLayerButton;
 	buttonTextureStruct mTechTreeLayerButtonTexture;
@@ -178,6 +179,7 @@ private:
 	InfoMapLayer * mInfoMapLayer;
 	MiniMapLayer * mMiniMapLayer;
 	void refreshMiniMap();
+	void checkMiniMap();
 	//factory
 	UnitFactory mUnitFactory[2];
 	TechFactory mTechFactory[2];
