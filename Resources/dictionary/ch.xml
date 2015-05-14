@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dict>
+	<key>Befall</key>
+	<string>降临</string>
 	<key>start</key>
 	<string>开始</string>
 	<key>setting</key>

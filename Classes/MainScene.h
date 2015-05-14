@@ -27,7 +27,7 @@ private:
 	Layer * mainLayer;
 	MainMenu * mainMenu;
 	Node * ball;
-		//pressed something, displayed menu
+	//pressed something, displayed menu
 	bool pressed;
 	Sprite * bgSprite;
 	EventListenerMouse * mouseListener;
