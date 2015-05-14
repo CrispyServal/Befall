@@ -265,7 +265,7 @@ private:
 	ResourcesStruct mResources[2];
 	//effective resoures
 	//e.g. productivity += numFarmer * (Farmer.numAttack + mExtraResources);
-	ResourcesStruct mExtraResources;
+	ResourcesStruct mExtraResources[2];
 	//effeciency of collection
 	ResourcesStruct mCollectionEffeciency;
 	//sign whether it is my turn

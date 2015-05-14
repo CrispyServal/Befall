@@ -464,7 +464,7 @@ void GameScene::checkTechFactory(int turnFlag)
 	{
 		//setInfluence
 		auto newTech = mTechFactory[turnFlag].getFinishedTech();
-		setTechInfluence(turnFlag, newTech);
+		unlockTechTree(turnFlag, newTech);
 		mTechFactory[turnFlag].setExistence(false);
 		//display
 		refreshMakingButton(turnFlag);
@@ -879,11 +879,11 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 	{
 		if (mType == "numResearchLevel")
 		{
-			mExtraResources.numResearchLevel += mValue;
+			mExtraResources[flag].numResearchLevel += mValue;
 		}
 		if (mType == "numProductivity")
 		{
-			mExtraResources.numProductivity += mValue;
+			mExtraResources[flag].numProductivity += mValue;
 		}
 	}
 	return;
@@ -1098,6 +1098,7 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 				{
 					mResources[tF] -= mTechInitDataMap[tech];
 					mTechFactory[tF].addNewTech(tech);
+					mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(tech);
 					refreshMakingButton(tF);
 					refreshResourcesIcons(tF);
 				}
@@ -1114,6 +1115,7 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 				mResources[tF] -= mTechInitDataMap[tech];
 				//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
 				mTechFactory[tF].addNewTech(tech);
+				mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(tech);
 				refreshMakingButton(tF);
 				CCLOG("vsPlayer; added new Tech!");
 				refreshResourcesIcons(tF);
@@ -1352,6 +1354,13 @@ void GameScene::initGameState()
 		mUnitFactory[i].setUnitTime(longrangeunit1,mUnitCampLayer->getUnitResources(longrangeunit1).numProductivity);
 		mUnitFactory[i].setUnitTime(longrangeunit2,mUnitCampLayer->getUnitResources(longrangeunit2).numProductivity);
 		mUnitFactory[i].setUnitTime(longrangeunit3,mUnitCampLayer->getUnitResources(longrangeunit3).numProductivity);
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		for (auto refreshTech : mTechEnumList)
+		{
+			mTechFactory[i].setTechTime(refreshTech, mTechInitDataMap[refreshTech].numResearchLevel);
+		}
 	}
 }
 
