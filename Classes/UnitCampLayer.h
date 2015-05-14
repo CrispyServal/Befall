@@ -41,13 +41,16 @@ public:
 		return true;
 	}
 	//返回被点的按钮，用于造兵。仅当包含按钮时调用
-	const UnitEnum getunitMouseOn();
+	const UnitEnum getUnitMouseOn();
 	//用于在悬停时候改变按钮图片
 	void onMouseMoved(Vec2 mousePoint);
 	//lock on or lock off
 	void setUnlocked(UnitEnum unit,bool unlock);
 	//set resource and property
 	void setUnitResourceAndProperty(UnitEnum unit, const ResourcesStruct & unitResources, const UnitPropertyStruct & unitProperty);
+	std::string getUnitName(UnitEnum mUnitEnum);
+	std::string getUnitIntroDuction(UnitEnum mUnitEnum);
+	int getUnitProductivity(UnitEnum mUnitEnum);
 
 	Texture2D * getUnitTexture(UnitEnum unit)
 	{

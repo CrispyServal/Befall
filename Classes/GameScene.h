@@ -69,6 +69,12 @@ struct keyStruct
 	bool d;
 };
 
+struct techIntroductionStruct
+{
+	std::string techName;
+	std::string techIntroduction;
+};
+
 const std::map<std::string, UnitEnum> mUnitStringEnumMap =
 {
 	{ "farmer", farmer},
@@ -239,6 +245,7 @@ private:
 	//init this map from json file
 	std::map<TechEnum, ResourcesStruct> mTechInitDataMap;
 	std::map<TechEnum, InfluenceStruct> mTechInitInfluenceMap;
+	std::map<TechEnum, techIntroductionStruct> mTechDisplayMap;
 	//init tech->comsumption map
 	void initTechData();
 	//矿藏的数据，只需要一份，两边会分别减少
@@ -298,6 +305,9 @@ private:
 
 	//
 	void refreshUnitCamp(const int & flag);
+	
+	//calc turn left
+	int calcInteger(int a, int b);
 };
 
 #endif // !GAMESCENE_H

@@ -470,6 +470,7 @@ void GameScene::switchTurn()
 	}
 	mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.off);
 	mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.off);
+	checkLayersOnMouseMoved();
 }
 
 void GameScene::checkTechFactory(int turnFlag)
@@ -1054,7 +1055,7 @@ void GameScene::startGame()
 	//refresh minimap
 	refreshMiniMap();
 	//Test for info map
-	mInfoMapLayer->displayText("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
+	//mInfoMapLayer->displayText("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
 	//update
 	mTimer->start();
 	scheduleUpdate();
@@ -1188,7 +1189,7 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 
 void GameScene::checkUnitCampLayerOnTouchEnded()
 {
-	auto unit = mUnitCampLayer->getunitMouseOn();
+	auto unit = mUnitCampLayer->getUnitMouseOn();
 	if (mGameMode == server || mGameMode == client)
 	{
 		int tF = (mGameMode == server) ? 0 : 1;
@@ -1315,9 +1316,63 @@ void GameScene::checkLayersOnMouseMoved()
 		{
 			//CCLOG("to call!!");
 			mUnitCampLayer->onMouseMoved(mMouseCoordinate);
+			if (mUnitCampLayer->containPoint(mMouseCoordinate))
+			{
+				auto unit = mUnitCampLayer->getUnitMouseOn();
+				int tF = (mGameMode == server) ? 0 : 1;
+				mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit), 
+					mUnitCampLayer->getUnitIntroDuction(unit), 
+					stringPredict + std::to_string(calcInteger(
+					mUnitCampLayer->getUnitProductivity(unit), 
+					mResources[tF].numProductivity)) + stringTurn);
+			}
+			else
+			{
+				mInfoMapLayer->clearAllInfo();
+			}
 		}
-		//
+		//TileMap
+		else if (mTechTreeLayer->isVisible())
+		{
+			if (mTechTreeLayer->containPoint(mMouseCoordinate))
+			{
+				auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinate);
+				int tF = (mGameMode == server) ? 0 : 1;
+				mInfoMapLayer->displayText(mTechDisplayMap[tech].techName, 
+					mTechDisplayMap[tech].techIntroduction, 
+					stringPredict + std::to_string(calcInteger(
+					mTechInitDataMap[tech].numResearchLevel,
+					mResources[tF].numResearchLevel)) + stringTurn);
+			}
+			else
+			{
+				mInfoMapLayer->clearAllInfo();
+			}
+		}
+		else if (mTiledMapLayer->containPoint(mMouseCoordinate))
+		{
+			//
+		}
+		else
+		{
+			mInfoMapLayer->clearAllInfo();
+		}
+
 	} while (0);
+}
+
+int GameScene::calcInteger(int a, int b)
+{
+	if (a == 0)
+		return 0;
+	if (a%b)
+	{
+		return a / b + 1;
+	}
+	else
+	{
+		return a / b;
+	}
 }
 
 void GameScene::checkTechAndUnitButton()
@@ -1723,6 +1778,15 @@ void GameScene::initTechData()
 				tech["influence"]["value"].GetInt()
 			};
 			mTechInitInfluenceMap[techE] = influence;
+
+			//Get DisplayInfo
+			techIntroductionStruct introduction = {
+				tech["title"].GetString(),
+				tech["explain"].GetString()
+				+ std::string("\n") +
+				tech["dialogue"].GetString()
+			};
+			mTechDisplayMap[techE] = introduction;
 		}
 	}
 }
