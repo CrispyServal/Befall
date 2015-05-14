@@ -262,7 +262,7 @@ bool UnitCampLayer::containPoint(Vec2 mousePoint)
 	return false;
 }
 
-const UnitEnum UnitCampLayer::getunitMouseOn()
+const UnitEnum UnitCampLayer::getUnitMouseOn()
 {
 	return mNowItem.unit;
 }
@@ -299,4 +299,50 @@ void UnitCampLayer::setUnlocked(UnitEnum unit, bool unlock)
 		}
 	}
 	//error
+}
+
+std::string UnitCampLayer::getUnitName(UnitEnum mUnitEnum)
+{
+	for (auto i : mItemsList)
+	{
+		if (i.unit == mUnitEnum)
+		{
+			return i.name;
+		}
+	}
+	return "";
+}
+
+std::string UnitCampLayer::getUnitIntroDuction(UnitEnum mUnitEnum)
+{
+	for (auto i : mItemsList)
+	{
+		if (i.unit == mUnitEnum)
+		{
+			return i.introduction;
+		}
+	}
+	return "";
+}
+
+int UnitCampLayer::getUnitProductivity(UnitEnum mUnitEnum)
+{
+	for (auto i : mItemsList)
+	{
+		if (i.unit == mUnitEnum)
+		{
+			return i.resources.numProductivity;
+		}
+	}
+}
+
+UnitPropertyStruct UnitCampLayer::getUnitProperty(UnitEnum mUnitEnum)
+{
+	for (auto i : mItemsList)
+	{
+		if (i.unit == mUnitEnum)
+		{
+			return i.property;
+		}
+	}
 }

@@ -35,6 +35,13 @@ struct GameStateStruct
 	std::map<UnitEnum, UnitPropertyStruct> extraProperty;
 };
 
+struct UnitNowDisplayStruct
+{
+	bool exist;
+	UnitEnum mUnitEnum;
+	UnitPropertyStruct property;
+};
+
 struct UnitInitDataStruct
 {
 	UnitPropertyStruct property;
@@ -73,6 +80,18 @@ struct keyStruct
 	bool s;
 	bool a;
 	bool d;
+};
+
+struct techIntroductionStruct
+{
+	std::string techName;
+	std::string techIntroduction;
+};
+
+struct unitIntroductionStruct
+{
+	std::string unitName;
+	std::string unitIntroduction;
 };
 
 const std::map<std::string, UnitEnum> mUnitStringEnumMap =
@@ -240,11 +259,13 @@ private:
 	//unit & resources ->initial property and consumption
 	//init this map from json file
 	std::map<UnitEnum, UnitInitDataStruct> mUnitInitDataMap;
+	std::map<UnitEnum, unitIntroductionStruct> mUnitDisplayMap;
 	void initUnitData();
 	//tech->initial comsumption
 	//init this map from json file
 	std::map<TechEnum, ResourcesStruct> mTechInitDataMap;
 	std::map<TechEnum, InfluenceStruct> mTechInitInfluenceMap;
+	std::map<TechEnum, techIntroductionStruct> mTechDisplayMap;
 	//init tech->comsumption map
 	void initTechData();
 	//矿藏的数据，只需要一份，两边会分别减少
@@ -310,6 +331,11 @@ private:
 
 	//
 	void refreshUnitCamp(const int & flag);
+	
+	//calc turn left
+	int calcInteger(int a, int b);
+
+	UnitNowDisplayStruct existUnitOnTiledMap(const MyPointStruct & mPos);
 };
 
 #endif // !GAMESCENE_H

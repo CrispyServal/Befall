@@ -472,6 +472,7 @@ void GameScene::switchTurn()
 	mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.off);
 	mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.off);
 	refreshResourcesTexture();
+	checkLayersOnMouseMoved();
 }
 
 void GameScene::checkTechFactory(int turnFlag)
@@ -972,8 +973,9 @@ void GameScene::refreshResourcesTexture()
 		if ((i.second.type == fixedResource) || (i.second.type == randomResource) )
 		{
 			float hp = (float)i.second.property.numHitPoint;
-			auto firstHp = hp * mResourceCriticalMap.at(i.second.type).firstP;
-			auto secondHp = hp * mResourceCriticalMap.at(i.second.type).secondP;
+			float hpL = (float)(mUnitInitDataMap[i.second.type].property.numHitPoint);
+			auto firstHp = hpL * mResourceCriticalMap.at(i.second.type).firstP;
+			auto secondHp = hpL * mResourceCriticalMap.at(i.second.type).secondP;
 			CCLOG("type: %d, hp: %f, first hp: %f, second hp: %f", i.second.type, hp, firstHp, secondHp);
 			if (hp > firstHp)
 			{
@@ -1084,7 +1086,7 @@ void GameScene::startGame()
 	//refresh resources
 	refreshResourcesTexture();
 	//Test for info map
-	mInfoMapLayer->displayTech("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
+	//mInfoMapLayer->displayText("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
 	//update
 	mTimer->start();
 	scheduleUpdate();
@@ -1218,7 +1220,7 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 
 void GameScene::checkUnitCampLayerOnTouchEnded()
 {
-	auto unit = mUnitCampLayer->getunitMouseOn();
+	auto unit = mUnitCampLayer->getUnitMouseOn();
 	if (mGameMode == server || mGameMode == client)
 	{
 		int tF = (mGameMode == server) ? 0 : 1;
@@ -1345,9 +1347,99 @@ void GameScene::checkLayersOnMouseMoved()
 		{
 			//CCLOG("to call!!");
 			mUnitCampLayer->onMouseMoved(mMouseCoordinate);
+			if (mUnitCampLayer->containPoint(mMouseCoordinate))
+			{
+				auto unit = mUnitCampLayer->getUnitMouseOn();
+				int tF = (mGameMode == server) ? 0 : 1;
+				mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit), 
+					mUnitCampLayer->getUnitIntroDuction(unit), 
+					stringPredict + std::to_string(calcInteger(
+					mUnitCampLayer->getUnitProductivity(unit), 
+					mResources[tF].numProductivity)) + stringTurn);
+			}
+			else
+			{
+				mInfoMapLayer->clearAllInfo();
+			}
 		}
-		//
+		//TileMap
+		else if (mTechTreeLayer->isVisible())
+		{
+			if (mTechTreeLayer->containPoint(mMouseCoordinate))
+			{
+				auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinate);
+				int tF = (mGameMode == server) ? 0 : 1;
+				mInfoMapLayer->displayText(mTechDisplayMap[tech].techName, 
+					mTechDisplayMap[tech].techIntroduction, 
+					stringPredict + std::to_string(calcInteger(
+					mTechInitDataMap[tech].numResearchLevel,
+					mResources[tF].numResearchLevel)) + stringTurn);
+			}
+			else
+			{
+				mInfoMapLayer->clearAllInfo();
+			}
+		}
+		else if (mTiledMapLayer->containPoint(mMouseCoordinate))
+		{
+			auto mPos = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinate);
+			auto unitInfo = existUnitOnTiledMap(mPos);
+			if (unitInfo.exist)
+			{
+				mInfoMapLayer->displayUnitInfo(
+					mUnitDisplayMap[unitInfo.mUnitEnum].unitName, 
+					unitInfo.property.numHitPoint, 
+					mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint);
+			}
+			else
+			{
+				mInfoMapLayer->clearAllInfo();
+			}
+			//waiting for yyp
+		}
+		else
+		{
+			mInfoMapLayer->clearAllInfo();
+		}
+
 	} while (0);
+}
+
+UnitNowDisplayStruct GameScene::existUnitOnTiledMap(const MyPointStruct & mPos)
+{
+	//unitMap, mResourceMap
+	for (auto i : mResourceMap)
+	{
+		if (i.first == mPos)
+		{
+			return UnitNowDisplayStruct{ true, i.second.type, i.second.property };
+		}
+	}
+	for (int j = 0; j < 2; j++)
+	{
+		for (auto i : mGameState[j].unitMap)
+		{
+			if (i.first == mPos)
+			{
+				return UnitNowDisplayStruct{ true, i.second.type, i.second.property };
+			}
+		}
+	}
+	return  UnitNowDisplayStruct{ false, base, UnitPropertyStruct{0,0,0,0,0,0} };
+}
+
+int GameScene::calcInteger(int a, int b)
+{
+	if (a == 0)
+		return 0;
+	if (a%b)
+	{
+		return a / b + 1;
+	}
+	else
+	{
+		return a / b;
+	}
 }
 
 void GameScene::checkTechAndUnitButton()
@@ -1753,6 +1845,15 @@ void GameScene::initTechData()
 				tech["influence"]["value"].GetInt()
 			};
 			mTechInitInfluenceMap[techE] = influence;
+
+			//Get DisplayInfo
+			techIntroductionStruct introduction = {
+				tech["title"].GetString(),
+				tech["explain"].GetString()
+				+ std::string("\n") +
+				tech["dialogue"].GetString()
+			};
+			mTechDisplayMap[techE] = introduction;
 		}
 	}
 }
@@ -1768,7 +1869,7 @@ void GameScene::initUnitData()
 	jDocument.Parse<0>(jsonStr.c_str());
 	if (jDocument.HasParseError())
 	{
-		CCLOG("unitDisplay.json parse error!");
+		CCLOG("unitdata.json parse error!");
 	}
 	if (!jDocument.IsObject())
 	{
@@ -1796,41 +1897,64 @@ void GameScene::initUnitData()
 					0
 				}
 			};
+			unitIntroductionStruct introduction = {
+				unit["name"].GetString(),
+				unit["introduction"].GetString()
+			};
 			std::string type = unit["unit"].GetString();
 			//CCLOG("type: %s", type.c_str());
 			if (type == "base")
 			{
 				mUnitInitDataMap[base] = data;
+				mUnitDisplayMap[base] = introduction;
 				continue;
 			}
 			if (type == "farmer")
 			{
 				mUnitInitDataMap[farmer] = data;
+				mUnitDisplayMap[farmer] = introduction;
 				continue;
 			}
 			if (type == "shortrangeunit1")
 			{
 				mUnitInitDataMap[shortrangeunit1] = data;
+				mUnitDisplayMap[shortrangeunit1] = introduction;
 				continue;
 			}
 			if (type == "shortrangeunit2")
 			{
 				mUnitInitDataMap[shortrangeunit2] = data;
+				mUnitDisplayMap[shortrangeunit2] = introduction;
 				continue;
 			}
 			if (type == "longrangeunit1")
 			{
 				mUnitInitDataMap[longrangeunit1] = data;
+				mUnitDisplayMap[longrangeunit1] = introduction;
 				continue;
 			}
 			if (type == "longrangeunit2")
 			{
 				mUnitInitDataMap[longrangeunit2] = data;
+				mUnitDisplayMap[longrangeunit2] = introduction;
 				continue;
 			}
 			if (type == "longrangeunit3")
 			{
 				mUnitInitDataMap[longrangeunit3] = data;
+				mUnitDisplayMap[longrangeunit3] = introduction;
+				continue;
+			}
+			if (type == "fixedResource")
+			{
+				mUnitInitDataMap[fixedResource] = data;
+				mUnitDisplayMap[fixedResource] = introduction;
+				continue;
+			}
+			if (type == "randomResource")
+			{
+				mUnitInitDataMap[randomResource] = data;
+				mUnitDisplayMap[randomResource] = introduction;
 				continue;
 			}
 		}

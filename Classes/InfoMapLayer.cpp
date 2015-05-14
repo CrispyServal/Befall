@@ -52,17 +52,17 @@ bool InfoMapLayer::init()
 	mNowHpBar->setPosition(mHpBarBg->getPosition());
 	addChild(mNowHpBar, 6);
 	//
-	mTechNameLabel = Label::createWithSystemFont("", "Arial", 20);
+	mTechNameLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
 	mTechNameLabel->setPosition(width / 2, height / 2 + 80);
 	addChild(mTechNameLabel, 7);
 	//
-	mTechIntroLabel = Label::createWithSystemFont("", "Arial", 12);
+	mTechIntroLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 12);
 	mTechIntroLabel->setPosition(width / 2, height / 2 - 20);	
 	mTechIntroLabel->setDimensions(134, 100);//
 	mTechIntroLabel->setAlignment(TextHAlignment::LEFT, TextVAlignment::TOP);
 	addChild(mTechIntroLabel, 8);
 	//
-	mTechTurnLeft = Label::createWithSystemFont("", "Arial", 16);
+	mTechTurnLeft = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
 	mTechTurnLeft->setPosition(width / 2, height / 2 - 95);
 	addChild(mTechTurnLeft, 9);
 	//
@@ -98,7 +98,7 @@ void InfoMapLayer::displayUnitInfo(string unitName, int hpNow, int hpAll)
 	mNowHpBar->setVisible(true);
 }
 
-void InfoMapLayer::displayTech(string techName, string techIntroduction, string techTurnLeft)
+void InfoMapLayer::displayText(string techName, string techIntroduction, string techTurnLeft)
 {
 	mUnitNameLabel -> setVisible(false);
 //	mUnitSprite -> setVisible(false);

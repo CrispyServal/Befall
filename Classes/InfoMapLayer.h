@@ -29,8 +29,8 @@ public:
 	
 	//DisplayUnitInfo in narrative format and HP info
 	void displayUnitInfo(string unitName, int hpNow, int hpAll);
-	//DisplayTechInfo in narrative format
-	void displayTech(string techName, string techIntroduction, string techTurnLeft);
+	//DisplayText in narrative format
+	void displayText(string techName, string techIntroduction, string techTurnLeft);
 	//Clear Info Display
 	void clearAllInfo();
 };
