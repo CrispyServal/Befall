@@ -471,6 +471,7 @@ void GameScene::switchTurn()
 	}
 	mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.off);
 	mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.off);
+	refreshResourcesTexture();
 }
 
 void GameScene::checkTechFactory(int turnFlag)
@@ -963,6 +964,32 @@ void GameScene::refreshUnitCamp(const int & flag)
 	}
 }
 
+void GameScene::refreshResourcesTexture()
+{
+	for (auto & i : mResourceMap)
+	{
+		CCLOG("position: %d,%d", i.first.x, i.first.y);
+		if ((i.second.type == fixedResource) || (i.second.type == randomResource) )
+		{
+			float hp = (float)i.second.property.numHitPoint;
+			auto firstHp = hp * mResourceCriticalMap.at(i.second.type).firstP;
+			auto secondHp = hp * mResourceCriticalMap.at(i.second.type).secondP;
+			CCLOG("type: %d, hp: %f, first hp: %f, second hp: %f", i.second.type, hp, firstHp, secondHp);
+			if (hp > firstHp)
+			{
+				i.second.sprite->setTexture(mResourceTextureMap[i.second.type].abundant);
+			}
+			else if (hp > secondHp)
+			{
+				i.second.sprite->setTexture(mResourceTextureMap[i.second.type].middle);
+			}
+			else
+			{
+				i.second.sprite->setTexture(mResourceTextureMap[i.second.type].dried);
+			}
+		}
+	}
+}
 
 void GameScene::refreshResourcesIcons(const int & turnFlag)
 //void GameScene::refreshResourcesIcons(const ResourcesStruct & resources)
@@ -1054,6 +1081,8 @@ void GameScene::startGame()
 	spawnUnit(farmer, 1);
 	//refresh minimap
 	refreshMiniMap();
+	//refresh resources
+	refreshResourcesTexture();
 	//Test for info map
 	mInfoMapLayer->displayTech("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
 	//update

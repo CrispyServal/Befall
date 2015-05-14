@@ -48,6 +48,12 @@ struct ResourceTextureStruct
 	Texture2D * dried;
 };
 
+struct ResourceCriticalPointStruct
+{
+	float firstP;
+	float secondP;
+};
+
 struct UnitTextureStruct
 {
 	Texture2D * front;
@@ -231,7 +237,7 @@ private:
 
 	//共通
 
-	//unit->initial property and consumption
+	//unit & resources ->initial property and consumption
 	//init this map from json file
 	std::map<UnitEnum, UnitInitDataStruct> mUnitInitDataMap;
 	void initUnitData();
@@ -243,6 +249,12 @@ private:
 	void initTechData();
 	//矿藏的数据，只需要一份，两边会分别减少
 	std::map<MyPointStruct, Unit> mResourceMap;
+	//criticalPoint map
+	const std::map<UnitEnum, ResourceCriticalPointStruct> mResourceCriticalMap = { {
+		{ fixedResource, { 0.6, 0.3 } },
+		{ randomResource, { 0.6, 0.3 } }
+	} };
+	void refreshResourcesTexture();
 	//init coordinate->fixedResource from json file
 	void initResourceMap();
 	//num of random resource
