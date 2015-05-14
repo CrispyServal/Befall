@@ -405,6 +405,9 @@ void GameScene::switchTurn()
 	if (mBlueTurn)
 	{
 		++mNumTurn;
+		std::stringstream ss;
+		ss << mNumTurn;
+		mTurnLabel->setString(ss.str());
 	}
 	CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
 	//start turn
@@ -719,6 +722,15 @@ void GameScene::onTouchMoved(Touch * touch, Event * event)
 			break;
 		}
 		else if (mMiniMapLayer->blockClick())
+		{
+			break;
+		}
+		//tiledmap
+		if (mTiledMapLayer->containPoint(mMouseCoordinate))
+		{
+			checkTiledMapOnTouchMoved();
+		}
+		else if (mTiledMapLayer->blockClick())
 		{
 			break;
 		}
@@ -1091,6 +1103,32 @@ void GameScene::checkMiniMap()
 	//CCLOG("pF: %f,%f", pF.x, pF.y);
 	Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
 	mTiledMapLayer->setPosition(mWinWidth / 2 - pOfM.x, mWinHeight / 2 - pOfM.y);
+}
+
+void GameScene::checkTiledMapOnTouchMoved()
+{
+	Vec2 mapP = mTiledMapLayer->getPosition();
+	//CCLOG("mapP %f,%f", mapP.x, mapP.y);
+	Size mapS = mTiledMapLayer->getMapSizeF();
+	Vec2 newP = Vec2(mapP.x + mMouseCoordinate.x - mMouseCoordinateP.x, mapP.y + mMouseCoordinate.y - mMouseCoordinateP.y);
+	Vec2 dis = Vec2(newP.x - mapP.x, newP.y - mapP.y);
+	if (mapP.y <= mWinHeight - mapS.height - mWinHeight / 2 - dis.y/* - mapS.height + moveDis - 50*/)
+	{
+		newP.y = mapP.y;
+	}
+	else if (mapP.y >= 0 + mWinHeight / 2 - dis.y/* - moveDis + 280*/)
+	{
+		newP.y = mapP.y;
+	}
+	if (mapP.x >= 0 + mWinHeight / 2 - dis.x/* - moveDis*/)
+	{
+		newP.x = mapP.x;
+	}
+	else if (mapP.x <= mWinWidth - mapS.width - mWinHeight / 2 - dis.x/* - mapS.width + moveDis*/)
+	{
+		newP.x = mapP.x;
+	}
+	mTiledMapLayer->setPosition(newP);
 }
 
 void GameScene::checkTechTreeLayerOnTouchEnded()

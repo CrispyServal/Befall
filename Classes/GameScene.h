@@ -164,6 +164,7 @@ private:
 	void checkTechTreeLayerOnTouchEnded();
 	void checkUnitCampLayerOnTouchEnded();
 	TiledMapLayer * mTiledMapLayer;
+	void checkTiledMapOnTouchMoved();
 	Sprite * mTechTreeLayerButton;
 	buttonTextureStruct mTechTreeLayerButtonTexture;
 	Sprite * mUnitCampLayerButton;
