@@ -410,6 +410,7 @@ void GameScene::switchTurn()
 		refreshMakingButton(tF);
 		checkFactory(tF);
 		mTimer->start();
+		mTimer->setTimerColor(tF);
 		//refresh 2 layer display from gamestate
 		//start a new turn
 	}
@@ -445,6 +446,7 @@ void GameScene::switchTurn()
 		if (mOperateEnable)
 		{
 			mTimer->start();
+			mTimer->setTimerColor(tF);
 		}
 		else
 		{

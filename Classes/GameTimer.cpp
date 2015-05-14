@@ -32,7 +32,7 @@ bool GameTimer::init()
 	mEndLabel->setPosition(mBgCircle->getPositionX(), mBgCircle->getPositionY()+30);
 	mEndLabel->enableGlow(Color4B(255,255,255,155));
 	addChild(mEndLabel, 2);
-	radius = 600 * mBgCircle->getScaleX() * this->getScaleX();
+	radius = 90 * mBgCircle->getScaleX() * this->getScaleX();
 	mVitualCircle = DrawNode::create();
 	mVitualCircle->drawSolidCircle(mBgCircle->getPosition(), radius, CC_DEGREES_TO_RADIANS(90), 50, Color4F(0, 0, 0, 0.5));	
 	addChild(mVitualCircle, 3);
@@ -60,7 +60,7 @@ void GameTimer::setEndName(std::string endName)
 //只需判断结束回合有没有包含
 bool GameTimer::containPoint(Vec2 mousePoint)
 {
-	radius = 600 * mBgCircle->getScaleX() * this->getScaleX();
+	radius = 90 * mBgCircle->getScaleX() * this->getScaleX();
 	Point wpoint = mBgCircle->getParent()->convertToWorldSpace(mBgCircle->getPosition());
 	if ((wpoint.x - mousePoint.x)*(wpoint.x - mousePoint.x) + (wpoint.y - mousePoint.y)*(wpoint.y - mousePoint.y) <= (radius)*(radius))
 		return true;
