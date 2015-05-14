@@ -28,7 +28,10 @@ public:
 	{
 		return true;
 	}
-
+	Texture2D * getTechTexture(TechEnum tech)
+	{
+		return mTechTexture[tech];
+	}
 
 private:
 	float width;
@@ -46,6 +49,8 @@ private:
 	std::map<TechEnum, Sprite *> mClickAreaMap;
 	std::map<TechEnum, TechStateEnum> mTechStateMap;
 	Dictionary * dictionary;
+	//texture
+	Texture2D * mTechTexture[32];
 };
 
 #endif // !TECHTREELAYER_H

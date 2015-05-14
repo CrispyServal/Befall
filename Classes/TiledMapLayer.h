@@ -26,6 +26,11 @@ public:
 	Size getMapSizeF();
 	//get number of tiles
 	Size getMapSize();
+	//get tile size
+	Size getTileSize()
+	{
+		return mTiledMap->getTileSize();
+	}
 	//set all tile to gid1
 	void cleanUp();
 	void setTileColor(const MyPointStruct & point, int tileID);
@@ -34,6 +39,7 @@ public:
 	const int mGidBlue = 2;
 	const int mGidRed = 3;
 	//coordinate methods
+	//word mousePosition -> tiled coordinate
 	MyPointStruct tiledCoorForPostion(const Vec2 & position);
 	Vec2 floatWorldCoorForPosition(const MyPointStruct & position);
 	Vec2 floatNodeCoorForPosition(const MyPointStruct & position);

@@ -84,6 +84,36 @@ std::vector<PathNodeStruct> GameScene::getPathTree(MyPointStruct point, int rang
 	}
 	return result;
 }
+
+//need to be tested
+std::vector<MyPointStruct> GameScene::getPath(const std::vector<PathNodeStruct> & pathTree, MyPointStruct pointTo)
+{
+	std::vector<MyPointStruct> result;
+	//check
+	bool findT = false;
+	PathNodeStruct opNode;
+	for (const auto & node : pathTree)
+	{
+		if (node.point == pointTo)
+		{
+			findT = true;
+			opNode = node;
+		}
+	}
+	if (!findT)
+	{
+		//error
+		return result;
+	}
+	//
+	while (opNode != pathTree[opNode.indexParent])
+	{
+		result.insert(result.begin(), opNode.point);
+		opNode = pathTree[opNode.indexParent];
+	}
+	return result;
+}
+
 bool GameScene::init()
 {
 	if (!Scene::init())
@@ -107,6 +137,8 @@ bool GameScene::init()
 	//texture
 	initResourceTexture();
 	initUnitTexture();
+	//making cancel texture
+	mMakingCancelTexture = mDirector->getTextureCache()->addImage("icon_close_circle.png");
 	//srand
 	srand(static_cast<unsigned>(time(NULL)));
 	//gamemode
@@ -117,15 +149,6 @@ bool GameScene::init()
 	//init MapSize
 	mMapSize = mTiledMapLayer->getMapSize();
 	addChild(mTiledMapLayer,1);
-	//gray bar
-	mGrayBar = DrawNode::create();
-	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBar->drawSolidRect(Vec2(mWinWidth - 250, 50), Vec2(mWinWidth,240+10),Color4F(0.607, 0.607, 0.607, 0.75));
-	addChild(mGrayBar, 3);
-	//resources icon
-	initResourcesIcons();
 	//menu
 	initGameMenu();
 	auto startMenu = Menu::create(MenuItemLabel::create( 
@@ -162,9 +185,24 @@ bool GameScene::init()
 	addChild(mInfoMapLayer, 5);
 	//miniMapLayer
 	mMiniMapLayer = MiniMapLayer::create();
+	float miniPS = 8;
+	mMiniMapLayer->setPointSize(miniPS);
 	mMiniMapLayer->setMapSize(mTiledMapLayer->getMapSize().width, mTiledMapLayer->getMapSize().height);
-	mMiniMapLayer->setPosition(Vec2(mWinWidth / 2 - 100 - 20,0 - mWinHeight / 2 + 56.25 + 70));
+	mMiniMapLayer->setPosition(Vec2((mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS) / 2, (- mWinHeight +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS ) / 2));
 	addChild(mMiniMapLayer, 5);
+	//gray bar
+	mGrayBar = DrawNode::create();
+	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), Vec2(mWinWidth,50 +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ),Color4F(0.607, 0.607, 0.607, 0.75));
+	addChild(mGrayBar, 3);
+	//mTurnRect
+	mTurnRect = DrawNode::create();//yyp
+	mTurnRect->drawSolidRect(Vec2(mWinWidth - 45, mWinHeight - 45), Vec2(mWinWidth, mWinHeight), Color4F(0, 0, 1, 0.8));
+	addChild(mTurnRect, 8);
+	//resources icon
+	initResourcesIcons();
 	//unitcamplayer
 	mUnitCampLayer = UnitCampLayer::create();
 	//mUnitCampLayer->setPosition(0, 50);
@@ -196,6 +234,19 @@ bool GameScene::init()
 	mUnitCampLayerButton->setPosition(mWinWidth / 2 + 150, (mUnitCampLayerButton->getBoundingBox().getMaxY() - mUnitCampLayerButton->getBoundingBox().getMinY())/2 - 3);
 	mUnitCampLayerButton->setScale(0.9);
 	addChild(mUnitCampLayerButton, 8);
+	//2 working button
+	mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(techroot);
+	mTechMakingButton = Sprite::createWithTexture(mTechMakingButtonTexture);
+	mTechMakingButton->setScale(0.8);
+	mTechMakingButton->setPosition(mTechTreeLayerButton->getPosition().x - 2 * (mTechMakingButton->boundingBox().getMaxX() - mTechMakingButton->boundingBox().getMinX()), mTechTreeLayerButton->getPosition().y);
+	mTechMakingButton->setVisible(false);
+	addChild(mTechMakingButton, 8);
+	mUnitMakingButtonTexture = mUnitCampLayer->getUnitTexture(farmer);
+	mUnitMakingButton = Sprite::createWithTexture(mUnitMakingButtonTexture);
+	mUnitMakingButton->setScale(0.8);
+	mUnitMakingButton->setPosition(mUnitCampLayerButton->getPosition().x + 2 * (mUnitMakingButton->boundingBox().getMaxX() - mUnitMakingButton->boundingBox().getMinX()), mUnitCampLayerButton->getPosition().y);
+	mUnitMakingButton->setVisible(false);
+	addChild(mUnitMakingButton, 8);
 	
 	if (mGameMode == vsPlayer)
 	{
@@ -260,28 +311,36 @@ void GameScene::startConnecting(float delta)
 	}
 }
 
-void GameScene::NetUpdate(float delta)
+void GameScene::netUpdate(float delta)
 {
 	CCLOG("net update");
 	//test
 	if (mGameMode == server || mGameMode == client)
 	{
+		int tF = mGameMode == server ? 0 : 1;
 		if ( mNet.read())
 		{
 			CCLOG("read!");
 			if (!mNet.isLocked())
 			{
 				//read something
-				if (mNet.getTech())
+				whichEnum which = mNet.getWhich();
+				if (which == newTech)
 				{
-					if (mGameMode == server)
-					{
-						unlockTechTree(1, mNet.getTech());
-					}
-					else if (mGameMode == client)
-					{
-						unlockTechTree(0, mNet.getTech());
-					}
+					unlockTechTree(tF, mNet.getTech());
+				}
+				else if ( which == newSoldier)
+				{
+					//place soldier to enemy's spawn
+				}
+				else if (which == twoPoints)
+				{
+				}
+				else if (which == end)
+				{
+				}
+				else if (which == youwin)
+				{
 				}
 				mNet.lockOn();
 			}
@@ -325,6 +384,9 @@ void GameScene::update(float delta)
 		mTiledMapLayer->setPosition(mapP.x - moveDis, mapP.y);
 		mapP = mTiledMapLayer->getPosition();
 	}
+	Vec2 position = Vec2((mWinWidth / 2 - mTiledMapLayer->getPosition().x) / mTiledMapLayer->getMapSizeF().width,(mWinHeight / 2 - mTiledMapLayer->getPosition().y) / mTiledMapLayer->getMapSizeF().height);
+	//setViewPosition
+	mMiniMapLayer->setViewPosition(position);
 
 	//timer
 	mTimer->refresh(delta);
@@ -336,8 +398,211 @@ void GameScene::update(float delta)
 
 void GameScene::switchTurn()
 {
-	mMyTurn = !mMyTurn;
-	//
+	//end turn
+	mBlueTurn = !mBlueTurn;
+	CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
+	//start turn
+	if (mGameMode == vsPlayer)
+	{
+		mUnitCampLayer->setVisible(false);
+		mTechTreeLayer->setVisible(false);
+		int tF = mBlueTurn ? 0 : 1;
+		CCLOG("vsPlayer,tF: %d", tF);
+		refreshTechTree(tF);
+		refreshUnitCamp(tF);
+		refreshResourcesIcons(tF);
+		refreshMakingButton(tF);
+		checkFactory(tF);
+		mTimer->start();
+		//refresh 2 layer display from gamestate
+		//start a new turn
+	}
+	else if (mGameMode == server || mGameMode == client)
+	{
+		//send end
+		while (!mNet.sendEnd())
+		{
+			auto err = WSAGetLastError();
+			if (err != WSAEWOULDBLOCK)
+			{
+				mDirector->popScene();
+			}
+		}
+		//set OE
+		int tF = -1;
+		if (mGameMode == server)
+		{
+			mOperateEnable = mBlueTurn;
+			tF = 0;
+		}
+		else if (mGameMode == client)
+		{
+			mOperateEnable = !mBlueTurn;
+			tF = 1;
+		}
+		refreshTechTree(tF);
+		refreshUnitCamp(tF);
+		refreshResourcesIcons(tF);
+		checkFactory(tF);
+		refreshMakingButton(tF);
+		//timer
+		if (mOperateEnable)
+		{
+			mTimer->start();
+		}
+		else
+		{
+			mTimer->shutDown();
+		}
+	}
+	mTurnRect->clear();//yyp
+	if (mBlueTurn)
+	{
+		mTurnRect->drawSolidRect(Vec2(mWinWidth - 45, mWinHeight - 45), Vec2(mWinWidth, mWinHeight), Color4F(0, 0, 1, 0.8));
+	}
+	else
+	{
+		mTurnRect->drawSolidRect(Vec2(mWinWidth - 45, mWinHeight - 45), Vec2(mWinWidth, mWinHeight), Color4F(1, 0, 0, 0.8));
+	}
+}
+
+void GameScene::checkFactory(int turnFlag)
+{
+	mUnitFactory[turnFlag].refresh(mResources[turnFlag].numProductivity);
+	if (mUnitFactory[turnFlag].finished() && (!spawnOccupied(turnFlag)) )
+	{
+		//getUnit
+		auto newUnit = mUnitFactory[turnFlag].getFinishedUnit();
+		//set Existence
+		mUnitFactory[turnFlag].setExistence(false);
+		CCLOG("finished! newUnit: %d", newUnit);
+		//CCLOG("finished! newUnit: %d", newUnit);
+		//send
+		if (mGameMode == server || mGameMode == client)
+		{
+			while (!mNet.sendNewSoldier(newSoldierStruct{ newUnit, mSpawn[turnFlag] }))
+			{
+				auto err = WSAGetLastError();
+				if (err != WSAEWOULDBLOCK)
+				{
+					mDirector->popScene();
+				}
+			}
+		}
+	}
+}
+
+//need to be tested
+void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
+{
+	if (path.size() < 2)
+	{
+		CCLOG("invalid path");
+		return;
+	}
+	bool oeBak = mOperateEnable;
+	mOperateEnable = false;
+	const float duration = 0.3;
+	float disX = mTiledMapLayer->getTileSize().width;
+	float disY = mTiledMapLayer->getTileSize().height;
+	//actions
+	auto moveUp = MoveBy::create(duration, Vec2(disY, 0));
+	auto moveDown = MoveBy::create(duration, Vec2(- disY, 0));
+	auto moveLeft = MoveBy::create(duration, Vec2(- disX, 0));
+	auto moveRight = MoveBy::create(duration, Vec2(disX, 0));
+	auto rotateRight = RotateBy::create(0, 90);
+	auto rotateLeft = RotateBy::create(0, -90);
+	//get unit sprite;
+	Sprite * unit;
+	bool found = false;
+	for (auto & i : mGameState[turnFlag].unitMap)
+	{
+		if (i.first == path[0])
+		{
+			unit = i.second.sprite;
+			found = true;
+		}
+	}
+	//error
+	if (!found)
+	{
+		CCLOG("error, unit not found!");
+		return;
+	}
+	//final position in Node
+	Vec2 finalP = mTiledMapLayer->floatNodeCoorForPosition(path[path.size() - 1]);
+	//sequence vector
+	Vector<FiniteTimeAction*> actionVector;
+	for (int i = 0; i < path.size() - 1; ++i)
+	{
+		auto & thisP = path[i];
+		auto & nextP = path[i + 1];
+		//check direction
+		if ( (thisP.x == nextP.x) && (thisP.y < nextP.y) )
+		{
+			//move up
+			actionVector.pushBack(moveUp);
+			continue;
+		}
+		else if ((thisP.x == nextP.x) && (thisP.y > nextP.y))
+		{
+			//move down
+			actionVector.pushBack(moveDown);
+			continue;
+		}
+		else if ((thisP.y == nextP.y) && (thisP.x > nextP.x))
+		{
+			//move left
+			actionVector.pushBack(moveLeft);
+			continue;
+		}
+		else if ((thisP.y == nextP.y) && (thisP.x < nextP.x))
+		{
+			//move left
+			actionVector.pushBack(moveRight);
+			continue;
+		}
+	}
+	//sequence
+	auto fixPosition = CallFunc::create([&]()->void{unit->setPosition(finalP); });
+	auto unLockOE = CallFunc::create([&]()->void{mOperateEnable = true; });
+	actionVector.pushBack(fixPosition);
+	actionVector.pushBack(unLockOE);
+	auto sequence = Sequence::create(actionVector);
+	unit->runAction(sequence);
+}
+
+//testing
+void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
+{
+	Unit newUnit = {
+		unit,
+		UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] ),
+		UnitStateEnum::fresh,
+		[&]()->Sprite*
+		{
+			auto sprite = Sprite::createWithTexture(mUnitTextureMap[turnFlag][unit].front);
+			sprite->setPosition(mTiledMapLayer->floatNodeCoorForPosition(mSpawn[turnFlag]));
+			mTiledMapLayer->addChild(sprite,2);
+			return sprite;
+		}()
+		};
+	//add to unitMap
+	mGameState[turnFlag].unitMap[mSpawn[turnFlag]] = newUnit;
+}
+
+//testing
+bool GameScene::spawnOccupied(int turnFlag)
+{
+	auto & spawn = mSpawn[turnFlag];
+	for (const auto & i : mGameState[turnFlag].unitMap)
+	{
+		if (i.first == spawn)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void GameScene::backToMainScene(Ref * sender)
@@ -415,11 +680,12 @@ void GameScene::onTouchMoved(Touch * touch, Event * event)
 		//minimap
 		if (mMiniMapLayer->containPoint(mMouseCoordinate))
 		{
-			mMiniMapLayer->moveView(mMouseCoordinate);
-			Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
-			CCLOG("pF: %f,%f", pF.x, pF.y);
-			Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
-			mTiledMapLayer->setPosition(mWinWidth / 2 - pOfM.x, mWinHeight / 2 - pOfM.y);
+			checkMiniMap();
+			break;
+		}
+		else if (mMiniMapLayer->blockClick())
+		{
+			break;
 		}
 	} while (0);
 
@@ -434,46 +700,85 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 		checkTechAndUnitButton();
 		do
 		{
-			//techLayer
-			if (mTechTreeLayer->containPoint(mMouseCoordinateTouch))
+			//minimap
+			if (mMiniMapLayer->containPoint(mMouseCoordinate))
 			{
-				auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinateTouch);
-				int flagGameState = 0;
-
-				if (mMyTurn)
-				{
-					flagGameState = 0;
-				}
-				else
-				{
-					flagGameState = 1;
-				}
-
-				if (mGameState[flagGameState].techTree.unlockable(tech))
-				{
-					//CCLOG("sadoa");
-					if (mGameMode == server || mGameMode == client)
-					{
-						while (!mNet.sendTech(tech))
-						{
-							auto err = WSAGetLastError();
-							if (err != WSAEWOULDBLOCK)
-							{
-								CCLOG("he GG!!");
-								mDirector->popScene();
-							}
-						}
-					}
-					else if (mGameMode == vsPlayer)
-					{
-						//add to factory
-						//unlockTechTree(flagGameState, tech);
-					}
-				}
+				checkMiniMap();
+				break;
 			}
-			else if (mTechTreeLayer->blockClick())
+			else if (mMiniMapLayer->blockClick())
 			{
 				break;
+			}
+			//timer
+			if (mTimer->containPoint(mMouseCoordinateTouch))
+			{
+				CCLOG("timer contain");
+				//timer contain bug
+				switchTurn();
+				break;
+			}
+			else if (mTimer->blockClick())
+			{
+				break;
+			}
+			//techLayer
+			if (mTechTreeLayer->isVisible())
+			{
+				if (mTechTreeLayer->containPoint(mMouseCoordinateTouch))
+				{
+					auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinateTouch);
+					int flagGameState = 0;
+
+					if (mBlueTurn)
+					{
+						flagGameState = 0;
+					}
+					else
+					{
+						flagGameState = 1;
+					}
+
+					if (mGameState[flagGameState].techTree.unlockable(tech))
+					{
+						//CCLOG("sadoa");
+						if (mGameMode == server || mGameMode == client)
+						{
+							while (!mNet.sendTech(tech))
+							{
+								auto err = WSAGetLastError();
+								if (err != WSAEWOULDBLOCK)
+								{
+									CCLOG("he GG!!");
+									mDirector->popScene();
+								}
+							}
+						}
+						else if (mGameMode == vsPlayer)
+						{
+							//add to factory
+							//unlockTechTree(flagGameState, tech);
+						}
+						break;
+					}
+				}
+				else if (mTechTreeLayer->blockClick())
+				{
+					break;
+				}
+			}
+			//unitCamp
+			if (mUnitCampLayer->isVisible())
+			{
+				if (mUnitCampLayer->containPoint(mMouseCoordinateTouch))
+				{
+					checkUnitCampLayerOnTouchEnded();
+					break;
+				}
+				else if (mUnitCampLayer->blockClick())
+				{
+					break;
+				}
 			}
 		} while (0);
 	}
@@ -482,7 +787,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 void GameScene::unlockTechTree(const int & flag, TechEnum tech)
 {
 	mGameState[flag].techTree.unlock(tech);
-	CCLOG("ssss: %d", mGameState[flag].techTree.isUnlocked(tech));
+	//CCLOG("ssss: %d", mGameState[flag].techTree.isUnlocked(tech));
 	setTechInfluence(flag,tech);
 	refreshTechTree(flag);
 }
@@ -596,16 +901,90 @@ void GameScene::refreshTechTree(const int & flag)
 	{
 		if (mGameState[flag].techTree.unlockable(i))
 		{
-			CCLOG("tech a: %d", i);
+			//CCLOG("tech a: %d", i);
 			mTechTreeLayer->setTechState(i, available);
 		}
 		else if(mGameState[flag].techTree.isUnlocked(i))
 		{
-			CCLOG("tech un: %d", i);
+			//CCLOG("tech un: %d", i);
 			mTechTreeLayer->setTechState(i, unlocked);
 		}
 	}
 	//waiting for factory coming soon~
+}
+
+void GameScene::refreshUnitCamp(const int & flag)
+{
+	for (const auto & unit : mUnitStringEnumMap)
+	{
+		auto property = UnitPropertyStruct{
+			mUnitInitDataMap[unit.second].property.numHitPoint + mGameState[flag].extraProperty[unit.second].numHitPoint,
+			mUnitInitDataMap[unit.second].property.numDefence + mGameState[flag].extraProperty[unit.second].numDefence,
+			mUnitInitDataMap[unit.second].property.numAttack + mGameState[flag].extraProperty[unit.second].numAttack,
+			mUnitInitDataMap[unit.second].property.numRangeAttack + mGameState[flag].extraProperty[unit.second].numRangeAttack,
+			mUnitInitDataMap[unit.second].property.numRangeMove + mGameState[flag].extraProperty[unit.second].numRangeMove,
+			mUnitInitDataMap[unit.second].property.numPopulation + mGameState[flag].extraProperty[unit.second].numPopulation
+		};
+		auto resource = ResourcesStruct{
+			mUnitInitDataMap[unit.second].consumption.numFixedResource,
+			mUnitInitDataMap[unit.second].consumption.numRandomResource,
+			mUnitInitDataMap[unit.second].consumption.numProductivity,
+			mUnitInitDataMap[unit.second].consumption.numResearchLevel
+		};
+		mUnitCampLayer->setUnitResourceAndProperty(unit.second, resource, property);
+	}
+}
+
+void GameScene::refreshResourcesIcons(const int & turnFlag)
+//void GameScene::refreshResourcesIcons(const ResourcesStruct & resources)
+{
+	auto resources = mResources[turnFlag];
+	std::stringstream ss;
+	ss << resources.numFixedResource;
+	CCLOG("F: %s", ss.str().c_str());
+	mFixedResourceLabel->setString(ss.str());
+	ss.clear();
+	ss.str("");
+	ss << resources.numRandomResource;
+	CCLOG("R: %s", ss.str().c_str());
+	mRandomResourceLabel->setString(ss.str());
+	ss.clear();
+	ss.str("");
+	ss << resources.numProductivity;
+	mProductivityLabel->setString(ss.str());
+	ss.clear();
+	ss.str("");
+	ss << resources.numResearchLevel;
+	mResearchLabel->setString(ss.str());
+}
+
+void GameScene::refreshPopulationIcons(const int & population)
+{
+	std::stringstream ss;
+	ss << population << "/" << mPopulationLimit;
+	mPopulationLabel->setString(ss.str());
+}
+
+void GameScene::refreshMakingButton(int turnF)
+{
+	if (mUnitFactory[turnF].unitExistence())
+	{
+		mUnitMakingButton->setVisible(true);
+		mUnitMakingButton->setTexture(mUnitCampLayer->getUnitTexture(mUnitFactory[turnF].getMakingUnit()));
+	}
+	else
+	{
+		mUnitMakingButton->setVisible(false);
+	}
+	if (mTechFactory[turnF].techExistence())
+	{
+		mTechMakingButton->setVisible(true);
+		mTechMakingButton->setTexture(mTechTreeLayer->getTechTexture(mTechFactory[turnF].getMakingTech()));
+	}
+	else
+	{
+		mTechMakingButton->setVisible(false);
+	}
 }
 
 void GameScene::onMouseMoved(Event * event)
@@ -633,12 +1012,17 @@ void GameScene::startGame()
 	//turn
 	if (mGameMode != client)
 	{
-		mMyTurn = true;
+		mBlueTurn = true;
+		mOperateEnable = true;
 	}
 	else
 	{
-		mMyTurn = false;
+		mBlueTurn = false;
+		mOperateEnable = false;
 	}
+	//test
+	spawnUnit(farmer, 0);
+	spawnUnit(farmer, 1);
 	//refresh minimap
 	refreshMiniMap();
 	//update
@@ -658,7 +1042,7 @@ void GameScene::startGame()
 	//net update, 0.5s
 	if (mGameMode == server || mGameMode == client)
 	{
-		schedule(schedule_selector(GameScene::NetUpdate), 0.5, CC_REPEAT_FOREVER, 0);
+		schedule(schedule_selector(GameScene::netUpdate), 0.5, CC_REPEAT_FOREVER, 0);
 	}
 }
 
@@ -696,6 +1080,82 @@ void GameScene::refreshMiniMap()
 	mMiniMapLayer->refresh(unitSet[0], unitSet[1], fixedRSet, randomRSet);
 }
 
+void GameScene::checkMiniMap()
+{
+	mMiniMapLayer->moveView(mMouseCoordinate);
+	Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
+	//CCLOG("pF: %f,%f", pF.x, pF.y);
+	Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
+	mTiledMapLayer->setPosition(mWinWidth / 2 - pOfM.x, mWinHeight / 2 - pOfM.y);
+}
+
+void GameScene::checkUnitCampLayerOnTouchEnded()
+{
+	auto unit = mUnitCampLayer->getunitMouseOn();
+	if (mGameMode == server || mGameMode == client)
+	{
+		int tF = (mGameMode == server) ? 0 : 1;
+		if (mOperateEnable)
+		{
+			if (!mUnitFactory[tF].unitExistence())
+			{
+				//add to factory
+				if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
+				{
+					mResources[tF] -= mUnitInitDataMap[unit].consumption;
+					//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
+					mUnitFactory[tF].addNewUnit(unit);
+					refreshMakingButton(tF);
+					refreshResourcesIcons(tF);
+				}
+			}
+		}
+	}
+	else if (mGameMode == vsPlayer)
+	{
+		int tF = mBlueTurn ? 0 : 1;
+		if (!mUnitFactory[tF].unitExistence())
+		{
+			if ((mResources[tF] >= mUnitInitDataMap[unit].consumption) && (mPopulation[tF] + mUnitInitDataMap[unit].property.numPopulation <= mPopulationLimit))
+			{
+				mResources[tF] -= mUnitInitDataMap[unit].consumption;
+				//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
+				mUnitFactory[tF].addNewUnit(unit);
+				refreshMakingButton(tF);
+				CCLOG("vsPlayer; added new unit!");
+				refreshResourcesIcons(tF);
+			}
+		}
+	}
+}
+
+void GameScene::checkMakingButtonOnMouseMoved()
+{
+	if (mUnitMakingButton->isVisible())
+	{
+		//unit
+		if (mUnitMakingButton->boundingBox().containsPoint(mMouseCoordinate))
+		{
+			mUnitMakingButton->setTexture(mMakingCancelTexture);
+		}
+		else
+		{
+			mUnitMakingButton->setTexture(mUnitMakingButtonTexture);
+		}
+	}
+	if (mTechMakingButton->isVisible())
+	{
+		if (mTechMakingButton->boundingBox().containsPoint(mMouseCoordinate))
+		{
+			mTechMakingButton->setTexture(mMakingCancelTexture);
+		}
+		else
+		{
+			mTechMakingButton->setTexture(mTechMakingButtonTexture);
+		}
+	}
+}
+
 void GameScene::checkBackToMainSceneItemOnMouseMoved()
 {
 	//cancel's scale effect
@@ -728,10 +1188,11 @@ void GameScene::checkLayersOnMouseMoved()
 	do
 	{
 		//UI(timer,buttons,minimap)
+		checkMakingButtonOnMouseMoved();
 		//Tech/Unit layer
 		if (mUnitCampLayer->isVisible())
 		{
-			CCLOG("to call!!");
+			//CCLOG("to call!!");
 			mUnitCampLayer->onMouseMoved(mMouseCoordinate);
 		}
 		//
@@ -778,6 +1239,8 @@ void GameScene::initGameState()
 	//spawn
 	mSpawn[0] = MyPointStruct{ 4, 17 };
 	mSpawn[1] = MyPointStruct{ 17, 4 };
+	//population
+	mPopulation[0] = mPopulation[1] = 0;
 	//¹²Í¨
 	initUnitData();
 	initTechData();
@@ -788,25 +1251,25 @@ void GameScene::initGameState()
 		mUnitCampLayer->setUnitResourceAndProperty(i.first, i.second.consumption, i.second.property);
 	}
 	//mResources
-	mResources = ResourcesStruct{ 100, 100, 10, 10 };
+	mResources[0] = mResources[1] = ResourcesStruct{ 100, 100, 10, 10 };
 	//set Label value
 	std::stringstream ssFixed;
-	ssFixed << mResources.numFixedResource;
+	ssFixed << mResources[0].numFixedResource;
 	mFixedResourceLabel->setString(ssFixed.str());
 	std::stringstream ssRandom;
-	ssRandom << mResources.numRandomResource;
+	ssRandom << mResources[0].numRandomResource;
 	mRandomResourceLabel->setString(ssRandom.str());
 	std::stringstream ssProductivity;
-	ssProductivity << mResources.numProductivity;
+	ssProductivity << mResources[0].numProductivity;
 	mProductivityLabel->setString(ssProductivity.str());
 	std::stringstream ssResearch;
-	ssResearch << mResources.numResearchLevel;
+	ssResearch << mResources[0].numResearchLevel;
 	mResearchLabel->setString(ssResearch.str());
 
 	mCollectionEffeciency = ResourcesStruct{ 0, 0, 0, 0 };
 	//Ë«±ß
 	TechTree techTree;
-	CCLOG("techroot? %d",techTree.isUnlocked(techroot));
+	//CCLOG("techroot? %d",techTree.isUnlocked(techroot));
 	std::map<MyPointStruct, Unit> unitMap;
 	std::map<UnitEnum, UnitPropertyStruct> extraProperty;
 	std::map<UnitEnum, bool> unitLockMap = {
@@ -825,6 +1288,16 @@ void GameScene::initGameState()
 	};
 	gameState.techTree.unlock(techroot);
 	mGameState[0] = mGameState[1] = gameState;
+	//initUnitFactory
+	for (int i = 0; i < 2; ++i)
+	{
+		mUnitFactory[i].setUnitTime(farmer,mUnitCampLayer->getUnitResources(farmer).numProductivity);
+		mUnitFactory[i].setUnitTime(shortrangeunit1,mUnitCampLayer->getUnitResources(shortrangeunit1).numProductivity);
+		mUnitFactory[i].setUnitTime(shortrangeunit2,mUnitCampLayer->getUnitResources(shortrangeunit2).numProductivity);
+		mUnitFactory[i].setUnitTime(longrangeunit1,mUnitCampLayer->getUnitResources(longrangeunit1).numProductivity);
+		mUnitFactory[i].setUnitTime(longrangeunit2,mUnitCampLayer->getUnitResources(longrangeunit2).numProductivity);
+		mUnitFactory[i].setUnitTime(longrangeunit3,mUnitCampLayer->getUnitResources(longrangeunit3).numProductivity);
+	}
 }
 
 void GameScene::initResourceMap()
@@ -1238,7 +1711,9 @@ void GameScene::initResourcesIcons()
 	auto populationIcon= Sprite::create("uiComponent/icon_cpu.png");
 	populationIcon->setPosition(offset * 4, 0);
 	resourcesIcons->addChild(populationIcon);
-	mPopulationLabel = Label::createWithTTF("0/100", "fonts/STXIHEI.TTF", iconsFontSize);
+	std::stringstream ssP;
+	ssP << "0/" << mPopulationLimit;
+	mPopulationLabel = Label::createWithTTF(ssP.str(), "fonts/STXIHEI.TTF", iconsFontSize);
 	mPopulationLabel->setColor(Color3B(0, 0, 0));
 	mPopulationLabel->setPosition(populationIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mPopulationLabel);

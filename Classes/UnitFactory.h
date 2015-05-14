@@ -18,26 +18,38 @@ public:
 	bool finished();
 	//返回当前建造的单位
 	UnitEnum getFinishedUnit();
+	//get making unit
+	UnitEnum getMakingUnit()
+	{
+		return mBuldingUnit;
+	}
 	//取消当前建造
 	void cancelNowUnit();
 	//开始一个建造, 去查需要的时间
 	void addNewUnit(UnitEnum unit);
 	//
 	bool unitExistence();
+	//
+	void setExistence(bool E)
+	{
+		mUnitExistence = E;
+	}
+	//set Time
+	void setUnitTime(UnitEnum unit, int time);
 private:
 	//等待中队列
 	UnitEnum mBuldingUnit;
 	//建造中的剩余量
 	int mTimer;
 	bool mUnitExistence;
-	map<UnitEnum, int> mUnitTimeTable = { { 
-			{ farmer, 10 }, 
-			{ longrangeunit1, 10 },
-			{ longrangeunit2, 10 },
-			{ longrangeunit3, 10 },
-			{ shortrangeunit1, 10},
-			{ shortrangeunit2, 10},
-			} };
+	map<UnitEnum, int> mUnitTimeTable = { {
+		{ farmer, 10 },
+		{ longrangeunit1, 10 },
+		{ longrangeunit2, 10 },
+		{ longrangeunit3, 10 },
+		{ shortrangeunit1, 10 },
+		{ shortrangeunit2, 10 },
+	} };
 };
 
 #endif // !UNITFACTORY_H

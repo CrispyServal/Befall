@@ -11,7 +11,11 @@ struct MyPointStruct
 {
 	int x;
 	int y;
+	
 };
+bool operator < (const MyPointStruct & thisOne, const MyPointStruct & another);
+bool operator == (const MyPointStruct & thisOne, const MyPointStruct & another);
+bool operator != (const MyPointStruct & thisOne, const MyPointStruct & another);
 
 struct InfluenceStruct
 {
@@ -20,7 +24,6 @@ struct InfluenceStruct
 	int value;
 };
 
-bool operator < (const MyPointStruct & thisOne, const MyPointStruct & another);
 
 //use this in vector
 struct PathNodeStruct
@@ -29,6 +32,8 @@ struct PathNodeStruct
 	int indexParent;
 	int stepLeft;
 };
+bool operator == (const PathNodeStruct & thisOne, const PathNodeStruct & another);
+bool operator != (const PathNodeStruct & thisOne, const PathNodeStruct & another);
 
 /*
 bool operator < (const PathNodeStruct & thisOne, const PathNodeStruct & another)
@@ -60,7 +65,20 @@ struct UnitPropertyStruct
 	int numRangeAttack;
 	int numRangeMove;
 	int numPopulation;
+	UnitPropertyStruct operator += (const UnitPropertyStruct & another)
+	{
+		this->numHitPoint += another.numHitPoint;
+		this->numDefence += another.numDefence;
+		this->numAttack += another.numAttack;
+		this->numRangeAttack += another.numRangeAttack;
+		this->numRangeMove+= another.numRangeMove;
+		this->numPopulation += another.numPopulation;
+		return (*this);
+	}
 };
+
+UnitPropertyStruct operator + (const UnitPropertyStruct & thisOne, const UnitPropertyStruct & another);
+
 
 struct ResourcesStruct
 {
@@ -68,6 +86,26 @@ struct ResourcesStruct
 	int numRandomResource;
 	int numProductivity;
 	int numResearchLevel;
+	ResourcesStruct operator += (const ResourcesStruct & another)
+	{
+		this->numFixedResource += another.numFixedResource;
+		this->numRandomResource += another.numRandomResource;
+		//this->numProductivity += another.numProductivity;
+		//this->numResearchLevel += another.numResearchLevel;
+		return (*this);
+	}
+	ResourcesStruct operator -= (const ResourcesStruct & another)
+	{
+		this->numFixedResource -= another.numFixedResource;
+		this->numRandomResource -= another.numRandomResource;
+		//this->numProductivity -= another.numProductivity;
+		//this->numResearchLevel -= another.numResearchLevel;
+		return (*this);
+	}
+	bool operator >= (const ResourcesStruct & another)
+	{
+		return ( (this->numFixedResource >= another.numFixedResource) && (this->numRandomResource >= another.numRandomResource)/* && (this->numProductivity >= another.numProductivity) && (this->numResearchLevel >= another.numResearchLevel)*/ );
+	}
 };
 
 struct Unit

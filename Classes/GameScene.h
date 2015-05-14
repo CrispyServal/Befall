@@ -71,6 +71,7 @@ struct keyStruct
 
 const std::map<std::string, UnitEnum> mUnitStringEnumMap =
 {
+	{ "farmer", farmer},
 	{ "shortRangeUnit1", shortrangeunit1 },
 	{ "shortRangeUnit2", shortrangeunit2 },
 	{ "longRangeUnit1", longrangeunit1 },
@@ -142,12 +143,15 @@ private:
 	YypNoBlockingNet mNet;
 	MenuItemLabel * mBackToMainSceneItem;
 	DrawNode * mGrayBar;
+	DrawNode * mTurnRect;
 	Label * mFixedResourceLabel;
 	Label * mRandomResourceLabel;
 	Label * mProductivityLabel;
 	Label * mResearchLabel;
 	Label * mPopulationLabel;
 	void initResourcesIcons();
+	void refreshResourcesIcons(const int & turnFlag);
+	void refreshPopulationIcons(const int & population);
 	//a menu
 	Node * mGameMenu;
 	void initGameMenu();
@@ -156,38 +160,52 @@ private:
 	void switchTurn();
 	TechTreeLayer * mTechTreeLayer;
 	UnitCampLayer * mUnitCampLayer;
+	void checkUnitCampLayerOnTouchEnded();
 	TiledMapLayer * mTiledMapLayer;
 	Sprite * mTechTreeLayerButton;
 	buttonTextureStruct mTechTreeLayerButtonTexture;
 	Sprite * mUnitCampLayerButton;
 	buttonTextureStruct mUnitCampLayerButtonTexture;
 	void checkTechAndUnitButton();
+	//waiting ding to finish resources
+	Sprite * mTechMakingButton;
+	Texture2D * mTechMakingButtonTexture;
+	Sprite * mUnitMakingButton;
+	Texture2D * mUnitMakingButtonTexture;
+	void checkMakingButtonOnMouseMoved();
+	void refreshMakingButton(int turnF);
+	Texture2D * mMakingCancelTexture;
+
 	InfoMapLayer * mInfoMapLayer;
 	MiniMapLayer * mMiniMapLayer;
 	void refreshMiniMap();
+	void checkMiniMap();
 	//factory
-	UnitFactory mUnitFactory;
-	TechFactory mTechFactory;
+	UnitFactory mUnitFactory[2];
+	void checkFactory(int turnFlag);
+	TechFactory mTechFactory[2];
 	//when connecting or listening, display juFlower or something else
 	Layer * mWelcomeLayer;
 	Layer * mTouchLayer;
 	EventListenerMouse * mMouseListener;
 	EventListenerTouchOneByOne * mTouchListener;
 	EventListenerKeyboard * mKeyboardListener;
+	//distance per press for map
 	const float moveDis = 20;
 	keyStruct mKeyStruct;
-	//methods----------------------------------------------------------
+
 	void initWelcomeLayer();
 	void initYypNet();
 	void initResourceTexture();
 	void initUnitTexture();
-	//updates
+	//net
 	void acceptConnect(float delta);
 	void startConnecting(float delta);
+	//start
 	void startGame();
-	//1、检查计时器是否结束
+	//update
 	void update(float delta);
-	void NetUpdate(float delta);
+	void netUpdate(float delta);
 
 	//callback
 	void backToMainScene(Ref * sender);
@@ -233,28 +251,43 @@ private:
 	GameStateStruct mGameState[2];
 	//spawn
 	MyPointStruct mSpawn[2];
+	bool spawnOccupied(int turnFlag);
+	//population
+	int mPopulation[2];
 
-	//单边
+	const int mPopulationLimit = 100;
+
+	//单边（误
 
 	//resourses
-	ResourcesStruct mResources;
+	ResourcesStruct mResources[2];
 	//effective resoures
 	//e.g. productivity += numFarmer * (Farmer.numAttack + mExtraResources);
 	ResourcesStruct mExtraResources;
 	//effeciency of collection
 	ResourcesStruct mCollectionEffeciency;
 	//sign whether it is my turn
-	bool mMyTurn;
+	bool mBlueTurn;
+	//if false, cannot do any thing about data
+	bool mOperateEnable;
 	//method
 	//初始静态数据在这里面。此函数初始化双方的GameState。可能会读字典。
 	void initGameState();
 	std::vector<MyPointStruct> getNearPoint(const MyPointStruct & point);
 	std::vector<PathNodeStruct> getPathTree(MyPointStruct point, int range, const std::set<MyPointStruct> & barrier);
+	std::vector<MyPointStruct> getPath(const std::vector<PathNodeStruct> & pathTree, MyPointStruct pointTo);
+	//spawn unit
+	void spawnUnit(UnitEnum unit, int turnFlag);
+	//unit moving
+	void moveUnit(std::vector<MyPointStruct> path, int turnFlag);
 
 	//Tech Influence
 	void setTechInfluence(const int & flag, TechEnum tech);
 	void unlockTechTree(const int & flag, TechEnum tech);
 	void refreshTechTree(const int & flag);
+
+	//
+	void refreshUnitCamp(const int & flag);
 };
 
 #endif // !GAMESCENE_H
@@ -267,7 +300,6 @@ private:
 		auto err = WSAGetLastError();
 		if (err != WSAEWOULDBLOCK)
 		{
-			CCLOG("he GGed so fast!!!");
 			mDirector->popScene();
 		}
 	}

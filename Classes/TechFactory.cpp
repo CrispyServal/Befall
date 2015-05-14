@@ -3,7 +3,8 @@
 
 using std::map;
 
-TechFactory::TechFactory()
+TechFactory::TechFactory():
+mTechExistence(false)
 {
 };
 TechFactory::~TechFactory()
@@ -19,7 +20,6 @@ bool TechFactory::finished()
 	if (mTimer <= 0 && mTechExistence)
 	{
 		return true;
-		mTechExistence = false;
 	}
 	else
 		return false;
