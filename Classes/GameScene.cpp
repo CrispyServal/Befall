@@ -1234,13 +1234,14 @@ void GameScene::checkMakingButtonOnMouseMoved()
 	if (mUnitMakingButton->isVisible())
 	{
 		//unit
+		//BUG!! mUnitMakingButtonTexture should be bilateral
 		if (mUnitMakingButton->boundingBox().containsPoint(mMouseCoordinate))
 		{
 			mUnitMakingButton->setTexture(mMakingCancelTexture);
 		}
 		else
 		{
-			mUnitMakingButton->setTexture(mUnitMakingButtonTexture);
+			mUnitMakingButton->setTexture(mUnitMakingButtonTexture);	
 		}
 	}
 	if (mTechMakingButton->isVisible())
@@ -1254,6 +1255,7 @@ void GameScene::checkMakingButtonOnMouseMoved()
 			mTechMakingButton->setTexture(mTechMakingButtonTexture);
 		}
 	}
+
 }
 
 void GameScene::checkMakingButtonOnTouchEnded()
@@ -1316,8 +1318,38 @@ void GameScene::checkLayersOnMouseMoved()
 		{
 			//CCLOG("to call!!");
 			mUnitCampLayer->onMouseMoved(mMouseCoordinate);
-			if (mUnitCampLayer->containPoint(mMouseCoordinate))
-			{
+		}
+
+		bool clearFlag = true;
+		if (mUnitMakingButton->isVisible() 
+			&& mUnitMakingButton->boundingBox().containsPoint(mMouseCoordinate))
+		{
+				//refresh InfoMap
+				int tF = mBlueTurn ? 0 : 1;
+				auto unit = mUnitFactory[tF].getMakingUnit();
+				mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit),
+					mUnitCampLayer->getUnitIntroDuction(unit),
+					stringPredict + std::to_string(calcInteger(
+					mUnitFactory[tF].getLeftTime(),
+					mResources[tF].numProductivity)) + stringTurn);
+				clearFlag = false;
+		}
+		if (mTechMakingButton->isVisible() && 
+			mTechMakingButton->boundingBox().containsPoint(mMouseCoordinate))
+		{
+			//refresh InfoMap
+			int tF = mBlueTurn ? 0 : 1;
+			auto tech = mTechFactory[tF].getMakingTech();
+			mInfoMapLayer->displayText(mTechDisplayMap[tech].techName,
+				mTechDisplayMap[tech].techIntroduction,
+				stringPredict + std::to_string(calcInteger(
+				mTechFactory[tF].getLeftTime(),
+				mResources[tF].numResearchLevel)) + stringTurn);
+			clearFlag = false;
+		}
+		if (mUnitCampLayer->isVisible() && 
+			mUnitCampLayer->containPoint(mMouseCoordinate))
+		{
 				auto unit = mUnitCampLayer->getUnitMouseOn();
 				int tF = (mGameMode == server) ? 0 : 1;
 				mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit), 
@@ -1325,31 +1357,27 @@ void GameScene::checkLayersOnMouseMoved()
 					stringPredict + std::to_string(calcInteger(
 					mUnitCampLayer->getUnitProductivity(unit), 
 					mResources[tF].numProductivity)) + stringTurn);
-			}
-			else
-			{
-				mInfoMapLayer->clearAllInfo();
-			}
+				clearFlag = false;
 		}
 		//TileMap
-		else if (mTechTreeLayer->isVisible())
+		if (mTechTreeLayer->isVisible() 
+			&& mTechTreeLayer->containPoint(mMouseCoordinate))
 		{
-			if (mTechTreeLayer->containPoint(mMouseCoordinate))
-			{
 				auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinate);
 				int tF = (mGameMode == server) ? 0 : 1;
+				if (mGameState[tF].techTree.isUnlocked(tech) || 
+					mGameState[tF].techTree.unlockable(tech))
+				{
 				mInfoMapLayer->displayText(mTechDisplayMap[tech].techName, 
 					mTechDisplayMap[tech].techIntroduction, 
 					stringPredict + std::to_string(calcInteger(
 					mTechInitDataMap[tech].numResearchLevel,
 					mResources[tF].numResearchLevel)) + stringTurn);
-			}
-			else
-			{
-				mInfoMapLayer->clearAllInfo();
-			}
+				clearFlag = false;
+				}
 		}
-		else if (mTiledMapLayer->containPoint(mMouseCoordinate))
+		if (mTiledMapLayer->containPoint(mMouseCoordinate) 
+			&& !mTechTreeLayer->isVisible() && !mUnitCampLayer->isVisible())
 		{
 			auto mPos = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinate);
 			auto unitInfo = existUnitOnTiledMap(mPos);
@@ -1359,18 +1387,14 @@ void GameScene::checkLayersOnMouseMoved()
 					mUnitDisplayMap[unitInfo.mUnitEnum].unitName, 
 					unitInfo.property.numHitPoint, 
 					mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint);
-			}
-			else
-			{
-				mInfoMapLayer->clearAllInfo();
+				clearFlag = false;
 			}
 			//waiting for yyp
-		}
-		else
+		} 
+		if (clearFlag)
 		{
 			mInfoMapLayer->clearAllInfo();
 		}
-
 	} while (0);
 }
 

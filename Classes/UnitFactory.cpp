@@ -54,3 +54,8 @@ bool UnitFactory::unitExistence()
 {
 	return mUnitExistence;
 }
+
+int UnitFactory::getLeftTime()
+{
+	return mTimer;
+}

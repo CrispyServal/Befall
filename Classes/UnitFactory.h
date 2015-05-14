@@ -36,6 +36,7 @@ public:
 	}
 	//set Time
 	void setUnitTime(UnitEnum unit, int time);
+	int getLeftTime();
 private:
 	//等待中队列
 	UnitEnum mBuldingUnit;

@@ -56,7 +56,7 @@ bool InfoMapLayer::init()
 	mTechNameLabel->setPosition(width / 2, height / 2 + 80);
 	addChild(mTechNameLabel, 7);
 	//
-	mTechIntroLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 12);
+	mTechIntroLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 16);
 	mTechIntroLabel->setPosition(width / 2, height / 2 - 20);	
 	mTechIntroLabel->setDimensions(134, 100);//
 	mTechIntroLabel->setAlignment(TextHAlignment::LEFT, TextVAlignment::TOP);

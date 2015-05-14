@@ -48,3 +48,8 @@ void TechFactory::setTechTime(TechEnum tech, int time)
 {
 	mTechTimeTable[tech] = time;
 }
+
+int TechFactory::getLeftTime()
+{
+	return mTimer;
+}
