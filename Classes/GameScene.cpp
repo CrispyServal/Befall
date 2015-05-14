@@ -621,7 +621,7 @@ void GameScene::onTouchMoved(Touch * touch, Event * event)
 		//minimap
 		if (mMiniMapLayer->containPoint(mMouseCoordinate))
 		{
-			mMiniMapLayer->moveView(mMouseCoordinate);
+			//mMiniMapLayer->moveView(mMouseCoordinate);
 			Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
 			//CCLOG("pF: %f,%f", pF.x, pF.y);
 			Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
@@ -648,7 +648,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			//minimap
 			if (mMiniMapLayer->containPoint(mMouseCoordinate))
 			{
-				mMiniMapLayer->moveView(mMouseCoordinate);
+				//mMiniMapLayer->moveView(mMouseCoordinate);
 				Vec2 pF = mMiniMapLayer->getViewPosition(mMouseCoordinate);
 				//CCLOG("pF: %f,%f", pF.x, pF.y);
 				Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);

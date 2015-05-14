@@ -143,6 +143,7 @@ private:
 	YypNoBlockingNet mNet;
 	MenuItemLabel * mBackToMainSceneItem;
 	DrawNode * mGrayBar;
+	DrawNode * mTurnRect;
 	Label * mFixedResourceLabel;
 	Label * mRandomResourceLabel;
 	Label * mProductivityLabel;
@@ -295,5 +296,4 @@ private:
 			mDirector->popScene();
 		}
 	}
-	jjj
 */
