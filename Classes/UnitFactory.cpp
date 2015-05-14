@@ -20,7 +20,7 @@ bool UnitFactory::finished()
 {
 	if (mTimer <= 0 && mUnitExistence)
 	{
-		mUnitExistence = false;
+		//mUnitExistence = false;
 		return true;
 	}
 	else

@@ -311,28 +311,36 @@ void GameScene::startConnecting(float delta)
 	}
 }
 
-void GameScene::NetUpdate(float delta)
+void GameScene::netUpdate(float delta)
 {
 	CCLOG("net update");
 	//test
 	if (mGameMode == server || mGameMode == client)
 	{
+		int tF = mGameMode == server ? 0 : 1;
 		if ( mNet.read())
 		{
 			CCLOG("read!");
 			if (!mNet.isLocked())
 			{
 				//read something
-				if (mNet.getTech())
+				whichEnum which = mNet.getWhich();
+				if (which == newTech)
 				{
-					if (mGameMode == server)
-					{
-						unlockTechTree(1, mNet.getTech());
-					}
-					else if (mGameMode == client)
-					{
-						unlockTechTree(0, mNet.getTech());
-					}
+					unlockTechTree(tF, mNet.getTech());
+				}
+				else if ( which == newSoldier)
+				{
+					//place soldier to enemy's spawn
+				}
+				else if (which == twoPoints)
+				{
+				}
+				else if (which == end)
+				{
+				}
+				else if (which == youwin)
+				{
 				}
 				mNet.lockOn();
 			}
@@ -403,14 +411,8 @@ void GameScene::switchTurn()
 		refreshTechTree(tF);
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
-		mUnitFactory[tF].refresh(mResources[tF].numProductivity);
-		if (mUnitFactory[tF].finished())
-		{
-			//getUnit
-			auto newUnit = mUnitFactory[tF].getFinishedUnit();
-			CCLOG("finished! newUnit: %d", newUnit);
-		}
 		refreshMakingButton(tF);
+		checkFactory(tF);
 		mTimer->start();
 		//refresh 2 layer display from gamestate
 		//start a new turn
@@ -441,22 +443,7 @@ void GameScene::switchTurn()
 		refreshTechTree(tF);
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
-		mUnitFactory[tF].refresh(mResources[tF].numProductivity);
-		if (mUnitFactory[tF].finished())
-		{
-			//getUnit
-			auto newUnit = mUnitFactory[tF].getFinishedUnit();
-			//CCLOG("finished! newUnit: %d", newUnit);
-			//send
-			while (!mNet.sendNewSoldier(newSoldierStruct{ newUnit, mSpawn[tF] }))
-			{
-				auto err = WSAGetLastError();
-				if (err != WSAEWOULDBLOCK)
-				{
-					mDirector->popScene();
-				}
-			}
-		}
+		checkFactory(tF);
 		refreshMakingButton(tF);
 		//timer
 		if (mOperateEnable)
@@ -476,6 +463,32 @@ void GameScene::switchTurn()
 	else
 	{
 		mTurnRect->drawSolidRect(Vec2(mWinWidth - 45, mWinHeight - 45), Vec2(mWinWidth, mWinHeight), Color4F(1, 0, 0, 0.8));
+	}
+}
+
+void GameScene::checkFactory(int turnFlag)
+{
+	mUnitFactory[turnFlag].refresh(mResources[turnFlag].numProductivity);
+	if (mUnitFactory[turnFlag].finished() && (!spawnOccupied(turnFlag)) )
+	{
+		//getUnit
+		auto newUnit = mUnitFactory[turnFlag].getFinishedUnit();
+		//set Existence
+		mUnitFactory[turnFlag].setExistence(false);
+		CCLOG("finished! newUnit: %d", newUnit);
+		//CCLOG("finished! newUnit: %d", newUnit);
+		//send
+		if (mGameMode == server || mGameMode == client)
+		{
+			while (!mNet.sendNewSoldier(newSoldierStruct{ newUnit, mSpawn[turnFlag] }))
+			{
+				auto err = WSAGetLastError();
+				if (err != WSAEWOULDBLOCK)
+				{
+					mDirector->popScene();
+				}
+			}
+		}
 	}
 }
 
@@ -557,6 +570,39 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
 	actionVector.pushBack(unLockOE);
 	auto sequence = Sequence::create(actionVector);
 	unit->runAction(sequence);
+}
+
+//testing
+void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
+{
+	Unit newUnit = {
+		unit,
+		UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] ),
+		UnitStateEnum::fresh,
+		[&]()->Sprite*
+		{
+			auto sprite = Sprite::createWithTexture(mUnitTextureMap[turnFlag][unit].front);
+			sprite->setPosition(mTiledMapLayer->floatNodeCoorForPosition(mSpawn[turnFlag]));
+			mTiledMapLayer->addChild(sprite,2);
+			return sprite;
+		}()
+		};
+	//add to unitMap
+	mGameState[turnFlag].unitMap[mSpawn[turnFlag]] = newUnit;
+}
+
+//testing
+bool GameScene::spawnOccupied(int turnFlag)
+{
+	auto & spawn = mSpawn[turnFlag];
+	for (const auto & i : mGameState[turnFlag].unitMap)
+	{
+		if (i.first == spawn)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void GameScene::backToMainScene(Ref * sender)
@@ -974,6 +1020,9 @@ void GameScene::startGame()
 		mBlueTurn = false;
 		mOperateEnable = false;
 	}
+	//test
+	spawnUnit(farmer, 0);
+	spawnUnit(farmer, 1);
 	//refresh minimap
 	refreshMiniMap();
 	//update
@@ -993,7 +1042,7 @@ void GameScene::startGame()
 	//net update, 0.5s
 	if (mGameMode == server || mGameMode == client)
 	{
-		schedule(schedule_selector(GameScene::NetUpdate), 0.5, CC_REPEAT_FOREVER, 0);
+		schedule(schedule_selector(GameScene::netUpdate), 0.5, CC_REPEAT_FOREVER, 0);
 	}
 }
 

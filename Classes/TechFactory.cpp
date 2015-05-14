@@ -20,7 +20,6 @@ bool TechFactory::finished()
 	if (mTimer <= 0 && mTechExistence)
 	{
 		return true;
-		mTechExistence = false;
 	}
 	else
 		return false;

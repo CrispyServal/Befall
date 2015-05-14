@@ -29,6 +29,11 @@ public:
 	void addNewTech(TechEnum tech);
 	//
 	bool techExistence();
+	//set
+	void setExistence(bool E)
+	{
+		mTechExistence = E;
+	}
 private:
 	//等待中队列
 	TechEnum mBuldingTech;

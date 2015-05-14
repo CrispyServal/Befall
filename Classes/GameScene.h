@@ -182,6 +182,7 @@ private:
 	void checkMiniMap();
 	//factory
 	UnitFactory mUnitFactory[2];
+	void checkFactory(int turnFlag);
 	TechFactory mTechFactory[2];
 	//when connecting or listening, display juFlower or something else
 	Layer * mWelcomeLayer;
@@ -204,7 +205,7 @@ private:
 	void startGame();
 	//update
 	void update(float delta);
-	void NetUpdate(float delta);
+	void netUpdate(float delta);
 
 	//callback
 	void backToMainScene(Ref * sender);
@@ -250,6 +251,7 @@ private:
 	GameStateStruct mGameState[2];
 	//spawn
 	MyPointStruct mSpawn[2];
+	bool spawnOccupied(int turnFlag);
 	//population
 	int mPopulation[2];
 
@@ -274,6 +276,8 @@ private:
 	std::vector<MyPointStruct> getNearPoint(const MyPointStruct & point);
 	std::vector<PathNodeStruct> getPathTree(MyPointStruct point, int range, const std::set<MyPointStruct> & barrier);
 	std::vector<MyPointStruct> getPath(const std::vector<PathNodeStruct> & pathTree, MyPointStruct pointTo);
+	//spawn unit
+	void spawnUnit(UnitEnum unit, int turnFlag);
 	//unit moving
 	void moveUnit(std::vector<MyPointStruct> path, int turnFlag);
 

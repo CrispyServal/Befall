@@ -29,6 +29,11 @@ public:
 	void addNewUnit(UnitEnum unit);
 	//
 	bool unitExistence();
+	//
+	void setExistence(bool E)
+	{
+		mUnitExistence = E;
+	}
 	//set Time
 	void setUnitTime(UnitEnum unit, int time);
 private:

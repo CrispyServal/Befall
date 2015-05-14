@@ -24,3 +24,14 @@ bool operator != (const PathNodeStruct & thisOne, const PathNodeStruct & another
 {
 	return !(thisOne==another);
 }
+UnitPropertyStruct operator + (const UnitPropertyStruct & thisOne, const UnitPropertyStruct & another)
+{
+	return UnitPropertyStruct{
+		thisOne.numHitPoint + another.numHitPoint,
+		thisOne.numDefence + another.numDefence,
+		thisOne.numAttack  + another.numAttack,
+		thisOne.numRangeAttack  + another.numRangeAttack,
+		thisOne.numRangeMove + another.numRangeMove,
+		thisOne.numPopulation  + another.numPopulation
+	};
+}

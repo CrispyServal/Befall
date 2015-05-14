@@ -65,7 +65,20 @@ struct UnitPropertyStruct
 	int numRangeAttack;
 	int numRangeMove;
 	int numPopulation;
+	UnitPropertyStruct operator += (const UnitPropertyStruct & another)
+	{
+		this->numHitPoint += another.numHitPoint;
+		this->numDefence += another.numDefence;
+		this->numAttack += another.numAttack;
+		this->numRangeAttack += another.numRangeAttack;
+		this->numRangeMove+= another.numRangeMove;
+		this->numPopulation += another.numPopulation;
+		return (*this);
+	}
 };
+
+UnitPropertyStruct operator + (const UnitPropertyStruct & thisOne, const UnitPropertyStruct & another);
+
 
 struct ResourcesStruct
 {
