@@ -43,3 +43,8 @@ bool TechFactory::techExistence()
 {
 	return mTechExistence;
 }
+
+void TechFactory::setTechTime(TechEnum tech, int time)
+{
+	mTechTimeTable[tech] = time;
+}

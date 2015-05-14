@@ -34,6 +34,7 @@ public:
 	{
 		mTechExistence = E;
 	}
+	void setTechTime(TechEnum tech, int time);
 private:
 	//等待中队列
 	TechEnum mBuldingTech;

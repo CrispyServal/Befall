@@ -408,7 +408,8 @@ void GameScene::switchTurn()
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
 		refreshMakingButton(tF);
-		checkFactory(tF);
+		checkTechFactory(tF);
+		checkUnitFactory(tF);
 		mTimer->start();
 		mTimer->setTimerColor(tF);
 		//refresh 2 layer display from gamestate
@@ -440,7 +441,8 @@ void GameScene::switchTurn()
 		refreshTechTree(tF);
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
-		checkFactory(tF);
+		checkTechFactory(tF);
+		checkUnitFactory(tF);
 		refreshMakingButton(tF);
 		//timer
 		if (mOperateEnable)
@@ -455,7 +457,33 @@ void GameScene::switchTurn()
 	}
 }
 
-void GameScene::checkFactory(int turnFlag)
+void GameScene::checkTechFactory(int turnFlag)
+{
+	mTechFactory[turnFlag].refresh(mResources[turnFlag].numResearchLevel);
+	if (mTechFactory[turnFlag].finished())
+	{
+		//setInfluence
+		auto newTech = mTechFactory[turnFlag].getFinishedTech();
+		setTechInfluence(turnFlag, newTech);
+		mTechFactory[turnFlag].setExistence(false);
+		//display
+		refreshMakingButton(turnFlag);
+		//send
+		if (mGameMode == server || mGameMode == client)
+		{
+			while (!mNet.sendTech(newTech))
+			{
+				auto err = WSAGetLastError();
+				if (err != WSAEWOULDBLOCK)
+				{
+					mDirector->popScene();
+				}
+			}
+		}
+	}
+}
+
+void GameScene::checkUnitFactory(int turnFlag)
 {
 	mUnitFactory[turnFlag].refresh(mResources[turnFlag].numProductivity);
 	if (mUnitFactory[turnFlag].finished() && (!spawnOccupied(turnFlag)) )
@@ -716,40 +744,8 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			{
 				if (mTechTreeLayer->containPoint(mMouseCoordinateTouch))
 				{
-					auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinateTouch);
-					int flagGameState = 0;
-
-					if (mBlueTurn)
-					{
-						flagGameState = 0;
-					}
-					else
-					{
-						flagGameState = 1;
-					}
-
-					if (mGameState[flagGameState].techTree.unlockable(tech))
-					{
-						//CCLOG("sadoa");
-						if (mGameMode == server || mGameMode == client)
-						{
-							while (!mNet.sendTech(tech))
-							{
-								auto err = WSAGetLastError();
-								if (err != WSAEWOULDBLOCK)
-								{
-									CCLOG("he GG!!");
-									mDirector->popScene();
-								}
-							}
-						}
-						else if (mGameMode == vsPlayer)
-						{
-							//add to factory
-							//unlockTechTree(flagGameState, tech);
-						}
-						break;
-					}
+					checkTechTreeLayerOnTouchEnded();
+					break;
 				}
 				else if (mTechTreeLayer->blockClick())
 				{
@@ -1076,6 +1072,45 @@ void GameScene::checkMiniMap()
 	//CCLOG("pF: %f,%f", pF.x, pF.y);
 	Vec2 pOfM = Vec2(mTiledMapLayer->getMapSizeF().width * pF.x, mTiledMapLayer->getMapSizeF().height * pF.y);
 	mTiledMapLayer->setPosition(mWinWidth / 2 - pOfM.x, mWinHeight / 2 - pOfM.y);
+}
+
+void GameScene::checkTechTreeLayerOnTouchEnded()
+{
+	auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinateTouch);
+	if (mGameMode == server || mGameMode == client)
+	{
+		int tF = (mGameMode == server) ? 0 : 1;
+		if (mOperateEnable)
+		{
+			if (!mTechFactory[tF].techExistence())
+			{
+				//add to factory
+				if (mResources[tF] >= mTechInitDataMap[tech])
+				{
+					mResources[tF] -= mTechInitDataMap[tech];
+					mTechFactory[tF].addNewTech(tech);
+					refreshMakingButton(tF);
+					refreshResourcesIcons(tF);
+				}
+			}
+		}
+	}
+	else if (mGameMode == vsPlayer)
+	{
+		int tF = mBlueTurn ? 0 : 1;
+		if (!mTechFactory[tF].techExistence())
+		{
+			if (mResources[tF] >= mTechInitDataMap[tech])
+			{
+				mResources[tF] -= mTechInitDataMap[tech];
+				//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
+				mTechFactory[tF].addNewTech(tech);
+				refreshMakingButton(tF);
+				CCLOG("vsPlayer; added new Tech!");
+				refreshResourcesIcons(tF);
+			}
+		}
+	}
 }
 
 void GameScene::checkUnitCampLayerOnTouchEnded()
