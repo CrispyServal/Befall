@@ -197,6 +197,11 @@ bool GameScene::init()
 	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBar->drawSolidRect(Vec2(mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), Vec2(mWinWidth,50 +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ),Color4F(0.607, 0.607, 0.607, 0.75));
 	addChild(mGrayBar, 3);
+	//turn label
+	mTurnLabel = Label::createWithTTF("0", "fonts/STXIHEI.TTF", 30);
+	mTurnLabel->setColor(Color3B(0, 0, 0));
+	mTurnLabel->setPosition(mWinWidth - 50, mWinHeight - mTurnLabel->getContentSize().height / 2);
+	addChild(mTurnLabel, 8);
 	//resources icon
 	initResourcesIcons();
 	//unitcamplayer
@@ -396,6 +401,11 @@ void GameScene::switchTurn()
 {
 	//end turn
 	mBlueTurn = !mBlueTurn;
+	//refresh NumTurn
+	if (mBlueTurn)
+	{
+		++mNumTurn;
+	}
 	CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
 	//start turn
 	if (mGameMode == vsPlayer)
@@ -948,11 +958,11 @@ void GameScene::refreshResourcesIcons(const int & turnFlag)
 	mRandomResourceLabel->setString(ss.str());
 	ss.clear();
 	ss.str("");
-	ss << resources.numProductivity;
+	ss << resources.numProductivity + mExtraResources[turnFlag].numProductivity;
 	mProductivityLabel->setString(ss.str());
 	ss.clear();
 	ss.str("");
-	ss << resources.numResearchLevel;
+	ss << resources.numResearchLevel + mExtraResources[turnFlag].numResearchLevel;
 	mResearchLabel->setString(ss.str());
 }
 
@@ -1105,6 +1115,7 @@ void GameScene::checkUnitCampLayerOnTouchEnded()
 					mUnitFactory[tF].addNewUnit(unit);
 					refreshMakingButton(tF);
 					refreshResourcesIcons(tF);
+					mUnitMakingButtonTexture = mUnitCampLayer->getUnitTexture(unit);
 				}
 			}
 		}
@@ -1122,6 +1133,7 @@ void GameScene::checkUnitCampLayerOnTouchEnded()
 				refreshMakingButton(tF);
 				CCLOG("vsPlayer; added new unit!");
 				refreshResourcesIcons(tF);
+				mUnitMakingButtonTexture = mUnitCampLayer->getUnitTexture(unit);
 			}
 		}
 	}
@@ -1256,6 +1268,8 @@ void GameScene::checkTechAndUnitButton()
 
 void GameScene::initGameState()
 {
+	//num turn
+	mNumTurn = 0;
 	//spawn
 	mSpawn[0] = MyPointStruct{ 4, 17 };
 	mSpawn[1] = MyPointStruct{ 17, 4 };
@@ -1272,6 +1286,8 @@ void GameScene::initGameState()
 	}
 	//mResources
 	mResources[0] = mResources[1] = ResourcesStruct{ 100, 100, 10, 10 };
+	//extra resources
+	mExtraResources[0] = mExtraResources[1] = ResourcesStruct{ 0, 0, 0, 0 };
 	//set Label value
 	std::stringstream ssFixed;
 	ssFixed << mResources[0].numFixedResource;
