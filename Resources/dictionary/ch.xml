@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dict>
 	<key>start</key>
-	<string>开始游戏</string>
+	<string>开始</string>
 	<key>setting</key>
 	<string>设置</string>
 	<key>exit</key>
@@ -25,7 +25,7 @@
 	<key>seOff</key>
 	<string>音效    关</string>
 	<key>ensureExit</key>
-	<string>确认退出</string>
+	<string>确认</string>
 	<key>server</key>
 	<string>作为主机</string>
 	<key>client</key>
@@ -74,4 +74,11 @@
 	<string>生产力:    </string>
 	<key>TECH</key>
 	<string>科技值:    </string>
+	<key>Predict</key>
+	<string>预计</string>
+	<key>Turn</key>
+	<string>回合</string>
+	<key>Going</key>
+	<string>已进行</string>
+
 </dict>

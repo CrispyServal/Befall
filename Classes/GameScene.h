@@ -148,6 +148,11 @@ private:
 	Label * mProductivityLabel;
 	Label * mResearchLabel;
 	Label * mPopulationLabel;
+
+	std::string stringTurn;
+	std::string stringPredict;
+	std::string stringGoing;
+
 	void initResourcesIcons();
 	void refreshResourcesIcons(const int & turnFlag);
 	void refreshPopulationIcons(const int & turnFlag);

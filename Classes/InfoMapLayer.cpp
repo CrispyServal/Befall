@@ -22,14 +22,16 @@ bool InfoMapLayer::init()
 	height = director->getWinSize().height;
 	//background sprite
 	mBackground = DrawNode::create();
-	mBackground->drawSolidRect(Vec2(-100, -120), Vec2(100, 120), Color4F(0.75, 0.75, 0.75, 1));
+	mBackground->drawSolidRect(Vec2(-100, -120), Vec2(100, 120), Color4F(0, 0, 0, 0.4));
 	mBackground->setPosition(width / 2, height / 2);
 	addChild(mBackground, 1);
 	//sprite intialize
-	// pic
-	mUnitSprite = Sprite::create("1pixel.png");//100 * 100
-	mUnitSprite->setPosition(width / 2 - 25, height / 2 -10);
-	addChild(mUnitSprite, 2);
+
+	//// pic
+	//mUnitSprite = Sprite::create("1pixel.png");//100 * 100
+	//mUnitSprite->setPosition(width / 2 - 25, height / 2 -10);
+	//addChild(mUnitSprite, 2);
+
 	//unitname
 	mUnitNameLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
 	mUnitNameLabel->setPosition(width / 2, height / 2 + 80);
@@ -68,22 +70,22 @@ bool InfoMapLayer::init()
 	mTechIntroLabel->setVisible(false);
 	mTechTurnLeft->setVisible(false);
 	mUnitNameLabel->setVisible(false);
-	mUnitSprite->setVisible(false);
+//	mUnitSprite->setVisible(false);
 	mHpBarBg->setVisible(false);
 	mHPBar->setVisible(false);
 	mNowHpBar->setVisible(false);
 	return true;
 }
 
-void InfoMapLayer::displayUnitINfo(string fileName, string unitName, int hpNow, int hpAll)
+void InfoMapLayer::displayUnitInfo(string unitName, int hpNow, int hpAll)
 {
 	mTechNameLabel->setVisible(false); 
 	mTechIntroLabel->setVisible(false);
 	mTechTurnLeft->setVisible(false);
 	// pic
-	CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage(fileName);
-	mUnitSprite->setTexture(texture);
-	mUnitSprite->setVisible(true);
+	//CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage(fileName);
+	//mUnitSprite->setTexture(texture);
+	//mUnitSprite->setVisible(true);
 	//unitname
 	mUnitNameLabel->setString(unitName);
 	mUnitNameLabel->setVisible(true);
@@ -95,10 +97,11 @@ void InfoMapLayer::displayUnitINfo(string fileName, string unitName, int hpNow, 
 	mNowHpBar->setScale(1, (float)hpNow / (float)hpAll);//nupdata
 	mNowHpBar->setVisible(true);
 }
-void InfoMapLayer::displayTech(string techName, string techIntroduction, int techTurnLeft)
+
+void InfoMapLayer::displayTech(string techName, string techIntroduction, string techTurnLeft)
 {
 	mUnitNameLabel -> setVisible(false);
-	mUnitSprite -> setVisible(false);
+//	mUnitSprite -> setVisible(false);
 	mHpBarBg->setVisible(false);
 	mHPBar -> setVisible(false);
 	mNowHpBar -> setVisible(false);
@@ -109,6 +112,18 @@ void InfoMapLayer::displayTech(string techName, string techIntroduction, int tec
 	mTechIntroLabel->setString(techIntroduction);
 	mTechIntroLabel->setVisible(true);
 	//
-	mTechTurnLeft->setString(std::to_string(techTurnLeft));
+	mTechTurnLeft->setString(techTurnLeft);
 	mTechTurnLeft->setVisible(true);
+}
+
+void InfoMapLayer::clearAllInfo()
+{
+	mTechNameLabel->setVisible(false);
+	mTechIntroLabel->setVisible(false);
+	mTechTurnLeft->setVisible(false);
+	mUnitNameLabel->setVisible(false);
+//	mUnitSprite->setVisible(false);
+	mHpBarBg->setVisible(false);
+	mHPBar->setVisible(false);
+	mNowHpBar->setVisible(false);
 }

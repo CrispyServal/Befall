@@ -806,6 +806,7 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 		if (unit.first == mType)
 		{
 			mGameState[flag].unitLockMap[mUnitStringEnumMap.at(mType)] = true;
+			CCLOG("Unlocked");
 			return;
 		}
 	}
@@ -813,6 +814,7 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 	{
 		if (mTarget == "longRange")
 		{
+			CCLOG("longRangeAttributeAdded");
 			if (mType == "numHitPoint")
 			{
 				mGameState[flag].extraProperty[longrangeunit1].numHitPoint += mValue;
@@ -889,10 +891,12 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 	{
 		if (mType == "numResearchLevel")
 		{
+			CCLOG("numResearchLevelAdded");
 			mExtraResources[flag].numResearchLevel += mValue;
 		}
 		if (mType == "numProductivity")
 		{
+			CCLOG("numProductivityAdded");
 			mExtraResources[flag].numProductivity += mValue;
 		}
 	}
@@ -1029,6 +1033,8 @@ void GameScene::startGame()
 	spawnUnit(farmer, 1);
 	//refresh minimap
 	refreshMiniMap();
+	//Test for info map
+	mInfoMapLayer->displayTech("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
 	//update
 	mTimer->start();
 	scheduleUpdate();
@@ -1378,6 +1384,11 @@ void GameScene::initGameState()
 			mTechFactory[i].setTechTime(refreshTech, mTechInitDataMap[refreshTech].numResearchLevel);
 		}
 	}
+	//init 
+	stringTurn = getDicValue("Turn");
+	stringPredict = getDicValue("Predict");
+	stringGoing = getDicValue("Going");
+
 }
 
 void GameScene::initResourceMap()

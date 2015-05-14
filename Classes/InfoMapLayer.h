@@ -26,9 +26,13 @@ public:
 
 	CREATE_FUNC(InfoMapLayer);
 	virtual bool init();
-
-	void displayUnitINfo(string fileName, string unitName, int hpNow, int hpAll);
-	void displayTech(string techName, string techIntroduction, int techTurnLeft);
+	
+	//DisplayUnitInfo in narrative format and HP info
+	void displayUnitInfo(string unitName, int hpNow, int hpAll);
+	//DisplayTechInfo in narrative format
+	void displayTech(string techName, string techIntroduction, string techTurnLeft);
+	//Clear Info Display
+	void clearAllInfo();
 };
 
 #endif
