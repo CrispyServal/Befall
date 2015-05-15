@@ -111,6 +111,7 @@ std::vector<MyPointStruct> GameScene::getPath(const std::vector<PathNodeStruct> 
 		result.insert(result.begin(), opNode.point);
 		opNode = pathTree[opNode.indexParent];
 	}
+	result.insert(result.begin(), opNode.point);
 	return result;
 }
 
@@ -566,25 +567,21 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
 	}
 	bool oeBak = mOperateEnable;
 	mOperateEnable = false;
-	const float duration = 0.3;
-	float disX = mTiledMapLayer->getTileSize().width;
-	float disY = mTiledMapLayer->getTileSize().height;
-	//actions
-	auto moveUp = MoveBy::create(duration, Vec2(disY, 0));
-	auto moveDown = MoveBy::create(duration, Vec2(- disY, 0));
-	auto moveLeft = MoveBy::create(duration, Vec2(- disX, 0));
-	auto moveRight = MoveBy::create(duration, Vec2(disX, 0));
-	auto rotateRight = RotateBy::create(0, 90);
-	auto rotateLeft = RotateBy::create(0, -90);
+	const float duration = 0.2;
 	//get unit sprite;
-	Sprite * unit;
+	Unit unit;
+	UnitEnum type;
 	bool found = false;
 	for (auto & i : mGameState[turnFlag].unitMap)
 	{
 		if (i.first == path[0])
 		{
-			unit = i.second.sprite;
+			unit = i.second;
+			CCLOG("unit.sprite: %x", i.second.sprite);
+			CCLOG("copy: unit.sprite: %x", unit.sprite);
+			type = unit.type;
 			found = true;
+			break;
 		}
 	}
 	//error
@@ -593,47 +590,80 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
 		CCLOG("error, unit not found!");
 		return;
 	}
-	//final position in Node
-	Vec2 finalP = mTiledMapLayer->floatNodeCoorForPosition(path[path.size() - 1]);
 	//sequence vector
 	Vector<FiniteTimeAction*> actionVector;
+	auto funcUp = CallFunc::create([unit,type,turnFlag,this]()->void{ unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].back); });
+	auto funcDown = CallFunc::create([unit,type,turnFlag,this]()->void{unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].front); });
+	auto funcLeft = CallFunc::create([unit,type,turnFlag,this]()->void{unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].side); unit.sprite->setFlippedX(true); });
+	auto funcRight = CallFunc::create([unit,type,turnFlag,this]()->void{unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].side); unit.sprite->setFlippedX(false); });
+
+	//last action
+	//0: none, 1: up, 2: down, 3: left, 4: right
+	short lastAction = 0;
 	for (int i = 0; i < path.size() - 1; ++i)
 	{
 		auto & thisP = path[i];
 		auto & nextP = path[i + 1];
+		auto nextPF = mTiledMapLayer->floatNodeCoorForPosition(nextP);
 		//check direction
-		if ( (thisP.x == nextP.x) && (thisP.y < nextP.y) )
+		if ( (thisP.x == nextP.x) && (thisP.y > nextP.y) )
 		{
 			//move up
-			actionVector.pushBack(moveUp);
-			continue;
+			CCLOG("up");
+			if (lastAction != 1)
+			{
+				actionVector.pushBack(funcUp);
+				lastAction = 1;
+			}
 		}
-		else if ((thisP.x == nextP.x) && (thisP.y > nextP.y))
+		else if ((thisP.x == nextP.x) && (thisP.y < nextP.y))
 		{
 			//move down
-			actionVector.pushBack(moveDown);
-			continue;
+			CCLOG("down");
+			if ( (lastAction != 0) && (lastAction != 2) )
+			{
+				actionVector.pushBack(funcDown);
+				lastAction = 2;
+			}
 		}
 		else if ((thisP.y == nextP.y) && (thisP.x > nextP.x))
 		{
 			//move left
-			actionVector.pushBack(moveLeft);
-			continue;
+			CCLOG("left");
+			if (lastAction != 3)
+			{
+				actionVector.pushBack(funcLeft);
+				lastAction = 3;
+			}
+			//unit->setFlipX(true);
 		}
 		else if ((thisP.y == nextP.y) && (thisP.x < nextP.x))
 		{
-			//move left
-			actionVector.pushBack(moveRight);
-			continue;
+			//move right
+			CCLOG("right");
+			if (lastAction != 4)
+			{
+				actionVector.pushBack(funcRight);
+				lastAction = 4;
+			}
+			///unit->setFlippedX(false);
 		}
+		actionVector.pushBack(MoveTo::create(duration, nextPF));
 	}
 	//sequence
-	auto fixPosition = CallFunc::create([&]()->void{unit->setPosition(finalP); });
-	auto unLockOE = CallFunc::create([&]()->void{mOperateEnable = true; });
-	actionVector.pushBack(fixPosition);
+	auto unLockOE = CallFunc::create([this,oeBak]()->void{mOperateEnable = oeBak; });
+	auto refreshUnitMap = CallFunc::create(
+	[this,turnFlag,path,unit]()->void{
+		//CCLOG("path test: %d,%d", path[0].x, path[0].y);
+		mGameState[turnFlag].unitMap.erase(path[0]);
+		mGameState[turnFlag].unitMap[path[path.size() - 1]] = unit;
+	}
+	);
+	actionVector.pushBack(refreshUnitMap);
 	actionVector.pushBack(unLockOE);
 	auto sequence = Sequence::create(actionVector);
-	unit->runAction(sequence);
+	//sequence->retain();
+	unit.sprite->runAction(sequence);
 }
 
 //testing
@@ -827,7 +857,10 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			{
 				int tF = mBlueTurn ? 0 : 1;
 				auto mapPoint = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinateTouch);
-				unitAction(mapPoint, tF);
+				if (mOperateEnable)
+				{
+					unitAction(mapPoint, tF);
+				}
 				break;
 			}
 			else if (mTimer->blockClick())
@@ -1017,7 +1050,7 @@ void GameScene::refreshResourcesTexture()
 			float hpL = (float)(mUnitInitDataMap[i.second.type].property.numHitPoint);
 			auto firstHp = hpL * mResourceCriticalMap.at(i.second.type).firstP;
 			auto secondHp = hpL * mResourceCriticalMap.at(i.second.type).secondP;
-			CCLOG("type: %d, hp: %f, first hp: %f, second hp: %f", i.second.type, hp, firstHp, secondHp);
+			//CCLOG("type: %d, hp: %f, first hp: %f, second hp: %f", i.second.type, hp, firstHp, secondHp);
 			if (hp > firstHp)
 			{
 				i.second.sprite->setTexture(mResourceTextureMap[i.second.type].abundant);
@@ -1119,8 +1152,8 @@ void GameScene::startGame()
 		mBlueTurn = false;
 		mOperateEnable = false;
 	}
-	//test
-	//spawnUnit(farmer, 0);
+	//init farmer
+	spawnUnit(farmer, 0);
 	spawnUnit(farmer, 1);
 	//refresh minimap
 	refreshMiniMap();
@@ -1761,7 +1794,7 @@ void GameScene::initResourceMap()
 				CCRANDOM_0_1() * mMapSize.width,
 				CCRANDOM_0_1() * mMapSize.height
 			};
-			CCLOG("i = %d, ranP: %d,%d",i, ranP.x, ranP.y);
+			//CCLOG("i = %d, ranP: %d,%d",i, ranP.x, ranP.y);
 			bool occupied = false;
 			//near spawn
 			for (const auto & spawn : mSpawn)
@@ -2232,34 +2265,34 @@ void GameScene::initUnitTexture()
 	for (int i = 0; i < 2; ++i)
 	{
 		mUnitTextureMap[i][farmer] = {
-			mDirector->getTextureCache()->addImage("unitIcon/farmer_front_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/farmer_back_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/farmer_side_" + std::string{ (char)('0' + i) }+".png")
+			mDirector->getTextureCache()->addImage("unitIcon/farmer_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/farmer_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/farmer_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][longrangeunit1] = {
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_front_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_back_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_side_" + std::string{ (char)('0' + i) }+".png")
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][longrangeunit2] = {
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_front_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_back_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_side_" + std::string{ (char)('0' + i) }+".png")
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][longrangeunit3] = {
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_front_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_back_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_side_" + std::string{ (char)('0' + i) }+".png")
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][shortrangeunit1] = {
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_front_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_back_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_side_" + std::string{ (char)('0' + i) }+".png")
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][shortrangeunit2] = {
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_front_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_back_" + std::string{ (char)('0' + i) }+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_side_" + std::string{ (char)('0' + i) }+".png")
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_side_" + std::to_string(i)+".png")
 		};
 	}
 	CCLOG("munittexturemap size: %d", mUnitTextureMap[0].size());
@@ -2381,6 +2414,12 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 			{
 				CCLOG("correctRoot");
 				auto movePath = getPath(mMoveRange, nowPoint);
+				//testing getPath
+				CCLOG("in Path:  ");
+				for (auto & i : movePath)
+				{
+					CCLOG("node: %d,%d", i.x, i.y);
+				}
 				deleteAttackRange();
 				deleteMoveRange();
 				moveUnit(movePath, tF);//error unit not found ??

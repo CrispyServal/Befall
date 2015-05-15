@@ -352,6 +352,8 @@ private:
 	MyPointStruct mOriginalPoint;
 	int mUnitActionFSM[2];
 
+	//for moveUnit
+	//void setTexture(Node * sender, void * which);
 };
 
 #endif // !GAMESCENE_H
