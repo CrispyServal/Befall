@@ -822,6 +822,18 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 					break;
 				}
 			}
+			//yyp mark
+			if (mTiledMapLayer->containPoint(mMouseCoordinateTouch))
+			{
+				int tF = mBlueTurn ? 0 : 1;
+				auto mapPoint = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinateTouch);
+				unitAction(mapPoint, tF);
+				break;
+			}
+			else if (mTimer->blockClick())
+			{
+				break;
+			}
 		} while (0);
 	}
 }
@@ -1622,6 +1634,9 @@ void GameScene::initGameState()
 	stringTurn = getDicValue("Turn");
 	stringPredict = getDicValue("Predict");
 	stringGoing = getDicValue("Going");
+	//yyp
+	mUnitActionFSM[0] = 0;
+	mUnitActionFSM[1] = 0;
 
 }
 
@@ -2249,4 +2264,165 @@ void GameScene::initUnitTexture()
 	}
 	CCLOG("munittexturemap size: %d", mUnitTextureMap[0].size());
 }
+
+void GameScene::showMoveRange(const MyPointStruct & unitPoint, const int & tF)//yypmark
+{
+	std::set <MyPointStruct> barrier;// need to repair
+	for (auto state : mGameState)
+	{
+		for (auto ob : state.unitMap)
+		{
+			barrier.insert(ob.first);
+		}
+	}
+	for (auto ob : mResourceMap)
+	{
+		if (ob.second.type == base)
+		{
+			auto nearPoint = getNearPoint(ob.first);
+			for (auto point : nearPoint)
+			{
+				barrier.insert(point);
+			}
+		}
+		barrier.insert(ob.first);
+	}
+	auto unit = mGameState[tF].unitMap[unitPoint];
+	mMoveRange = getPathTree(unitPoint, unit.property.numRangeMove, barrier);
+	for (auto unitPath : mMoveRange)
+	{
+			mTiledMapLayer->setTileColor(unitPath.point, 2);
+	}
+}
+
+void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
+{
+	std::set <MyPointStruct> barrier;
+	auto unit = mGameState[tF].unitMap[unitPoint];
+	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack, barrier);
+	for (auto attacking : attackTree)
+	{
+		for (auto enemy : mGameState[1 - tF].unitMap)
+		{
+			if (attacking.point == enemy.first)
+			{
+				mAttackrange.insert(attacking.point);
+				mTiledMapLayer->setTileColor(attacking.point, 3);
+			}
+		}
+	}
+}
+
+void GameScene::deleteMoveRange()
+{
+	for (auto unitPath : mMoveRange)
+	{
+		mTiledMapLayer->setTileColor(unitPath.point, 1);
+	}
+	mMoveRange.clear();
+}
+
+void GameScene::deleteAttackRange()
+{
+	for (auto attacking : mAttackrange)
+	{
+		mTiledMapLayer->setTileColor(attacking, 1);
+	}
+	mAttackrange.clear();
+}
+
+void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
+{	
+	//mUnitActionFSM[tF] = 0;
+	CCLOG("%d", mUnitActionFSM[tF]);
+	switch (mUnitActionFSM[tF])
+	{
+		//intial
+	case 0:
+		for (auto i : mGameState[tF].unitMap)
+		{
+			if (i.first == nowPoint)
+			{
+				if (i.second.state == fresh)
+				{
+					mOriginalPoint = nowPoint;
+					showMoveRange(mOriginalPoint, tF);
+					showAttackRange(mOriginalPoint, tF);
+					mUnitActionFSM[tF] = 1;
+				}
+				return;
+			}
+		}
+		break;
+		//move
+	case 1:
+		if (nowPoint == mOriginalPoint)
+		{
+			deleteMoveRange();
+			deleteAttackRange();
+			mUnitActionFSM[tF] = 0;
+			break;
+		}
+		for (auto attackingNode : mAttackrange)
+		{
+			if (nowPoint == attackingNode)
+			{
+				deleteMoveRange();
+				deleteAttackRange();
+				//attack
+				mGameState[tF].unitMap[nowPoint].state = attacked;
+				mUnitActionFSM[tF] = 0;
+				return;
+			}
+		}
+		for (auto pathNode : mMoveRange)
+		{
+			if (nowPoint == pathNode.point)
+			{
+				CCLOG("correctRoot");
+				auto movePath = getPath(mMoveRange, nowPoint);
+				deleteAttackRange();
+				deleteMoveRange();
+				moveUnit(movePath, tF);//error unit not found ??
+				mOriginalPoint == nowPoint;
+				mGameState[tF].unitMap[nowPoint].state = moved;
+				showAttackRange(nowPoint, tF);
+				if (mAttackrange.empty())
+				{
+					deleteAttackRange();		
+					mUnitActionFSM[tF] = 0;
+				}
+				else
+				{
+					mUnitActionFSM[tF] = 2;
+				}
+				return;
+			}
+		}
+		break;
+		//after move
+	case 2:
+		if (nowPoint == mOriginalPoint)
+		{
+			deleteMoveRange();
+			deleteAttackRange();
+			mUnitActionFSM[tF] = 0;
+			break;
+		}
+		for (auto attackingNode : mAttackrange)
+		{
+			if (nowPoint == attackingNode)
+			{
+				deleteAttackRange();
+				//attack
+				mGameState[tF].unitMap[nowPoint].state = attacked;
+				mUnitActionFSM[tF] = 0;
+				return;
+			}
+		}
+		break;
+	}
+}
+
+
 

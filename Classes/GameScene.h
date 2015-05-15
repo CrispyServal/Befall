@@ -340,6 +340,18 @@ private:
 	int calcInteger(int a, int b);
 
 	UnitNowDisplayStruct existUnitOnTiledMap(const MyPointStruct & mPos);
+
+	//yyp
+	void showMoveRange(const MyPointStruct & unitPoint, const int & tF);
+	void showAttackRange(const MyPointStruct & unitPoint, const int & tF);
+	void deleteMoveRange();
+	void deleteAttackRange();
+	void unitAction(const MyPointStruct & nowPoint, int tF);
+	std::vector <PathNodeStruct> mMoveRange;
+	std::set <MyPointStruct> mAttackrange;
+	MyPointStruct mOriginalPoint;
+	int mUnitActionFSM[2];
+
 };
 
 #endif // !GAMESCENE_H
