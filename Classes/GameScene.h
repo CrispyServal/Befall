@@ -23,6 +23,7 @@
 //using namespace cocos2d;
 USING_NS_CC;
 
+//unitMap include unit
 struct GameStateStruct
 {
 	//一颗科技树
@@ -220,6 +221,7 @@ private:
 	void checkTechFactory(int turnFlag);
 	TechFactory mTechFactory[2];
 	//when connecting or listening, display juFlower or something else
+	//juFlower 2333333333
 	Layer * mWelcomeLayer;
 	Layer * mTouchLayer;
 	EventListenerMouse * mMouseListener;
@@ -258,6 +260,7 @@ private:
 
 	//unit & resources ->initial property and consumption
 	//init this map from json file
+	UnitPropertyStruct mMaxHitPointOfBase[2];
 	std::map<UnitEnum, UnitInitDataStruct> mUnitInitDataMap;
 	std::map<UnitEnum, unitIntroductionStruct> mUnitDisplayMap;
 	void initUnitData();
@@ -270,6 +273,7 @@ private:
 	void initTechData();
 	//矿藏的数据，只需要一份，两边会分别减少
 	std::map<MyPointStruct, Unit> mResourceMap;
+
 	//criticalPoint map
 	const std::map<UnitEnum, ResourceCriticalPointStruct> mResourceCriticalMap = { {
 		{ fixedResource, { 0.6, 0.3 } },

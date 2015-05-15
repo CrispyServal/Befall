@@ -123,7 +123,8 @@ bool GameScene::init()
 	//global
 	mDirector = Director::getInstance();
 	mUserDefault = UserDefault::getInstance();
-    mDictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + mUserDefault->getStringForKey("language") + ".xml" }.c_str());
+    mDictionary = Dictionary::createWithContentsOfFile(
+		std::string{ "dictionary/" + mUserDefault->getStringForKey("language") + ".xml" }.c_str());
 	mDictionary->retain();
 	mKeyStruct = {
 		false,
@@ -189,14 +190,23 @@ bool GameScene::init()
 	float miniPS = 8;
 	mMiniMapLayer->setPointSize(miniPS);
 	mMiniMapLayer->setMapSize(mTiledMapLayer->getMapSize().width, mTiledMapLayer->getMapSize().height);
-	mMiniMapLayer->setPosition(Vec2((mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS) / 2, (- mWinHeight +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS ) / 2));
+	mMiniMapLayer->setPosition(Vec2((mWinWidth 
+		- mTiledMapLayer->getMapSize().width * miniPS 
+		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS) / 2, 
+		(- mWinHeight +mTiledMapLayer->getMapSize().width * miniPS 
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS ) / 2));
 	addChild(mMiniMapLayer, 5);
 	//gray bar
 	mGrayBar = DrawNode::create();
 	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBar->drawSolidRect(Vec2(mWinWidth - mTiledMapLayer->getMapSize().width * miniPS - mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), Vec2(mWinWidth,50 +mTiledMapLayer->getMapSize().width * miniPS +mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ),Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(mWinWidth 
+		- mTiledMapLayer->getMapSize().width * miniPS 
+		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), 
+		Vec2(mWinWidth,50 +mTiledMapLayer->getMapSize().width * miniPS 
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ),
+		Color4F(0.607, 0.607, 0.607, 0.75));
 	addChild(mGrayBar, 3);
 	//turn label
 	mTurnLabel = Label::createWithTTF(getDicValue("Going")+" 0 "+getDicValue("Turn"), "fonts/STXIHEI.TTF", 24);
@@ -224,7 +234,9 @@ bool GameScene::init()
 		mDirector->getTextureCache()->addImage("uiComponent/icon_researchtab_white.png")
 	};
 	mTechTreeLayerButton = Sprite::createWithTexture(mTechTreeLayerButtonTexture.off);
-	mTechTreeLayerButton->setPosition(mWinWidth / 2 - 150, (mTechTreeLayerButton->getBoundingBox().getMaxY() - mTechTreeLayerButton->getBoundingBox().getMinY())/2 - 3);
+	mTechTreeLayerButton->setPosition(mWinWidth / 2 - 150, 
+		(mTechTreeLayerButton->getBoundingBox().getMaxY() 
+		- mTechTreeLayerButton->getBoundingBox().getMinY())/2 - 3);
 	mTechTreeLayerButton->setScale(0.9);
 	addChild(mTechTreeLayerButton, 8);
 
@@ -233,20 +245,28 @@ bool GameScene::init()
 		mDirector->getTextureCache()->addImage("uiComponent/icon_militarycamp_white.png")
 	};
 	mUnitCampLayerButton = Sprite::createWithTexture(mUnitCampLayerButtonTexture.off);
-	mUnitCampLayerButton->setPosition(mWinWidth / 2 + 150, (mUnitCampLayerButton->getBoundingBox().getMaxY() - mUnitCampLayerButton->getBoundingBox().getMinY())/2 - 3);
+	mUnitCampLayerButton->setPosition(mWinWidth / 2 + 150, 
+		(mUnitCampLayerButton->getBoundingBox().getMaxY() 
+		- mUnitCampLayerButton->getBoundingBox().getMinY())/2 - 3);
 	mUnitCampLayerButton->setScale(0.9);
 	addChild(mUnitCampLayerButton, 8);
 	//2 working button
 	mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(techroot);
 	mTechMakingButton = Sprite::createWithTexture(mTechMakingButtonTexture);
 	mTechMakingButton->setScale(0.8);
-	mTechMakingButton->setPosition(mTechTreeLayerButton->getPosition().x - 2 * (mTechMakingButton->boundingBox().getMaxX() - mTechMakingButton->boundingBox().getMinX()), mTechTreeLayerButton->getPosition().y);
+	mTechMakingButton->setPosition(mTechTreeLayerButton->getPosition().x 
+		- 2 * (mTechMakingButton->boundingBox().getMaxX() 
+		- mTechMakingButton->boundingBox().getMinX()), 
+		mTechTreeLayerButton->getPosition().y);
 	mTechMakingButton->setVisible(false);
 	addChild(mTechMakingButton, 8);
 	mUnitMakingButtonTexture = mUnitCampLayer->getUnitTexture(farmer);
 	mUnitMakingButton = Sprite::createWithTexture(mUnitMakingButtonTexture);
 	mUnitMakingButton->setScale(0.8);
-	mUnitMakingButton->setPosition(mUnitCampLayerButton->getPosition().x + 2 * (mUnitMakingButton->boundingBox().getMaxX() - mUnitMakingButton->boundingBox().getMinX()), mUnitCampLayerButton->getPosition().y);
+	mUnitMakingButton->setPosition(mUnitCampLayerButton->getPosition().x 
+		+ 2 * (mUnitMakingButton->boundingBox().getMaxX() 
+		- mUnitMakingButton->boundingBox().getMinX()), 
+		mUnitCampLayerButton->getPosition().y);
 	mUnitMakingButton->setVisible(false);
 	addChild(mUnitMakingButton, 8);
 	
@@ -408,7 +428,8 @@ void GameScene::switchTurn()
 		++mNumTurn;
 		CCLOG("going : %s", getDicValue("Going").c_str());
 		CCLOG("turn : %s", getDicValue("Turn").c_str());
-		mTurnLabel->setString(getDicValue("Going") + " " + std::to_string(mNumTurn) + " " + getDicValue("Turn"));
+		mTurnLabel->setString(getDicValue("Going") + " " 
+			+ std::to_string(mNumTurn) + " " + getDicValue("Turn"));
 	}
 	CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
 	//start turn
@@ -899,6 +920,14 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 			{
 				mGameState[flag].extraProperty[shortrangeunit1].numPopulation += mValue;
 				mGameState[flag].extraProperty[shortrangeunit2].numPopulation += mValue;
+			}
+		}
+		if (mTarget == "base")
+		{
+			if (mType == "numHitPoint")
+			{
+				mResourceMap[mBasePosition[flag]].property.numHitPoint += mValue;
+				mMaxHitPointOfBase[flag].numHitPoint += mValue;
 			}
 		}
 		return;
@@ -1412,16 +1441,29 @@ void GameScene::checkLayersOnMouseMoved()
 		{
 			auto mPos = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinate);
 			auto unitInfo = existUnitOnTiledMap(mPos);
+			int tF = (mGameMode == server) ? 0 : 1;
 			if (unitInfo.exist)
 			{
-				mInfoMapLayer->displayUnitInfo(
-					mUnitDisplayMap[unitInfo.mUnitEnum].unitName, 
-					unitInfo.property.numHitPoint, 
-					mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint);
-				clearFlag = false;
+				if (unitInfo.mUnitEnum == base)
+				{
+					mInfoMapLayer->displayUnitInfo(
+						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
+						unitInfo.property.numHitPoint,
+						mMaxHitPointOfBase[tF].numHitPoint);
+					clearFlag = false;
+				}
+				else
+				{
+					mInfoMapLayer->displayUnitInfo(
+						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
+						unitInfo.property.numHitPoint,
+						mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint);
+					clearFlag = false;
+				}
 			}
 			//waiting for yyp
 		} 
+		//waiting method to get label  contain info;
 		if (clearFlag)
 		{
 			mInfoMapLayer->clearAllInfo();
@@ -1931,6 +1973,8 @@ void GameScene::initUnitData()
 			{
 				mUnitInitDataMap[base] = data;
 				mUnitDisplayMap[base] = introduction;
+				mMaxHitPointOfBase[0] = data.property;
+				mMaxHitPointOfBase[1] = data.property;
 				continue;
 			}
 			if (type == "farmer")
@@ -2063,7 +2107,9 @@ void GameScene::initGameMenu()
 		//autorelease();
 	});
 	auto menuBg = DrawNode::create();
-	menuBg->drawSolidRect(Vec2(mWinWidth / 2 - 100, mWinHeight / 2 - 150), Vec2(mWinWidth / 2 + 100, mWinHeight / 2 + 150), Color4F(0.607, 0.607, 0.607, 0.75));
+	menuBg->drawSolidRect(Vec2(mWinWidth / 2 - 100, mWinHeight / 2 - 150), 
+		Vec2(mWinWidth / 2 + 100, mWinHeight / 2 + 150), 
+		Color4F(0.607, 0.607, 0.607, 0.75));
 	auto menu = Menu::create(/*bgItem,*/ youWinItem, GGItem, NULL);
 	menu->alignItemsVerticallyWithPadding(20);
 	mGameMenu = Node::create();

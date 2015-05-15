@@ -713,8 +713,8 @@
 ],
 "influence" :
 {
-"type" : "numBaseHitPoint",
-"target" : "",
+"type" : "numHitPoint",
+"target" : "base",
 "value" : 400
 },
 "consumption" :
@@ -736,8 +736,8 @@
 ],
 "influence" :
 {
-"type" : "numBaseHitPoint",
-"target" : "",
+"type" : "numHitPoint",
+"target" : "base",
 "value" : 800
 },
 "consumption" :
