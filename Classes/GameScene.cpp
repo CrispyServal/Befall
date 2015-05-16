@@ -338,48 +338,46 @@ void GameScene::netUpdate(float delta)
 {
 	CCLOG("net update");
 	//test
-	if (mGameMode == server || mGameMode == client)
+
+	int tF = mGameMode == server ? 0 : 1;
+	if (mNet.read())
 	{
-		int tF = mGameMode == server ? 0 : 1;
-		if ( mNet.read())
+		CCLOG("read!");
+		if (!mNet.isLocked())
 		{
-			CCLOG("read!");
-			if (!mNet.isLocked())
+			//read something
+			whichEnum which = mNet.getWhich();
+			if (which == newTech)
 			{
-				//read something
-				whichEnum which = mNet.getWhich();
-				if (which == newTech)
-				{
-					unlockTechTree(tF, mNet.getTech());
-				}
-				else if ( which == newSoldier)
-				{
-					//place soldier to enemy's spawn
-					spawnUnit(mNet.getNewSoldier().unit, 1 - tF);
-				}
-				else if (which == twoPoints)
-				{
-					readTwoPoint(tF);
-				}
-				else if (which == end)
-				{
-					switchTurn();
-				}
-				else if (which == youwin)
-				{
-					CCLOG("i win");
-				}
-				mNet.lockOn();
+				unlockTechTree(1 - tF, mNet.getTech());
 			}
+			else if (which == newSoldier)
+			{
+				//place soldier to enemy's spawn
+				spawnUnit(mNet.getNewSoldier().unit, 1 - tF);
+			}
+			else if (which == twoPoints)
+			{
+				readTwoPoint(tF);
+			}
+			else if (which == end)
+			{
+				switchTurn();
+			}
+			else if (which == youwin)
+			{
+				CCLOG("i win");
+			}
+			mNet.lockOn();
 		}
-		else
+	}
+	else
+	{
+		CCLOG("read error");
+		auto err = WSAGetLastError();
+		if (err != WSAEWOULDBLOCK)
 		{
-			CCLOG("read error");
-			auto err = WSAGetLastError();
-			if (err != WSAEWOULDBLOCK)
-			{
-				CCLOG("he GGed!!!");
-			}
+			CCLOG("he GGed!!!");
 		}
 	}
 }
@@ -2496,12 +2494,12 @@ void GameScene::initYypNet()
 	{
 	case server:
 		mNet.startServer(mUserDefault->getIntegerForKey("port"));
-		schedule(schedule_selector(GameScene::acceptConnect),1,CC_REPEAT_FOREVER,0);
+		schedule(schedule_selector(GameScene::acceptConnect),0.1,CC_REPEAT_FOREVER,0);
 		break;
 	case client:
 		//display juFlower
 		//mNet.makeConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
-		schedule(schedule_selector(GameScene::startConnecting),1,CC_REPEAT_FOREVER,0);
+		schedule(schedule_selector(GameScene::startConnecting),0.1,CC_REPEAT_FOREVER,0);
 		break;
 	case vsPlayer:
 		break;
