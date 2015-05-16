@@ -337,7 +337,7 @@ private:
 	//unit moving
 	void moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool showAttachRange = false);
 	//tF是攻击来源的所有方
-	void attackUnit(const MyPointStruct & from, const MyPointStruct & to, const int & tF);
+	void attackUnit(const MyPointStruct & from, const MyPointStruct & attackedUnitPositionto, const int & tF);
 
 	//Tech Influence
 	void setTechInfluence(const int & flag, TechEnum tech);
@@ -396,5 +396,9 @@ private:
 			mDirector->popScene();
 		}
 	}
+*/
+/*
+	基地存在mResourceMap里面。因为它不需要两边通信。一边死的时候自然会通信。
+	但是基地的初始信息放在uniinitmap里面。
 */
 //lq : working on attackUnit

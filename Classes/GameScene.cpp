@@ -427,23 +427,24 @@ void GameScene::switchTurn()
 	if (mBlueTurn)
 	{
 		++mNumTurn;
-		CCLOG("going : %s", getDicValue("Going").c_str());
-		CCLOG("turn : %s", getDicValue("Turn").c_str());
+		//CCLOG("going : %s", getDicValue("Going").c_str());
+		//CCLOG("turn : %s", getDicValue("Turn").c_str());
 		mTurnLabel->setString(getDicValue("Going") + " " 
 			+ std::to_string(mNumTurn) + " " + getDicValue("Turn"));
 	}
-	CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
+	//CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
 	//start turn
 	if (mGameMode == vsPlayer)
 	{
 		mUnitCampLayer->setVisible(false);
 		mTechTreeLayer->setVisible(false);
 		int tF = mBlueTurn ? 0 : 1;
-		CCLOG("vsPlayer,tF: %d", tF);
+		//CCLOG("vsPlayer,tF: %d", tF);
 		checkTechFactory(tF);
 		checkUnitFactory(tF);
 		refreshTechTree(tF);
 		refreshUnitCamp(tF);
+		refreshResource(tF);
 		refreshResourcesIcons(tF);
 		refreshMakingButton(tF);
 		refreshUnitState(tF);
@@ -479,6 +480,7 @@ void GameScene::switchTurn()
 		checkUnitFactory(tF);
 		refreshTechTree(tF);
 		refreshUnitCamp(tF);
+		refreshResource(tF);
 		refreshResourcesIcons(tF);
 		refreshMakingButton(tF);
 		refreshUnitState(tF);
@@ -499,6 +501,7 @@ void GameScene::switchTurn()
 	checkLayersOnMouseMoved();
 	deleteAttackRange();
 	deleteMoveRange();
+	mUnitActionFSM[0] = mUnitActionFSM[1] = 0;
 }
 
 void GameScene::refreshUnitState(const int & turnFlag)
@@ -544,6 +547,7 @@ void GameScene::checkUnitFactory(int turnFlag)
 		auto newUnit = mUnitFactory[turnFlag].getFinishedUnit();
 		//spawn it 
 		spawnUnit(newUnit,turnFlag);
+		refreshMiniMap();
 		//add population
 		mPopulation[turnFlag] += (mUnitInitDataMap[newUnit].property.numPopulation + mGameState[turnFlag].extraProperty[newUnit].numPopulation);
 		mUnitFactory[turnFlag].setExistence(false);
@@ -692,13 +696,50 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	unit.sprite->runAction(sequence);
 }
 
-void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & to, const int & tF)
+void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & attackedUnitPosition, const int & tF)
 {
+	auto typeFrom = mGameState[tF].unitMap[from].type;
+	//check attackedUnitPosition type
+	for (auto & reP : mResourceMap)
+	{
+		if ((reP.first == attackedUnitPosition) && (reP.second.type != base))
+		{
+			//attack resource
+			collectionFamerAttack(from, attackedUnitPosition, tF);
+			return;
+		}
+	}
+	//action
 
+	//base
+	if (attackedUnitPosition == mBasePosition[1 - tF])
+	{
+		auto & HP = mResourceMap[attackedUnitPosition].property.numHitPoint;
+		HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[attackedUnitPosition].property.numDefence);
+		//die?
+		if (HP <= 0)
+		{
+			die(attackedUnitPosition, 1 - tF);
+		}
+	}
+	else
+	{
+		auto typeTo = mGameState[1 - tF].unitMap[attackedUnitPosition].type;
+		//unit
+		auto & HP = mGameState[1 - tF].unitMap[attackedUnitPosition].property.numHitPoint;
+		CCLOG("unit a unit: HP: %d", HP);
+		HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mGameState[1 - tF].unitMap[attackedUnitPosition].property.numDefence -mGameState[1-tF].extraProperty[typeTo].numDefence);
+		CCLOG("aftar a, HP: %d", HP);
+		if (HP <= 0)
+		{
+			die(attackedUnitPosition, 1 - tF);
+		}
+	}
 }
 //need to be tested
 void GameScene::die(const MyPointStruct & point, const int & tF)
 {
+	CCLOG("die point: %d,%d", point.x, point.y);
 	//base
 	if (point == mBasePosition[tF])
 	{
@@ -707,8 +748,10 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	}
 	//unit
 	bool foundU = false;
+	CCLOG("unitmap size: %d", mGameState[tF].unitMap.size());
 	for (auto & i : mGameState[tF].unitMap)
 	{
+		CCLOG("searching unit map.%d,%d", i.first.x, i.first.y);
 		if (i.first == point)
 		{
 			//found
@@ -718,7 +761,7 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	}
 	if (foundU)
 	{
-		mGameState[tF].unitMap[point].sprite->autorelease();
+		mGameState[tF].unitMap[point].sprite->removeFromParentAndCleanup(true);
 		mGameState[tF].unitMap.erase(point);
 		return;
 	}
@@ -729,11 +772,12 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 		if (i.first == point)
 		{
 			foundR = true;
+			break;
 		}
 	}
 	if (foundR)
 	{
-		mResourceMap[point].sprite->autorelease();
+		mResourceMap[point].sprite->removeFromParentAndCleanup(true);
 		mResourceMap.erase(point);
 		return;
 	}
@@ -741,6 +785,8 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 
 void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 {
+	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] );
+	CCLOG("spawning property: {hp:%d,atk:%d,def:%d,movR:%d,atR:%d,po:%d,}", pro.numHitPoint,pro.numAttack,pro.numDefence,pro.numRangeMove,pro.numRangeAttack,pro.numPopulation);
 	Unit newUnit = {
 		unit,
 		UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] ),
@@ -2375,6 +2421,7 @@ void GameScene::initUnitTexture()
 
 void GameScene::showMoveRange(const MyPointStruct & unitPoint, const int & tF)//yypmark
 {
+	CCLOG("showMoveRange: unitPoint: %d,%d", unitPoint.x, unitPoint.y);
 	std::set <MyPointStruct> barrier;// need to repair
 	for (auto state : mGameState)
 	{
@@ -2405,6 +2452,7 @@ void GameScene::showMoveRange(const MyPointStruct & unitPoint, const int & tF)//
 
 void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
 {
+	CCLOG("showAttackRange: unitPoint: %d,%d", unitPoint.x, unitPoint.y);
 	std::set <MyPointStruct> barrier;
 	auto unit = mGameState[tF].unitMap[unitPoint];
 	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack, barrier);
@@ -2436,7 +2484,7 @@ void GameScene::deleteMoveRange()
 {
 	for (auto unitPath : mMoveRange)
 	{
-		CCLOG("deleteMoveRange: %d,%d", unitPath.point.x, unitPath.point.y);
+		//CCLOG("deleteMoveRange: %d,%d", unitPath.point.x, unitPath.point.y);
 		mTiledMapLayer->setTileColor(unitPath.point, 1);
 	}
 	mMoveRange.clear();
@@ -2447,7 +2495,7 @@ void GameScene::deleteAttackRange()
 	CCLOG("attack range size %d", mAttackRange.size());
 	for (auto attacking : mAttackRange)
 	{
-		CCLOG("deleteAttackRange: %d,%d", attacking.x, attacking.y);
+		//CCLOG("deleteAttackRange: %d,%d", attacking.x, attacking.y);
 		mTiledMapLayer->setTileColor(attacking, 1);
 	}
 	mAttackRange.clear();
@@ -2492,7 +2540,9 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				deleteMoveRange();
 				deleteAttackRange();
 				//attack
-				mGameState[tF].unitMap[nowPoint].state = attacked;
+				attackUnit(mOriginalPoint, nowPoint,tF);
+				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
+				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				mUnitActionFSM[tF] = 0;
 				return;
 			}
@@ -2511,9 +2561,15 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				}
 				deleteAttackRange();
 				deleteMoveRange();
+				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
 				mGameState[tF].unitMap[mOriginalPoint].state = moved;
 				CCLOG("nowPoint: %d,%d", nowPoint.x, nowPoint.y);
-				moveUnit(movePath, tF, true);//error unit not found ??
+				moveUnit(movePath, tF, true);
+				//farmer
+				if (mGameState[tF].unitMap[mOriginalPoint].type == farmer)
+				{
+					collectionFarmerMove(mOriginalPoint, tF);
+				}
 				mOriginalPoint = nowPoint;
 				/*
 				showAttackRange(nowPoint, tF);
@@ -2546,7 +2602,9 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 			{
 				deleteAttackRange();
 				//attack
-				mGameState[tF].unitMap[nowPoint].state = attacked;
+				attackUnit(mOriginalPoint, nowPoint, tF);
+				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
+				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				mUnitActionFSM[tF] = 0;
 				return;
 			}
@@ -2574,7 +2632,7 @@ bool GameScene::collecable(const MyPointStruct & resourcePosition, const int & t
 		}
 	}
 	//not found
-	return false;
+	return true;
 }
 
 //need test
@@ -2586,10 +2644,13 @@ void GameScene::refreshResourceCollectionState(const MyPointStruct & resourcePos
 		{
 			//found
 			int change = increase ? 1 : -1;
+			CCLOG("refreshRCS: change: %d", change);
 			i.second.numOfFarmer += change;
+			i.second.owner = tF;
 			if (i.second.numOfFarmer == 0)
 			{
 				//wild now
+				CCLOG("change to wild!");
 				i.second.owner = -1;
 			}
 			return;
