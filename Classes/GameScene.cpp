@@ -2603,12 +2603,15 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				deleteMoveRange();
 				deleteAttackRange();
 				//send
-				while (!mNet.sendTwoPoint(twoPointStruct{ mOriginalPoint, nowPoint }))
+				if (mGameMode == server || mGameMode == client)
 				{
-					auto err = WSAGetLastError();
-					if (err != WSAEWOULDBLOCK)
+					while (!mNet.sendTwoPoint(twoPointStruct{ mOriginalPoint, nowPoint }))
 					{
-						mDirector->popScene();
+						auto err = WSAGetLastError();
+						if (err != WSAEWOULDBLOCK)
+						{
+							mDirector->popScene();
+						}
 					}
 				}
 				//attack
@@ -2630,12 +2633,15 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				deleteMoveRange();
 				mGameState[tF].unitMap[mOriginalPoint].state = moved;
 				//send
-				while (!mNet.sendTwoPoint(twoPointStruct{ mOriginalPoint, nowPoint }))
+				if (mGameMode == server || mGameMode == client)
 				{
-					auto err = WSAGetLastError();
-					if (err != WSAEWOULDBLOCK)
+					while (!mNet.sendTwoPoint(twoPointStruct{ mOriginalPoint, nowPoint }))
 					{
-						mDirector->popScene();
+						auto err = WSAGetLastError();
+						if (err != WSAEWOULDBLOCK)
+						{
+							mDirector->popScene();
+						}
 					}
 				}
 				//move
@@ -2677,12 +2683,15 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 			{
 				deleteAttackRange();
 				//send
-				while (!mNet.sendTwoPoint(twoPointStruct{ mOriginalPoint, nowPoint }))
+				if (mGameMode == server || mGameMode == client)
 				{
-					auto err = WSAGetLastError();
-					if (err != WSAEWOULDBLOCK)
+					while (!mNet.sendTwoPoint(twoPointStruct{ mOriginalPoint, nowPoint }))
 					{
-						mDirector->popScene();
+						auto err = WSAGetLastError();
+						if (err != WSAEWOULDBLOCK)
+						{
+							mDirector->popScene();
+						}
 					}
 				}
 				//attack
