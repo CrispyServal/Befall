@@ -2114,6 +2114,8 @@ void GameScene::initResourceMap()
 						}
 						*/
 					}
+					CCLOG("Sleep sended. %d,%d", ranP.x, ranP.y);
+					Sleep(250);
 					CCLOG("sended. %d,%d", ranP.x, ranP.y);
 				}
 				mResourceMap[ranP] = Unit{
