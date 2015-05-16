@@ -394,6 +394,9 @@ private:
 	void collectionFamerAttack(const MyPointStruct & farmerFrom, const MyPointStruct & farmerTo, const int & tF);
 	//
 	void refreshResource(const int & tF);
+
+	//
+	int whosUnit(MyPointStruct unitPoint);
 };
 
 #endif // !GAMESCENE_H
