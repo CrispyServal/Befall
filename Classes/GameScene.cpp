@@ -326,6 +326,7 @@ void GameScene::acceptConnect(float delta)
 void GameScene::startConnecting(float delta)
 {
 	CCLOG("connecting...");
+	//CCLOG("ip: %s,  port:  %s", (char *)mUserDefault->getStringForKey("ip").c_str(), mUserDefault->getIntegerForKey("port"));
 	if (mNet.makeConnect((char *)mUserDefault->getStringForKey("ip").c_str(), mUserDefault->getIntegerForKey("port")))
 	{
 		CCLOG("connecting successed");
@@ -2106,12 +2107,14 @@ void GameScene::initResourceMap()
 				{
 					while (!mNet.sendOnePoint(ranP))
 					{
+						/*
 						auto err = WSAGetLastError();
 						if (err != WSAEWOULDBLOCK)
 						{
 							CCLOG("he GGed so fast!!!");
 							mDirector->popScene();
 						}
+						*/
 					}
 					CCLOG("sended. %d,%d", ranP.x, ranP.y);
 				}
@@ -2131,14 +2134,16 @@ void GameScene::initResourceMap()
 		}
 		if (mGameMode == server)
 		{
-			while (!mNet.sendEnd());
+			while (!mNet.sendEnd())
 			{
+				/*
 				auto err = WSAGetLastError();
 				if (err != WSAEWOULDBLOCK)
 				{
 					CCLOG("he GGed so fast!!!");
 					mDirector->popScene();
 				}
+				*/
 			}
 			CCLOG("sended end");
 		}
@@ -2150,12 +2155,14 @@ void GameScene::initResourceMap()
 		{
 			while (!mNet.read())
 			{
-				auto err = WSAGetLastError();
-				if (err != WSAEWOULDBLOCK)
+				//auto err = WSAGetLastError();
+				/*
+				if (err != WSAEWOULDBLOCK )
 				{
 					CCLOG("he GGed so fast!!!");
 					mDirector->popScene();
 				}
+				*/
 			}
 			if (mNet.getWhich() == onePoint)
 			{
@@ -2496,12 +2503,14 @@ void GameScene::initYypNet()
 	{
 	case server:
 		mNet.startServer(mUserDefault->getIntegerForKey("port"));
-		schedule(schedule_selector(GameScene::acceptConnect),1,CC_REPEAT_FOREVER,0);
+		CCLOG("port: %s", mUserDefault->getIntegerForKey("port"));
+		schedule(schedule_selector(GameScene::acceptConnect),0.1,CC_REPEAT_FOREVER,0);
 		break;
 	case client:
 		//display juFlower
 		//mNet.makeConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
-		schedule(schedule_selector(GameScene::startConnecting),1,CC_REPEAT_FOREVER,0);
+		//schedule(schedule_selector(GameScene::startConnecting),0.1,CC_REPEAT_FOREVER,0);
+		startConnecting(0.1);
 		break;
 	case vsPlayer:
 		break;
