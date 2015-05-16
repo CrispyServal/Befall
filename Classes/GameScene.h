@@ -23,6 +23,18 @@
 //using namespace cocos2d;
 USING_NS_CC;
 
+//GameState 
+//Default Property:
+//mUnitInitDataMap for all elements
+
+//Extra Property:
+//extraProperty for all units
+//mMaxHitPointOfBase = defaultProperty + effective tech influence
+
+//Now Propert:
+//GameState[tF].unitMap
+//mResourceMap[mBasePosition[flag]].property
+
 //unitMap include unit
 struct GameStateStruct
 {
