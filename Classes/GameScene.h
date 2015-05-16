@@ -354,7 +354,8 @@ private:
 	MyPointStruct mOriginalPoint;
 	int mUnitActionFSM[2];
 
-	void die(MyPointStruct point);
+	//for unit, resource, base
+	void die(const MyPointStruct & point, const int & tF);
 };
 
 #endif // !GAMESCENE_H

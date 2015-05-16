@@ -569,7 +569,6 @@ void GameScene::checkUnitFactory(int turnFlag)
 	}
 }
 
-//need to be tested
 void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool showAttachRange)
 {
 	if (path.size() < 2)
@@ -693,7 +692,49 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	unit.sprite->runAction(sequence);
 }
 
-//testing
+//need to be tested
+void GameScene::die(const MyPointStruct & point, const int & tF)
+{
+	//base
+	if (point == mBasePosition[tF])
+	{
+		//win(tF);
+		return;
+	}
+	//unit
+	bool foundU = false;
+	for (auto & i : mGameState[tF].unitMap)
+	{
+		if (i.first == point)
+		{
+			//found
+			foundU = true;
+			break;
+		}
+	}
+	if (foundU)
+	{
+		mGameState[tF].unitMap[point].sprite->autorelease();
+		mGameState[tF].unitMap.erase(point);
+		return;
+	}
+	//resources
+	bool foundR = false;
+	for (auto & i : mResourceMap)
+	{
+		if (i.first == point)
+		{
+			foundR = true;
+		}
+	}
+	if (foundR)
+	{
+		mResourceMap[point].sprite->autorelease();
+		mResourceMap.erase(point);
+		return;
+	}
+}
+
 void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 {
 	Unit newUnit = {
