@@ -2874,10 +2874,19 @@ void GameScene::refreshResource(const int & tF)
 	{
 		if (i.second.owner == tF)
 		{
+			auto type = mResourceMap[i.first].type;
+			int extraPro;
+			if (type == fixedResource)
+			{
+				extraPro = mExtraResources[tF].numFixedResource;
+			}
+			else if (type == randomResource)
+			{
+				extraPro = mExtraResources[tF].numRandomResource;
+			}
 			int & leftHP = mResourceMap[i.first].property.numHitPoint;
 			CCLOG("leftHP: %d", leftHP);
-			int deltaHP = mResources[tF].numProductivity + i.second.numOfFarmer * (mUnitInitDataMap[farmer].property.numAttack + mGameState[tF].extraProperty[farmer].numAttack);
-			auto type = mResourceMap[i.first].type;
+			int deltaHP = i.second.numOfFarmer * (mUnitInitDataMap[farmer].property.numAttack + mGameState[tF].extraProperty[farmer].numAttack + extraPro);
 			CCLOG("deltaHP: %d", deltaHP);
 			if (leftHP > deltaHP)
 			{
