@@ -22,7 +22,7 @@ bool InfoMapLayer::init()
 	height = director->getWinSize().height;
 	//background sprite
 	mBackground = DrawNode::create();
-	mBackground->drawSolidRect(Vec2(-100, -120), Vec2(100, 120), Color4F(0, 0, 0, 0.4));
+	mBackground->drawSolidRect(Vec2(-88, -88), Vec2(88, 88), Color4F(0, 0, 0, 0.4));
 	mBackground->setPosition(width / 2, height / 2);
 	addChild(mBackground, 1);
 	//sprite intialize
@@ -34,36 +34,36 @@ bool InfoMapLayer::init()
 
 	//unitname
 	mUnitNameLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
-	mUnitNameLabel->setPosition(width / 2, height / 2 + 80);
+	mUnitNameLabel->setPosition(width / 2, height / 2 + 50);
 	addChild(mUnitNameLabel, 3);
 	//
 	mHpBarBg = DrawNode::create();
-	mHpBarBg->drawSolidRect(Vec2(-12, -2), Vec2(12, 102), Color4F(1, 1, 1, 1));
-	mHpBarBg->setPosition(width / 2 + 65, height / 2 - 60);
+	mHpBarBg->drawSolidRect(Vec2(-2, -12), Vec2(102, 12), Color4F(1, 1, 1, 1));
+	mHpBarBg->setPosition(width / 2 - 50, height / 2 - 50);
 	addChild(mHpBarBg, 4);
 	//mhpbar
 	mHPBar = DrawNode::create();
-	mHPBar->drawSolidRect(Vec2(-10, 0), Vec2(10, 100), Color4F(0, 0, 0, 1));
+	mHPBar->drawSolidRect(Vec2(0, -10), Vec2(100, 10), Color4F(0, 0, 0, 1));
 	mHPBar->setPosition(mHpBarBg->getPosition());
 	addChild(mHPBar, 5);
 	//mnowhp
 	mNowHpBar = DrawNode::create();
-	mNowHpBar->drawSolidRect(Vec2(-10, 0), Vec2(10, 100), Color4F(1, 0, 0, 1));
+	mNowHpBar->drawSolidRect(Vec2(0, -10), Vec2(100, 10), Color4F(1, 0, 0, 1));
 	mNowHpBar->setPosition(mHpBarBg->getPosition());
 	addChild(mNowHpBar, 6);
 	//
 	mTechNameLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
-	mTechNameLabel->setPosition(width / 2, height / 2 + 80);
+	mTechNameLabel->setPosition(width / 2, height / 2 + 70);
 	addChild(mTechNameLabel, 7);
 	//
 	mTechIntroLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 16);
-	mTechIntroLabel->setPosition(width / 2, height / 2 - 20);	
-	mTechIntroLabel->setDimensions(134, 100);//
-	mTechIntroLabel->setAlignment(TextHAlignment::LEFT, TextVAlignment::TOP);
+	mTechIntroLabel->setPosition(width / 2, height / 2 );	
+	mTechIntroLabel->setDimensions(134, 108);//
+	mTechIntroLabel->setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
 	addChild(mTechIntroLabel, 8);
 	//
 	mTechTurnLeft = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
-	mTechTurnLeft->setPosition(width / 2, height / 2 - 95);
+	mTechTurnLeft->setPosition(width / 2, height / 2 - 70);
 	addChild(mTechTurnLeft, 9);
 	//
 	mTechNameLabel->setVisible(false);
@@ -94,7 +94,7 @@ void InfoMapLayer::displayUnitInfo(string unitName, int hpNow, int hpAll)
 	//mhpbar
 	mHPBar->setVisible(true);
 	//mnowhp
-	mNowHpBar->setScale(1, (float)hpNow / (float)hpAll);//nupdata
+	mNowHpBar->setScale((float)hpNow / (float)hpAll, 1);//nupdata
 	mNowHpBar->setVisible(true);
 }
 
