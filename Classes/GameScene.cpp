@@ -355,15 +355,19 @@ void GameScene::netUpdate(float delta)
 				else if ( which == newSoldier)
 				{
 					//place soldier to enemy's spawn
+					spawnUnit(mNet.getNewSoldier().unit, 1 - tF);
 				}
 				else if (which == twoPoints)
 				{
+					readTwoPoint(tF);
 				}
 				else if (which == end)
 				{
+					switchTurn();
 				}
 				else if (which == youwin)
 				{
+					CCLOG("i win");
 				}
 				mNet.lockOn();
 			}
@@ -377,6 +381,65 @@ void GameScene::netUpdate(float delta)
 				CCLOG("he GGed!!!");
 			}
 		}
+	}
+}
+
+//tF reading
+void GameScene::readTwoPoint(const int & tF)
+{
+	auto twoPoint = mNet.getPoints();
+	//
+	bool attack = false;
+	for (auto & i : mGameState[tF].unitMap)
+	{
+		if (i.first == twoPoint.second)
+		{
+			//attack my unit
+			attack = true;
+			return;
+		}
+	}
+	//
+	for (auto & i : mResourceMap)
+	{
+		if (i.first == twoPoint.second)
+		{
+			//attack resource
+			attack = true;
+			return;
+		}
+	}
+	if (attack)
+	{
+		attackUnit(twoPoint.first, twoPoint.first, 1 - tF);
+	}
+	else
+	{
+		//move
+		std::set <MyPointStruct> barrier;// need to repair
+		for (auto state : mGameState)
+		{
+			for (auto ob : state.unitMap)
+			{
+				barrier.insert(ob.first);
+			}
+		}
+		for (auto ob : mResourceMap)
+		{
+			if (ob.second.type == base)
+			{
+				auto nearPoint = getNearPoint(ob.first);
+				for (auto point : nearPoint)
+				{
+					barrier.insert(point);
+				}
+			}
+			barrier.insert(ob.first);
+		}
+		auto unit = mGameState[1 - tF].unitMap[twoPoint.first];
+		auto pathTree = getPathTree(twoPoint.first, unit.property.numRangeMove, barrier);
+		auto path = getPath(pathTree, twoPoint.second);
+		moveUnit(path, 1 - tF);
 	}
 }
 
@@ -2539,8 +2602,17 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 			{
 				deleteMoveRange();
 				deleteAttackRange();
+				//send
+				while (!mNet.sendTwoPoint(twoPointStruct{ mOriginalPoint, nowPoint }))
+				{
+					auto err = WSAGetLastError();
+					if (err != WSAEWOULDBLOCK)
+					{
+						mDirector->popScene();
+					}
+				}
 				//attack
-				attackUnit(mOriginalPoint, nowPoint,tF);
+				attackUnit(mOriginalPoint, nowPoint, tF);
 				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
 				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				mUnitActionFSM[tF] = 0;
@@ -2554,16 +2626,19 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				CCLOG("correctRoot");
 				auto movePath = getPath(mMoveRange, nowPoint);
 				//testing getPath
-				CCLOG("in Path:  ");
-				for (auto & i : movePath)
-				{
-					CCLOG("node: %d,%d", i.x, i.y);
-				}
 				deleteAttackRange();
 				deleteMoveRange();
-				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
 				mGameState[tF].unitMap[mOriginalPoint].state = moved;
-				CCLOG("nowPoint: %d,%d", nowPoint.x, nowPoint.y);
+				//send
+				while (!mNet.sendTwoPoint(twoPointStruct{ mOriginalPoint, nowPoint }))
+				{
+					auto err = WSAGetLastError();
+					if (err != WSAEWOULDBLOCK)
+					{
+						mDirector->popScene();
+					}
+				}
+				//move
 				moveUnit(movePath, tF, true);
 				//farmer
 				if (mGameState[tF].unitMap[mOriginalPoint].type == farmer)
@@ -2601,6 +2676,15 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 			if (nowPoint == attackingNode)
 			{
 				deleteAttackRange();
+				//send
+				while (!mNet.sendTwoPoint(twoPointStruct{ mOriginalPoint, nowPoint }))
+				{
+					auto err = WSAGetLastError();
+					if (err != WSAEWOULDBLOCK)
+					{
+						mDirector->popScene();
+					}
+				}
 				//attack
 				attackUnit(mOriginalPoint, nowPoint, tF);
 				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);

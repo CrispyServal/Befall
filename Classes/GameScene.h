@@ -250,6 +250,7 @@ private:
 	//update
 	void update(float delta);
 	void netUpdate(float delta);
+	void readTwoPoint(const int & tF);
 
 	//callback
 	void backToMainScene(Ref * sender);
