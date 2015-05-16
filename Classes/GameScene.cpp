@@ -1451,16 +1451,19 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 		int tF = (mGameMode == server) ? 0 : 1;
 		if (mOperateEnable)
 		{
-			if (!mTechFactory[tF].techExistence())
+			if (mGameState[tF].techTree.unlockable(tech))
 			{
-				//add to factory
-				if (mResources[tF] >= mTechInitDataMap[tech])
+				if (!mTechFactory[tF].techExistence())
 				{
-					mResources[tF] -= mTechInitDataMap[tech];
-					mTechFactory[tF].addNewTech(tech);
-					mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(tech);
-					refreshMakingButton(tF);
-					refreshResourcesIcons(tF);
+					//add to factory
+					if (mResources[tF] >= mTechInitDataMap[tech])
+					{
+						mResources[tF] -= mTechInitDataMap[tech];
+						mTechFactory[tF].addNewTech(tech);
+						mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(tech);
+						refreshMakingButton(tF);
+						refreshResourcesIcons(tF);
+					}
 				}
 			}
 		}
@@ -1468,17 +1471,20 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 	else if (mGameMode == vsPlayer)
 	{
 		int tF = mBlueTurn ? 0 : 1;
-		if (!mTechFactory[tF].techExistence())
+		if (mGameState[tF].techTree.unlockable(tech))
 		{
-			if (mResources[tF] >= mTechInitDataMap[tech])
+			if (!mTechFactory[tF].techExistence())
 			{
-				mResources[tF] -= mTechInitDataMap[tech];
-				//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
-				mTechFactory[tF].addNewTech(tech);
-				mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(tech);
-				refreshMakingButton(tF);
-				CCLOG("vsPlayer; added new Tech!");
-				refreshResourcesIcons(tF);
+				if (mResources[tF] >= mTechInitDataMap[tech])
+				{
+					mResources[tF] -= mTechInitDataMap[tech];
+					//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
+					mTechFactory[tF].addNewTech(tech);
+					mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(tech);
+					refreshMakingButton(tF);
+					CCLOG("vsPlayer; added new Tech!");
+					refreshResourcesIcons(tF);
+				}
 			}
 		}
 	}
