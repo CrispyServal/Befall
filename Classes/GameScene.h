@@ -141,6 +141,13 @@ const std::vector<TechEnum> mTechEnumList =
 	defbase2
 };
 
+struct ResourceCollectionStruct
+{
+	//-1:wild; 0:blue; 1:read
+	int owner;
+	int numOfFarmer;
+};
+
 class GameScene : public Scene
 {
 public:
@@ -329,6 +336,8 @@ private:
 	void spawnUnit(UnitEnum unit, int turnFlag);
 	//unit moving
 	void moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool showAttachRange = false);
+	//tF是攻击来源的所有方
+	void attackUnit(const MyPointStruct & from, const MyPointStruct & to, const int & tF);
 
 	//Tech Influence
 	void setTechInfluence(const int & flag, TechEnum tech);
@@ -350,12 +359,28 @@ private:
 	void deleteAttackRange();
 	void unitAction(const MyPointStruct & nowPoint, int tF);
 	std::vector <PathNodeStruct> mMoveRange;
-	std::set <MyPointStruct> mAttackrange;
+	std::set <MyPointStruct> mAttackRange;
 	MyPointStruct mOriginalPoint;
 	int mUnitActionFSM[2];
 
 	//for unit, resource, base
 	void die(const MyPointStruct & point, const int & tF);
+
+	//resources collection
+	std::map<MyPointStruct, MyPointStruct> mFarmerResourceMap[2];
+	//没查到矿坐标也算作野矿，省去初始化
+	std::map<MyPointStruct, ResourceCollectionStruct> mResourceCollectionMap;
+	//刷新矿物的农民数，0时自动设为野矿
+	void refreshResourceCollectionState(const MyPointStruct & resourcePosition, bool increase, const int & tF);
+	//看一个矿某一方的农民能不能采
+	bool collecable(const MyPointStruct & resourcePosition, const int & tF);
+	//农民移动时，调用此函数。如果农民离开了原来的矿，可以清除统计
+	//只需起点
+	void collectionFarmerMove(const MyPointStruct & farmerFrom, const int & tF);
+	//农民攻击时，调用此函数。自动处理统计状态
+	void collectionFamerAttack(const MyPointStruct & farmerFrom, const MyPointStruct & farmerTo, const int & tF);
+	//
+	void refreshResource(const int & tF);
 };
 
 #endif // !GAMESCENE_H
@@ -372,3 +397,4 @@ private:
 		}
 	}
 */
+//lq : working on attackUnit

@@ -28,11 +28,11 @@ std::vector<MyPointStruct> GameScene::getNearPoint(const MyPointStruct & point)
 	{
 		result.push_back(MyPointStruct{ point.x, point.y - 1 });
 	}
-	if (point.x < mMapSize.width)
+	if (point.x < mMapSize.width - 1)
 	{
 		result.push_back(MyPointStruct{ point.x + 1, point.y });
 	}
-	if (point.y < mMapSize.height)
+	if (point.y < mMapSize.height - 1)
 	{
 		result.push_back(MyPointStruct{ point.x, point.y + 1 });
 	}
@@ -667,7 +667,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	auto showAttackRangeC = CallFunc::create(
 	[this,path,turnFlag]()->void{
 		showAttackRange(path[path.size()-1], turnFlag);
-		if (mAttackrange.empty())
+		if (mAttackRange.empty())
 		{
 			deleteAttackRange();
 			mUnitActionFSM[turnFlag] = 0;
@@ -692,6 +692,10 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	unit.sprite->runAction(sequence);
 }
 
+void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & to, const int & tF)
+{
+
+}
 //need to be tested
 void GameScene::die(const MyPointStruct & point, const int & tF)
 {
@@ -925,6 +929,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			{
 				int tF = mBlueTurn ? 0 : 1;
 				auto mapPoint = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinateTouch);
+				CCLOG("tiled coor touched: %d,%d", mapPoint.x, mapPoint.y);
 				if (mOperateEnable)
 				{
 					unitAction(mapPoint, tF);
@@ -2409,8 +2414,19 @@ void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
 		{
 			if (attacking.point == enemy.first)
 			{
-				mAttackrange.insert(attacking.point);
+				mAttackRange.insert(attacking.point);
 				mTiledMapLayer->setTileColor(attacking.point, 3);
+			}
+		}
+		if (unit.type == farmer)
+		{
+			for (auto resource : mResourceMap)
+			{
+				if (attacking.point == resource.first)
+				{
+					mAttackRange.insert(attacking.point);
+					mTiledMapLayer->setTileColor(attacking.point, 3);
+				}
 			}
 		}
 	}
@@ -2420,6 +2436,7 @@ void GameScene::deleteMoveRange()
 {
 	for (auto unitPath : mMoveRange)
 	{
+		CCLOG("deleteMoveRange: %d,%d", unitPath.point.x, unitPath.point.y);
 		mTiledMapLayer->setTileColor(unitPath.point, 1);
 	}
 	mMoveRange.clear();
@@ -2427,11 +2444,13 @@ void GameScene::deleteMoveRange()
 
 void GameScene::deleteAttackRange()
 {
-	for (auto attacking : mAttackrange)
+	CCLOG("attack range size %d", mAttackRange.size());
+	for (auto attacking : mAttackRange)
 	{
+		CCLOG("deleteAttackRange: %d,%d", attacking.x, attacking.y);
 		mTiledMapLayer->setTileColor(attacking, 1);
 	}
-	mAttackrange.clear();
+	mAttackRange.clear();
 }
 
 void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
@@ -2466,7 +2485,7 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 			mUnitActionFSM[tF] = 0;
 			break;
 		}
-		for (auto attackingNode : mAttackrange)
+		for (auto attackingNode : mAttackRange)
 		{
 			if (nowPoint == attackingNode)
 			{
@@ -2498,7 +2517,7 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				mOriginalPoint = nowPoint;
 				/*
 				showAttackRange(nowPoint, tF);
-				if (mAttackrange.empty())
+				if (mAttackRange.empty())
 				{
 					deleteAttackRange();		
 					mUnitActionFSM[tF] = 0;
@@ -2521,7 +2540,7 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 			mUnitActionFSM[tF] = 0;
 			break;
 		}
-		for (auto attackingNode : mAttackrange)
+		for (auto attackingNode : mAttackRange)
 		{
 			if (nowPoint == attackingNode)
 			{
@@ -2536,5 +2555,160 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 	}
 }
 
+//need test
+bool GameScene::collecable(const MyPointStruct & resourcePosition, const int & tF)
+{
+	for (const auto & i : mResourceCollectionMap)
+	{
+		if (i.first == resourcePosition)
+		{
+			//found
+			if (i.second.owner == -1 || i.second.owner == tF)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	//not found
+	return false;
+}
 
+//need test
+void GameScene::refreshResourceCollectionState(const MyPointStruct & resourcePosition, bool increase, const int & tF)
+{
+	for (auto & i : mResourceCollectionMap)
+	{
+		if (i.first == resourcePosition)
+		{
+			//found
+			int change = increase ? 1 : -1;
+			i.second.numOfFarmer += change;
+			if (i.second.numOfFarmer == 0)
+			{
+				//wild now
+				i.second.owner = -1;
+			}
+			return;
+		}
+	}
+	//not found, add new
+	mResourceCollectionMap[resourcePosition] = ResourceCollectionStruct{
+		tF,
+		1
+	};
+}
 
+//need test
+void GameScene::collectionFarmerMove(const MyPointStruct & farmerFrom, const int & tF)
+{
+	//get resourcePoint
+	bool found = false;
+	MyPointStruct resourcePosition;
+	for (auto & i : mFarmerResourceMap[tF])
+	{
+		if (i.first == farmerFrom)
+		{
+			//found
+			found = true;
+			resourcePosition = i.second;
+		}
+	}
+	if (found)
+	{
+		refreshResourceCollectionState(resourcePosition, false, tF);
+		mFarmerResourceMap[tF].erase(farmerFrom);
+	}
+}
+
+//need test
+void GameScene::collectionFamerAttack(const MyPointStruct & farmerFrom, const MyPointStruct & farmerTo, const int & tF)
+{
+	//check collecable
+	if (!collecable(farmerTo, tF))
+	{
+		return;
+	}
+	bool found = false;
+	for (auto & i : mFarmerResourceMap[tF])
+	{
+		if (i.first == farmerFrom)
+		{
+			found = true;
+			//found farmer
+			if (i.second == farmerTo)
+			{
+				//attack attacking resource
+				return;
+			}
+		}
+	}
+	if (found)
+	{
+		//decrease numOfFarmer
+		refreshResourceCollectionState(farmerTo, false, tF);
+		mFarmerResourceMap[tF].erase(farmerFrom);
+	}
+	mFarmerResourceMap[tF][farmerFrom] = farmerTo;
+	refreshResourceCollectionState(farmerTo, true, tF);
+}
+
+//need test
+void GameScene::refreshResource(const int & tF)
+{
+	auto productivity = mResources[tF].numProductivity + mExtraResources[tF].numProductivity;
+	std::vector<MyPointStruct> toDeleteResourceP;
+	for (auto & i : mResourceCollectionMap)
+	{
+		if (i.second.owner == tF)
+		{
+			int & leftHP = mResourceMap[i.first].property.numHitPoint;
+			CCLOG("leftHP: %d", leftHP);
+			int deltaHP = mResources[tF].numProductivity + i.second.numOfFarmer * (mUnitInitDataMap[farmer].property.numAttack + mGameState[tF].extraProperty[farmer].numAttack);
+			auto type = mResourceMap[i.first].type;
+			CCLOG("deltaHP: %d", deltaHP);
+			if (leftHP > deltaHP)
+			{
+				leftHP -= deltaHP;
+			}
+			else
+			{
+				//dried
+				//die
+				die(i.first, tF);
+				toDeleteResourceP.push_back(i.first);
+				//erase from farmer->resource map
+				std::vector<MyPointStruct> toDeleteFarmerP;
+				for (auto F2R : mFarmerResourceMap[tF])
+				{
+					if (F2R.second == i.first)
+					{
+						//found 
+						toDeleteFarmerP.push_back(F2R.first);
+					}
+				}
+				for (const auto & famerP : toDeleteFarmerP)
+				{
+					mFarmerResourceMap[tF].erase(famerP);
+				}
+			}
+			//refresh mResources
+			if (type == fixedResource)
+			{
+				mResources[tF].numFixedResource += deltaHP;
+			}
+			else if (type == randomResource)
+			{
+				mResources[tF].numRandomResource += deltaHP;
+			}
+		}
+	}
+	//delete dried resource from resourceCollectionMap
+	for (auto reP : toDeleteResourceP)
+	{
+		mResourceCollectionMap.erase(reP);
+	}
+}
