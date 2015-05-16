@@ -53,33 +53,8 @@ public:
 	UnitPropertyStruct getUnitProperty(UnitEnum mUnitEnum);
 	int getUnitProductivity(UnitEnum mUnitEnum);
 
-	Texture2D * getUnitTexture(UnitEnum unit)
-	{
-		//find
-		bool found = false;
-		for (const auto & i : mUnitTexture)
-		{
-			if (i.first == unit)
-			{
-				found = true;
-				break;
-			}
-		}
-		if (!found)
-		{
-			CCLOG("unit not found!");
-			return NULL;
-		}
-		//get
-		if (unit < mUnitTexture.size())
-		{
-			return mUnitTexture[unit];
-		}
-		else
-		{
-			CCLOG("error: invalid unit");
-		}
-	}
+	Texture2D * getUnitTexture(UnitEnum unit);
+	
 	const ResourcesStruct getUnitResources(UnitEnum unit) const;
 private:
 	//每个单位的数据存储

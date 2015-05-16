@@ -1128,8 +1128,9 @@ void GameScene::refreshMakingButton(int turnF)
 {
 	if (mUnitFactory[turnF].unitExistence())
 	{
+		mUnitMakingButtonTexture = mUnitCampLayer->getUnitTexture(mUnitFactory[turnF].getMakingUnit());
+		mUnitMakingButton->setTexture(mUnitMakingButtonTexture);
 		mUnitMakingButton->setVisible(true);
-		mUnitMakingButton->setTexture(mUnitCampLayer->getUnitTexture(mUnitFactory[turnF].getMakingUnit()));
 	}
 	else
 	{
@@ -1138,7 +1139,8 @@ void GameScene::refreshMakingButton(int turnF)
 	if (mTechFactory[turnF].techExistence())
 	{
 		mTechMakingButton->setVisible(true);
-		mTechMakingButton->setTexture(mTechTreeLayer->getTechTexture(mTechFactory[turnF].getMakingTech()));
+		mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(mTechFactory[turnF].getMakingTech());
+		mTechMakingButton->setTexture(mTechMakingButtonTexture);
 	}
 	else
 	{

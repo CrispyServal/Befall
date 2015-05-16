@@ -325,6 +325,33 @@ std::string UnitCampLayer::getUnitIntroDuction(UnitEnum mUnitEnum)
 	return "";
 }
 
+Texture2D * UnitCampLayer::getUnitTexture(UnitEnum unit)
+	{
+		//find
+		bool found = false;
+		for (const auto & i : mUnitTexture)
+		{
+			if (i.first == unit)
+			{
+				found = true;
+				break;
+			}
+		}
+		if (!found)
+		{
+			CCLOG("unit not found!");
+			return NULL;
+		}
+		//get
+		if (unit < mUnitTexture.size())
+		{
+			return mUnitTexture[unit];
+		}
+		else
+		{
+			CCLOG("error: invalid unit");
+		}
+	}
 int UnitCampLayer::getUnitProductivity(UnitEnum mUnitEnum)
 {
 	for (auto i : mItemsList)
