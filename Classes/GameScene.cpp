@@ -1164,12 +1164,20 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 		if (mType == "numResearchLevel")
 		{
 			CCLOG("numResearchLevelAdded");
-			mExtraResources[flag].numResearchLevel += mValue;
+			mResources[flag].numResearchLevel += mValue;
 		}
 		if (mType == "numProductivity")
 		{
 			CCLOG("numProductivityAdded");
-			mExtraResources[flag].numProductivity += mValue;
+			mResources[flag].numProductivity += mValue;
+		}
+		if (mType == "numFixedResource")
+		{
+			mExtraResources[flag].numFixedResource += mValue;
+		}
+		if (mType == "numRandomResource")
+		{
+			mExtraResources[flag].numRandomResource += mValue;
 		}
 	}
 	return;
@@ -1264,11 +1272,11 @@ void GameScene::refreshResourcesIcons(const int & turnFlag)
 	mRandomResourceLabel->setString(ss.str());
 	ss.clear();
 	ss.str("");
-	ss << resources.numProductivity + mExtraResources[turnFlag].numProductivity;
+	ss << resources.numProductivity;
 	mProductivityLabel->setString(ss.str());
 	ss.clear();
 	ss.str("");
-	ss << resources.numResearchLevel + mExtraResources[turnFlag].numResearchLevel;
+	ss << resources.numResearchLevel;
 	mResearchLabel->setString(ss.str());
 }
 
@@ -1614,7 +1622,15 @@ void GameScene::checkLayersOnMouseMoved()
 			&& mUnitMakingButton->boundingBox().containsPoint(mMouseCoordinate))
 		{
 				//refresh InfoMap
-				int tF = mBlueTurn ? 0 : 1;
+			int tF = -1;
+			if (mGameMode == vsPlayer)
+			{
+				tF = mBlueTurn ? 0 : 1;
+			}
+			else if (mGameMode == server || mGameMode == client)
+			{
+				tF = (mGameMode == server) ? 0 : 1;
+			}
 				auto unit = mUnitFactory[tF].getMakingUnit();
 				mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit),
 					mUnitCampLayer->getUnitIntroDuction(unit),
@@ -1627,7 +1643,15 @@ void GameScene::checkLayersOnMouseMoved()
 			mTechMakingButton->boundingBox().containsPoint(mMouseCoordinate))
 		{
 			//refresh InfoMap
-			int tF = mBlueTurn ? 0 : 1;
+			int tF = -1;
+			if (mGameMode == vsPlayer)
+			{
+				tF = mBlueTurn ? 0 : 1;
+			}
+			else if (mGameMode == server || mGameMode == client)
+			{
+				tF = (mGameMode == server) ? 0 : 1;
+			}
 			auto tech = mTechFactory[tF].getMakingTech();
 			mInfoMapLayer->displayText(mTechDisplayMap[tech].techName,
 				mTechDisplayMap[tech].techIntroduction,
@@ -1640,7 +1664,15 @@ void GameScene::checkLayersOnMouseMoved()
 			mUnitCampLayer->containPoint(mMouseCoordinate))
 		{
 				auto unit = mUnitCampLayer->getUnitMouseOn();
-				int tF = (mGameMode == server) ? 0 : 1;
+				int tF = -1;
+				if (mGameMode == vsPlayer)
+				{
+					tF = mBlueTurn ? 0 : 1;
+				}
+				else if (mGameMode == server || mGameMode == client)
+				{
+					tF = (mGameMode == server) ? 0 : 1;
+				}
 				mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit), 
 					mUnitCampLayer->getUnitIntroDuction(unit), 
 					stringPredict + std::to_string(calcInteger(
@@ -1654,17 +1686,13 @@ void GameScene::checkLayersOnMouseMoved()
 		{
 				auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinate);
 				int tF = -1;
-				if (mGameMode == server)
-				{
-					tF = 0;
-				}
-				else if (mGameMode == client)
-				{
-					tF = 1;
-				}
-				else if (mGameMode = vsPlayer)
+				if (mGameMode == vsPlayer)
 				{
 					tF = mBlueTurn ? 0 : 1;
+				}
+				else if (mGameMode == server || mGameMode == client)
+				{
+					tF = (mGameMode == server) ? 0 : 1;
 				}
 				if (mGameState[tF].techTree.isUnlocked(tech) || 
 					mGameState[tF].techTree.unlockable(tech))
