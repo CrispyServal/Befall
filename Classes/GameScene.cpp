@@ -694,7 +694,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 		else if ((thisP.x == nextP.x) && (thisP.y < nextP.y))
 		{
 			//move down
-			if ( (lastAction != 0) && (lastAction != 2) )
+			if ( lastAction != 2 )
 			{
 				actionVector.pushBack(funcDown);
 				lastAction = 2;
@@ -1648,12 +1648,24 @@ void GameScene::checkLayersOnMouseMoved()
 					mResources[tF].numProductivity)) + stringTurn);
 				clearFlag = false;
 		}
-		//TileMap
+		//techTreeLayer
 		if (mTechTreeLayer->isVisible() 
 			&& mTechTreeLayer->containPoint(mMouseCoordinate))
 		{
 				auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinate);
-				int tF = (mGameMode == server) ? 0 : 1;
+				int tF = -1;
+				if (mGameMode == server)
+				{
+					tF = 0;
+				}
+				else if (mGameMode == client)
+				{
+					tF = 1;
+				}
+				else if (mGameMode = vsPlayer)
+				{
+					tF = mBlueTurn ? 0 : 1;
+				}
 				if (mGameState[tF].techTree.isUnlocked(tech) || 
 					mGameState[tF].techTree.unlockable(tech))
 				{
@@ -1665,12 +1677,25 @@ void GameScene::checkLayersOnMouseMoved()
 				clearFlag = false;
 				}
 		}
+		//tiledMap
 		if (mTiledMapLayer->containPoint(mMouseCoordinate) 
 			&& !mTechTreeLayer->isVisible() && !mUnitCampLayer->isVisible())
 		{
 			auto mPos = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinate);
 			auto unitInfo = existUnitOnTiledMap(mPos);
-			int tF = (mGameMode == server) ? 0 : 1;
+			int tF = -1;
+			if (mGameMode == server)
+			{
+				tF = 0;
+			}
+			else if (mGameMode == client)
+			{
+				tF = 1;
+			}
+			else if (mGameMode = vsPlayer)
+			{
+				tF = mBlueTurn ? 0 : 1;
+			}
 			if (unitInfo.exist)
 			{
 				if (unitInfo.mUnitEnum == base)
@@ -1681,12 +1706,21 @@ void GameScene::checkLayersOnMouseMoved()
 						mMaxHitPointOfBase[tF].numHitPoint);
 					clearFlag = false;
 				}
+				else if (unitInfo.mUnitEnum == fixedResource || unitInfo.mUnitEnum == randomResource)
+				{
+					mInfoMapLayer->displayUnitInfo(
+						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
+						unitInfo.property.numHitPoint,
+						mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint
+					);
+					clearFlag = false;
+				}
 				else
 				{
 					mInfoMapLayer->displayUnitInfo(
 						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
 						unitInfo.property.numHitPoint,
-						mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint);
+						mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint + mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint);
 					clearFlag = false;
 				}
 			}
@@ -1737,6 +1771,20 @@ int GameScene::calcInteger(int a, int b)
 	}
 }
 
+int GameScene::whosUnit(MyPointStruct unitPoint)
+{
+	for (int i = 0; i < 2; ++i)
+	{
+		for (auto & hehe : mGameState[i].unitMap)
+		{
+			if (hehe.first == unitPoint)
+			{
+				return i;
+			}
+		}
+	}
+	return -1;
+}
 void GameScene::checkTechAndUnitButton()
 {
 	//open/close techTreeLayer/UnitCampLayer
@@ -2516,11 +2564,18 @@ void GameScene::showMoveRange(const MyPointStruct & unitPoint, const int & tF)//
 void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
 {
 	CCLOG("showAttackRange: unitPoint: %d,%d", unitPoint.x, unitPoint.y);
+	CCLOG("he base P : %d,%d", mBasePosition[1 - tF].x, mBasePosition[1 - tF].y);
 	std::set <MyPointStruct> barrier;
 	auto unit = mGameState[tF].unitMap[unitPoint];
 	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack, barrier);
+	CCLOG("my atk range: %d", unit.property.numRangeAttack);
 	for (auto attacking : attackTree)
-	{
+	{ 
+		if (attacking.point == mBasePosition[1 - tF])
+		{
+			mAttackRange.insert(attacking.point);
+			mTiledMapLayer->setTileColor(attacking.point, 3);
+		}
 		for (auto enemy : mGameState[1 - tF].unitMap)
 		{
 			if (attacking.point == enemy.first)
