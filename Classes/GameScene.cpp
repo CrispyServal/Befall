@@ -446,6 +446,7 @@ void GameScene::switchTurn()
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
 		refreshMakingButton(tF);
+		refreshUnitState(tF);
 		mTimer->start();
 		mTimer->setTimerColor(tF);
 		//refresh 2 layer display from gamestate
@@ -480,6 +481,7 @@ void GameScene::switchTurn()
 		refreshUnitCamp(tF);
 		refreshResourcesIcons(tF);
 		refreshMakingButton(tF);
+		refreshUnitState(tF);
 		//timer
 		if (mOperateEnable)
 		{
@@ -495,6 +497,16 @@ void GameScene::switchTurn()
 	mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.off);
 	refreshResourcesTexture();
 	checkLayersOnMouseMoved();
+	deleteAttackRange();
+	deleteMoveRange();
+}
+
+void GameScene::refreshUnitState(const int & turnFlag)
+{
+	for (auto & i : mGameState[turnFlag].unitMap)
+	{
+		i.second.state = fresh;
+	}
 }
 
 void GameScene::checkTechFactory(int turnFlag)
@@ -558,7 +570,7 @@ void GameScene::checkUnitFactory(int turnFlag)
 }
 
 //need to be tested
-void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
+void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool showAttachRange)
 {
 	if (path.size() < 2)
 	{
@@ -577,8 +589,6 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
 		if (i.first == path[0])
 		{
 			unit = i.second;
-			CCLOG("unit.sprite: %x", i.second.sprite);
-			CCLOG("copy: unit.sprite: %x", unit.sprite);
 			type = unit.type;
 			found = true;
 			break;
@@ -609,7 +619,6 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
 		if ( (thisP.x == nextP.x) && (thisP.y > nextP.y) )
 		{
 			//move up
-			CCLOG("up");
 			if (lastAction != 1)
 			{
 				actionVector.pushBack(funcUp);
@@ -619,7 +628,6 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
 		else if ((thisP.x == nextP.x) && (thisP.y < nextP.y))
 		{
 			//move down
-			CCLOG("down");
 			if ( (lastAction != 0) && (lastAction != 2) )
 			{
 				actionVector.pushBack(funcDown);
@@ -629,7 +637,6 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
 		else if ((thisP.y == nextP.y) && (thisP.x > nextP.x))
 		{
 			//move left
-			CCLOG("left");
 			if (lastAction != 3)
 			{
 				actionVector.pushBack(funcLeft);
@@ -640,7 +647,6 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
 		else if ((thisP.y == nextP.y) && (thisP.x < nextP.x))
 		{
 			//move right
-			CCLOG("right");
 			if (lastAction != 4)
 			{
 				actionVector.pushBack(funcRight);
@@ -651,16 +657,37 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag)
 		actionVector.pushBack(MoveTo::create(duration, nextPF));
 	}
 	//sequence
-	auto unLockOE = CallFunc::create([this,oeBak]()->void{mOperateEnable = oeBak; });
-	auto refreshUnitMap = CallFunc::create(
+	auto unLockOEC = CallFunc::create([this,oeBak]()->void{mOperateEnable = oeBak; });
+	auto refreshUnitMapC = CallFunc::create(
 	[this,turnFlag,path,unit]()->void{
 		//CCLOG("path test: %d,%d", path[0].x, path[0].y);
 		mGameState[turnFlag].unitMap.erase(path[0]);
 		mGameState[turnFlag].unitMap[path[path.size() - 1]] = unit;
 	}
 	);
-	actionVector.pushBack(refreshUnitMap);
-	actionVector.pushBack(unLockOE);
+	auto showAttackRangeC = CallFunc::create(
+	[this,path,turnFlag]()->void{
+		showAttackRange(path[path.size()-1], turnFlag);
+		if (mAttackrange.empty())
+		{
+			deleteAttackRange();
+			mUnitActionFSM[turnFlag] = 0;
+		}
+		else
+		{
+			mUnitActionFSM[turnFlag] = 2;
+		}
+
+	}
+	);
+	auto refreshMiniMapC = CallFunc::create(CC_CALLBACK_0(GameScene::refreshMiniMap, this));
+	actionVector.pushBack(refreshUnitMapC);
+	actionVector.pushBack(unLockOEC);
+	actionVector.pushBack(refreshMiniMapC);
+	if (showAttachRange)
+	{
+		actionVector.pushBack(showAttackRangeC);
+	}
 	auto sequence = Sequence::create(actionVector);
 	//sequence->retain();
 	unit.sprite->runAction(sequence);
@@ -863,7 +890,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 				}
 				break;
 			}
-			else if (mTimer->blockClick())
+			else if (mTiledMapLayer->blockClick())
 			{
 				break;
 			}
@@ -1043,7 +1070,7 @@ void GameScene::refreshResourcesTexture()
 {
 	for (auto & i : mResourceMap)
 	{
-		CCLOG("position: %d,%d", i.first.x, i.first.y);
+		//CCLOG("position: %d,%d", i.first.x, i.first.y);
 		if ((i.second.type == fixedResource) || (i.second.type == randomResource) )
 		{
 			float hp = (float)i.second.property.numHitPoint;
@@ -2422,9 +2449,11 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				}
 				deleteAttackRange();
 				deleteMoveRange();
-				moveUnit(movePath, tF);//error unit not found ??
-				mOriginalPoint == nowPoint;
-				mGameState[tF].unitMap[nowPoint].state = moved;
+				mGameState[tF].unitMap[mOriginalPoint].state = moved;
+				CCLOG("nowPoint: %d,%d", nowPoint.x, nowPoint.y);
+				moveUnit(movePath, tF, true);//error unit not found ??
+				mOriginalPoint = nowPoint;
+				/*
 				showAttackRange(nowPoint, tF);
 				if (mAttackrange.empty())
 				{
@@ -2435,6 +2464,7 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				{
 					mUnitActionFSM[tF] = 2;
 				}
+				*/
 				return;
 			}
 		}

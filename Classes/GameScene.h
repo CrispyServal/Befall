@@ -296,6 +296,8 @@ private:
 
 	//all game states,0 for server
 	GameStateStruct mGameState[2];
+	//when switching turn, change unit state to fresh
+	void refreshUnitState(const int & turnFlag);
 	//spawn
 	MyPointStruct mSpawn[2];
 	bool spawnOccupied(int turnFlag);
@@ -326,7 +328,7 @@ private:
 	//spawn unit
 	void spawnUnit(UnitEnum unit, int turnFlag);
 	//unit moving
-	void moveUnit(std::vector<MyPointStruct> path, int turnFlag);
+	void moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool showAttachRange = false);
 
 	//Tech Influence
 	void setTechInfluence(const int & flag, TechEnum tech);
@@ -352,8 +354,7 @@ private:
 	MyPointStruct mOriginalPoint;
 	int mUnitActionFSM[2];
 
-	//for moveUnit
-	//void setTexture(Node * sender, void * which);
+	void die(MyPointStruct point);
 };
 
 #endif // !GAMESCENE_H
