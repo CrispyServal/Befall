@@ -207,6 +207,7 @@ private:
 	//Layers
 	GameTimer * mTimer;
 	void switchTurn();
+	bool mUpdateTimerLock;
 	Label * mTurnLabel;
 	int mNumTurn;
 	TechTreeLayer * mTechTreeLayer;

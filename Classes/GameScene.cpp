@@ -489,10 +489,17 @@ void GameScene::update(float delta)
 	mMiniMapLayer->setViewPosition(position);
 
 	//timer
-	mTimer->refresh(delta);
-	if (mTimer->isEnded())
+	if (!mTimer->isEnded())
 	{
-		switchTurn();
+		mTimer->refresh(delta);
+	}
+	else
+	{
+		if (!mUpdateTimerLock)
+		{
+			mUpdateTimerLock = true;
+			switchTurn();
+		}
 	}
 }
 
@@ -568,6 +575,7 @@ void GameScene::switchTurn()
 			CCLOG("OE true");
 			mTimer->start();
 			mTimer->setTimerColor(tF);
+			mUpdateTimerLock = false;
 		}
 		else
 		{
@@ -1017,7 +1025,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			{
 				CCLOG("timer contain");
 				//timer contain bug
-				switchTurn();
+				mTimer->shutDown();
 				break;
 			}
 			else if (mTimer->blockClick())
@@ -1885,6 +1893,8 @@ void GameScene::checkTechAndUnitButton()
 
 void GameScene::initGameState()
 {
+	//update timer lock
+	mUpdateTimerLock = false;
 	//num turn
 	mNumTurn = 0;
 	//spawn
