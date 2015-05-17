@@ -182,7 +182,7 @@ bool YypNoBlockingNet::startServer(int pot)
 	slisten = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (slisten == INVALID_SOCKET)
 	{
-		printf("socket error !");
+		//printf("socket error !");
 		return false;
 	}
 	//non blocking mode
@@ -231,7 +231,7 @@ bool YypNoBlockingNet::endServer()
 		return false;;
 }
 
-bool YypNoBlockingNet::makeConnect(char *IP, int pot)
+bool YypNoBlockingNet::startConnect(char *IP, int pot)
 {
 	WORD sockVersion = MAKEWORD(2, 2);
 	WSADATA data;
@@ -245,19 +245,26 @@ bool YypNoBlockingNet::makeConnect(char *IP, int pot)
 		//printf("invalid socket !");
 		return false;
 	}
-	sockaddr_in serAddr;
+	//non blocking
+	unsigned long ul = 1;
+	if (ioctlsocket(sclient, FIONBIO, &ul) == SOCKET_ERROR)
+	{
+		closesocket(sclient);
+		return false;
+	}
 	serAddr.sin_family = AF_INET;
 	serAddr.sin_port = htons(pot);
 	serAddr.sin_addr.S_un.S_addr = inet_addr(IP);
+	return true;
+}
+bool YypNoBlockingNet::makeConnect()
+{
 	if (connect(sclient, (sockaddr *)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 	{
-		//printf("connect error !");
-		closesocket(sclient);
 		return false;
 	}
 	return true;
 }
-
 bool YypNoBlockingNet::deleteConnect()
 {
 	if (!closesocket(sclient) && !WSACleanup())

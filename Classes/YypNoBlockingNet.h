@@ -39,6 +39,7 @@ private:
 	SOCKET sclient;
 	SOCKET slisten;
 	sockaddr_in remoteAddr;
+	sockaddr_in serAddr;
 	int nAddrlen;
 	bool lock;
 	TechEnum mTech;
@@ -67,7 +68,8 @@ public:
 	bool startServer(int pot);
 	bool acceptConnect();
 	bool endServer();
-	bool makeConnect(char* IP, int pot);
+	bool startConnect(char* IP, int pot);
+	bool makeConnect();
 	bool deleteConnect();
 	YypNoBlockingNet();
 	~YypNoBlockingNet();

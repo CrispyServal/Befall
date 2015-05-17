@@ -1,4 +1,4 @@
-
+#include "MyStructs.h"
 #include <iostream>
 #include "YypNoBlockingNet.h"
 
@@ -45,7 +45,10 @@ int main()
 		{
 			auto err = WSAGetLastError();
 			if (err == WSAEWOULDBLOCK)
+			{
+				cout << "non blocking\n";
 				continue;
+			}
 			else if (err == WSAETIMEDOUT)//超时。  
 			{
 				cout << "error";
@@ -63,80 +66,25 @@ int main()
 			}
 		}
 		cout << "tech = " << server.getTech() << endl;
-
-		while (!server.read())
+		
+		TechEnum tech = defbase1;
+		Sleep(500);
+		cout << "tech2 =" << tech << endl;
+		while (!server.sendTech(tech))
 		{
-			auto err = WSAGetLastError();
-			if (err == WSAEWOULDBLOCK)
+			int r = WSAGetLastError();
+			if (r == WSAEWOULDBLOCK)
+			{
+				Sleep(20);
 				continue;
-			else if (err == WSAETIMEDOUT)//超时。  
-			{
-				cout << "error";
-				break;
 			}
-			else if (err == WSAENETDOWN)//连接断开。  
+			else
 			{
-				cout << "error";
-				break;
-			}
-			else//其他错误。  
-			{
-				cout << "error";
-				break;
-			}
-		}
-		cout << "soldier = " << server.getNewSoldier().unit << endl;
-		cout << "x1 = " << server.getNewSoldier().loc.x << endl;
-		cout << "y1 = " << server.getNewSoldier().loc.y << endl;
-
-		while (!server.read())
-		{
-			auto err = WSAGetLastError();
-			if (err == WSAEWOULDBLOCK)
-				continue;
-			else if (err == WSAETIMEDOUT)//超时。  
-			{
-				cout << "error";
-				break;
-			}
-			else if (err == WSAENETDOWN)//连接断开。  
-			{
-				cout << "error";
-				break;
-			}
-			else//其他错误。  
-			{
-				cout << "error";
+				std::cout << "数据发送失败！" << std::endl;
 				break;
 			}
 		}
 
-		cout << "p: x1 = " << server.getPoints().first.x << endl;
-		cout << "p: x2 = " << server.getPoints().first.y << endl; 
-		cout << "p: y1 = " << server.getPoints().second.x << endl; 
-		cout << "p: y2 = " << server.getPoints().second.y << endl; 
-		while (!server.read())
-		{
-			auto err = WSAGetLastError();
-			if (err == WSAEWOULDBLOCK)
-				continue;
-			else if (err == WSAETIMEDOUT)//超时。  
-			{
-				cout << "error";
-				break;
-			}
-			else if (err == WSAENETDOWN)//连接断开。  
-			{
-				cout << "error";
-				break;
-			}
-			else//其他错误。  
-			{
-				cout << "error";
-				break;
-			}
-		}
-		cout << server.getWhich() << endl;
 		server.endServer();
 		system("pause");
 	}
@@ -148,10 +96,36 @@ int main()
 		cout << "input pots:";
 		int pots;
 		cin >> pots;
-		client.makeConnect(IP, pots);
+		client.startConnect(IP, pots);
+		cout << "start connect correct\n";
+		while (true)
+		{
+			if (!client.makeConnect())
+			{
+				int r = WSAGetLastError();
+				if (r == WSAEWOULDBLOCK || r == WSAEINVAL)
+				{
+					//std::cout<<"未收到客户端的连接请求。"<<std::endl;  
+					continue;
+				}
+				else if (r == WSAEISCONN)//套接字原来已经连接！！  
+				{
+					break;
+				}
+				else
+				{
+					//std::cout << "未知错误" << std::endl;
+					getchar();
+					return -1;
+				}
+			}
+			else
+				break;
+		}
+		cout << "make connect correct\n";
 		TechEnum tech = defbase2;
 		cout << "tech = " << tech << endl;
-
+		Sleep(500);
 		while (!client.sendTech(tech))
 		{
 			int r = WSAGetLastError();
@@ -163,67 +137,37 @@ int main()
 			else
 			{
 				std::cout << "数据发送失败！" << std::endl;
-				return false;
+				system("pause");
+				break;
 			}	
 		}
 
-		newSoldierStruct newSoldier;
-		newSoldier.unit = base;
-		newSoldier.loc.x = 2;
-		newSoldier.loc.y = 23;
-		cout << "soldier = " << newSoldier.unit << endl;
-		Sleep(20);
-		while (!client.sendNewSoldier(newSoldier))
+		while (!client.read())
 		{
-			int r = WSAGetLastError();
-			if (r == WSAEWOULDBLOCK)
+			auto err = WSAGetLastError();
+			if (err == WSAEWOULDBLOCK)
 			{
-				Sleep(20);
+				cout << "non blocking\n";
 				continue;
 			}
-			else
+			else if (err == WSAETIMEDOUT)//超时。  
 			{
-				std::cout << "数据发送失败！" << std::endl;
-				return false;
+				cout << "error\n";
+				break;
+			}
+			else if (err == WSAENETDOWN)//连接断开。  
+			{
+				cout << "error\n";
+				break;
+			}
+			else//其他错误。  
+			{
+				cout << "error\n";
+				break;
 			}
 		}
+		cout << "tech = " << client.getTech() << endl;
 
-		twoPointStruct points;
-		points.first.x = 21;
-		points.first.y = 23;
-		points.second.x = 54;
-		points.second.y = 76;
-		Sleep(20);
-		while (!client.sedTwoPoint(points))
-		{
-			int r = WSAGetLastError();
-			if (r == WSAEWOULDBLOCK)
-			{
-				Sleep(20);
-				continue;
-			}
-			else
-			{
-				std::cout << "数据发送失败！" << std::endl;
-				return false;
-			}
-		}
-
-		Sleep(20);
-		while (!client.sedEnd())
-		{
-			int r = WSAGetLastError();
-			if (r == WSAEWOULDBLOCK)
-			{
-				Sleep(20);
-				continue;
-			}
-			else
-			{
-				std::cout << "数据发送失败！" << std::endl;
-				return false;
-			}
-		}
 		client.deleteConnect();
 		system("pause");
 	}
