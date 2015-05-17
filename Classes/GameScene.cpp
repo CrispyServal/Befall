@@ -500,6 +500,7 @@ void GameScene::switchTurn()
 {
 	//end turn
 	mBlueTurn = !mBlueTurn;
+	CCLOG("now turn: %d", mBlueTurn);
 	//refresh NumTurn
 	if (mBlueTurn)
 	{
@@ -564,11 +565,13 @@ void GameScene::switchTurn()
 		//timer
 		if (mOperateEnable)
 		{
+			CCLOG("OE true");
 			mTimer->start();
 			mTimer->setTimerColor(tF);
 		}
 		else
 		{
+			CCLOG("OE false");
 			mTimer->shutDown();
 		}
 	}
