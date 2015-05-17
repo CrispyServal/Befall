@@ -504,7 +504,7 @@ void GameScene::switchTurn()
 		//CCLOG("vsPlayer,tF: %d", tF);
 		checkTechFactory(tF);
 		checkUnitFactory(tF);
-		refreshTechTree(tF);
+		refreshTechTreeLayer(tF);
 		refreshUnitCamp(tF);
 		refreshResource(tF);
 		refreshResourcesIcons(tF);
@@ -540,7 +540,7 @@ void GameScene::switchTurn()
 		}
 		checkTechFactory(tF);
 		checkUnitFactory(tF);
-		refreshTechTree(tF);
+		refreshTechTreeLayer(tF);
 		refreshUnitCamp(tF);
 		refreshResource(tF);
 		refreshResourcesIcons(tF);
@@ -1057,7 +1057,7 @@ void GameScene::unlockTechTree(const int & flag, TechEnum tech)
 	mGameState[flag].techTree.unlock(tech);
 	//CCLOG("ssss: %d", mGameState[flag].techTree.isUnlocked(tech));
 	setTechInfluence(flag,tech);
-	refreshTechTree(flag);
+	refreshTechTreeLayer(flag);
 }
 
 void GameScene::setTechInfluence(const int & flag, TechEnum tech)
@@ -1182,8 +1182,9 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 	return;
 }
 
-void GameScene::refreshTechTree(const int & flag)
+void GameScene::refreshTechTreeLayer(const int & flag)
 {
+	
 	for (const auto & i : mTechEnumList)
 	{
 		if (mGameState[flag].techTree.unlockable(i))
@@ -1196,8 +1197,17 @@ void GameScene::refreshTechTree(const int & flag)
 			//CCLOG("tech un: %d", i);
 			mTechTreeLayer->setTechState(i, unlocked);
 		}
+		else
+		{
+			mTechTreeLayer->setTechState(i, unavailable);
+		}
 	}
 	//waiting for factory coming soon~
+	if (mTechFactory[flag].techExistence())
+	{
+		auto makingTech = mTechFactory[flag].getMakingTech();
+		mTechTreeLayer->setTechState(makingTech, unlocking);
+	}
 }
 
 void GameScene::refreshUnitCamp(const int & flag)
@@ -1359,11 +1369,11 @@ void GameScene::startGame()
 	//TechTreeLayerRefreshing
 	if (mGameMode == server || mGameMode == vsPlayer)
 	{
-		refreshTechTree(0);
+		refreshTechTreeLayer(0);
 	}
 	else if (mGameMode == client)
 	{
-		refreshTechTree(1);
+		refreshTechTreeLayer(1);
 	}
 
 	//net update, 0.5s
@@ -1460,6 +1470,7 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 						mResources[tF] -= mTechInitDataMap[tech];
 						mTechFactory[tF].addNewTech(tech);
 						mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(tech);
+						refreshTechTreeLayer(tF);
 						refreshMakingButton(tF);
 						refreshResourcesIcons(tF);
 					}
@@ -1480,6 +1491,7 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 					//mPopulation[tF] += mUnitInitDataMap[unit].property.numPopulation;
 					mTechFactory[tF].addNewTech(tech);
 					mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(tech);
+					refreshTechTreeLayer(tF);
 					refreshMakingButton(tF);
 					CCLOG("vsPlayer; added new Tech!");
 					refreshResourcesIcons(tF);
