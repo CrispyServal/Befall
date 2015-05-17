@@ -332,6 +332,17 @@ void GameScene::startConnecting(float delta)
 		CCLOG("connecting successed");
 		startGame();
 		unschedule(schedule_selector(GameScene::startConnecting));
+		CCLOG("unscheduled connect");
+	}
+	else
+	{
+		int r = WSAGetLastError();
+		if (r == WSAEISCONN)
+		{
+			startGame();
+			unschedule(schedule_selector(GameScene::startConnecting));
+			CCLOG("unscheduled connect");
+		}
 	}
 }
 
@@ -2525,6 +2536,8 @@ void GameScene::initYypNet()
 		//display juFlower
 		//mNet.makeConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
 		mNet.startConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
+		CCLOG("ip: %s", (char *)(mUserDefault->getStringForKey("ip").c_str()));
+		CCLOG("port %d", mUserDefault->getIntegerForKey("port"));
 		schedule(schedule_selector(GameScene::startConnecting),0.1,CC_REPEAT_FOREVER,0);
 		//startConnecting(0.1);
 		break;
