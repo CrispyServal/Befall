@@ -201,7 +201,7 @@ bool GameScene::init()
 	mGrayBar = DrawNode::create();
 	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(200 + 10, 240 + 10), Color4F(0.607, 0.607, 0.607, 0.75));
+	mGrayBar->drawSolidRect(Vec2(0, 50), Vec2(mTiledMapLayer->getMapSize().width * miniPS + 30,50 +mTiledMapLayer->getMapSize().width * miniPS + mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBar->drawSolidRect(Vec2(mWinWidth 
 		- mTiledMapLayer->getMapSize().width * miniPS 
 		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), 
