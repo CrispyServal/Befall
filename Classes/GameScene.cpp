@@ -523,7 +523,7 @@ void GameScene::switchTurn()
 			auto err = WSAGetLastError();
 			if (err != WSAEWOULDBLOCK)
 			{
-				mDirector->popScene();
+				//mDirector->popScene();
 			}
 		}
 		//set OE
@@ -593,7 +593,7 @@ void GameScene::checkTechFactory(int turnFlag)
 				auto err = WSAGetLastError();
 				if (err != WSAEWOULDBLOCK)
 				{
-					mDirector->popScene();
+					//mDirector->popScene();
 				}
 			}
 		}
@@ -628,7 +628,7 @@ void GameScene::checkUnitFactory(int turnFlag)
 				auto err = WSAGetLastError();
 				if (err != WSAEWOULDBLOCK)
 				{
-					mDirector->popScene();
+					//mDirector->popScene();
 				}
 			}
 		}
@@ -2416,7 +2416,7 @@ void GameScene::initGameMenu()
 				if (err != WSAEWOULDBLOCK)
 				{
 					CCLOG("he GG!!");
-					mDirector->popScene();
+					//mDirector->popScene();
 				}
 			}
 		}
@@ -2707,7 +2707,7 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 						auto err = WSAGetLastError();
 						if (err != WSAEWOULDBLOCK)
 						{
-							mDirector->popScene();
+							//mDirector->popScene();
 						}
 					}
 				}
@@ -2737,7 +2737,7 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 						auto err = WSAGetLastError();
 						if (err != WSAEWOULDBLOCK)
 						{
-							mDirector->popScene();
+							//mDirector->popScene();
 						}
 					}
 				}
@@ -2787,7 +2787,7 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 						auto err = WSAGetLastError();
 						if (err != WSAEWOULDBLOCK)
 						{
-							mDirector->popScene();
+							//mDirector->popScene();
 						}
 					}
 				}
