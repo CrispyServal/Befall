@@ -327,7 +327,7 @@ void GameScene::startConnecting(float delta)
 {
 	CCLOG("connecting...");
 	//CCLOG("ip: %s,  port:  %s", (char *)mUserDefault->getStringForKey("ip").c_str(), mUserDefault->getIntegerForKey("port"));
-	if (mNet.makeConnect((char *)mUserDefault->getStringForKey("ip").c_str(), mUserDefault->getIntegerForKey("port")))
+	if (mNet.makeConnect())
 	{
 		CCLOG("connecting successed");
 		startGame();
@@ -350,19 +350,23 @@ void GameScene::netUpdate(float delta)
 			whichEnum which = mNet.getWhich();
 			if (which == newTech)
 			{
+				CCLOG("new tech");
 				unlockTechTree(1 - tF, mNet.getTech());
 			}
 			else if (which == newSoldier)
 			{
+				CCLOG("new unit");
 				//place soldier to enemy's spawn
 				spawnUnit(mNet.getNewSoldier().unit, 1 - tF);
 			}
 			else if (which == twoPoints)
 			{
+				CCLOG("2 p");
 				readTwoPoint(tF);
 			}
 			else if (which == end)
 			{
+				CCLOG("end");
 				switchTurn();
 			}
 			else if (which == youwin)
@@ -2520,8 +2524,9 @@ void GameScene::initYypNet()
 	case client:
 		//display juFlower
 		//mNet.makeConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
-		//schedule(schedule_selector(GameScene::startConnecting),0.1,CC_REPEAT_FOREVER,0);
-		startConnecting(0.1);
+		mNet.startConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
+		schedule(schedule_selector(GameScene::startConnecting),0.1,CC_REPEAT_FOREVER,0);
+		//startConnecting(0.1);
 		break;
 	case vsPlayer:
 		break;
