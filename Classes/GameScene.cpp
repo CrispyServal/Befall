@@ -389,8 +389,8 @@ void GameScene::netUpdate(float delta)
 	}
 	else
 	{
-		CCLOG("read error");
 		auto err = WSAGetLastError();
+		CCLOG("net err: %d", err);
 		if (err != WSAEWOULDBLOCK)
 		{
 			CCLOG("he GGed!!!");
@@ -457,6 +457,7 @@ void GameScene::readTwoPoint(const int & tF)
 	}
 }
 
+//--update
 void GameScene::update(float delta)
 {
 	//move
@@ -495,14 +496,17 @@ void GameScene::update(float delta)
 	}
 	else
 	{
+		//ended
 		if (!mUpdateTimerLock)
 		{
+			//first time to end
 			mUpdateTimerLock = true;
 			switchTurn();
 		}
 	}
 }
 
+//--switchTurn
 void GameScene::switchTurn()
 {
 	//end turn
@@ -521,6 +525,7 @@ void GameScene::switchTurn()
 	//start turn
 	if (mGameMode == vsPlayer)
 	{
+		mUpdateTimerLock = false;
 		mUnitCampLayer->setVisible(false);
 		mTechTreeLayer->setVisible(false);
 		int tF = mBlueTurn ? 0 : 1;
@@ -1360,6 +1365,7 @@ void GameScene::onMouseMoved(Event * event)
 	checkLayersOnMouseMoved();
 }
 
+//--startGame
 void GameScene::startGame()
 {
 	//
@@ -1373,11 +1379,14 @@ void GameScene::startGame()
 	{
 		mBlueTurn = true;
 		mOperateEnable = true;
+		//update timer lock
+		mUpdateTimerLock = false;
 	}
 	else
 	{
 		mBlueTurn = false;
 		mOperateEnable = false;
+		mUpdateTimerLock = true;
 	}
 	//init farmer
 	spawnUnit(farmer, 0);
@@ -1893,8 +1902,6 @@ void GameScene::checkTechAndUnitButton()
 
 void GameScene::initGameState()
 {
-	//update timer lock
-	mUpdateTimerLock = false;
 	//num turn
 	mNumTurn = 0;
 	//spawn
@@ -2155,7 +2162,7 @@ void GameScene::initResourceMap()
 						*/
 					}
 					CCLOG("Sleep sended. %d,%d", ranP.x, ranP.y);
-					Sleep(250);
+					Sleep(500);
 					CCLOG("sended. %d,%d", ranP.x, ranP.y);
 				}
 				mResourceMap[ranP] = Unit{
