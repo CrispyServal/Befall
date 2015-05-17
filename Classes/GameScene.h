@@ -355,7 +355,7 @@ private:
 	//Tech Influence
 	void setTechInfluence(const int & flag, TechEnum tech);
 	void unlockTechTree(const int & flag, TechEnum tech);
-	void refreshTechTree(const int & flag);
+	void refreshTechTreeLayer(const int & flag);
 
 	//
 	void refreshUnitCamp(const int & flag);
