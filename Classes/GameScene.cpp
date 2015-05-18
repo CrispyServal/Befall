@@ -132,6 +132,7 @@ bool GameScene::init()
 		false,
 		false
 	};
+	initAttackTexture();
     //mDictionary->retain();
 	mDispatcher = mDirector->getEventDispatcher();
 	mWinHeight = mDirector->getWinSize().height;
@@ -825,6 +826,32 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & attackedUnitPosition, const int & tF)
 {
 	auto typeFrom = mGameState[tF].unitMap[from].type;
+	//check direction
+	int rightDis = attackedUnitPosition.x - from.x;
+	bool right = rightDis > 0;
+	int upDis = attackedUnitPosition.y - from.y;
+	bool up = upDis > 0;
+	int hDis = right ? rightDis : -rightDis;
+	int vDis = up ? upDis : -upDis;
+	//change direction
+	if ( right && (hDis > vDis) )
+	{
+		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].side);
+		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
+	}
+	else if ( (!right) && (hDis > vDis) ) 
+	{
+		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].side);
+		mGameState[tF].unitMap[from].sprite->setFlippedX(true);
+	}
+	else if ( up && (hDis < vDis))
+	{
+		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].back);
+	}
+	else if ( (!up) && (hDis < vDis))
+	{
+		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].back);
+	}
 	//check attackedUnitPosition type
 	for (auto & reP : mResourceMap)
 	{
@@ -2023,6 +2050,20 @@ void GameScene::checkTechAndUnitButton()
 			mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.off);
 		}
 	}
+}
+
+void GameScene::initAttackTexture()
+{
+	mAttackTexture = 
+	{
+		mDirector->getTextureCache()->addImage("animation/LR1ThrowOut.png"),
+		mDirector->getTextureCache()->addImage("animation/LR1Explosive.png"),
+		mDirector->getTextureCache()->addImage("animation/LR2ThrowOut.png"),
+		mDirector->getTextureCache()->addImage("animation/LR2Explosive.png"),
+		mDirector->getTextureCache()->addImage("animation/LR3Explosive.png"),
+		mDirector->getTextureCache()->addImage("animation/SR2ThrowOut.png"),
+		mDirector->getTextureCache()->addImage("animation/SR2Explosive.png")
+	};
 }
 
 void GameScene::initGameState()

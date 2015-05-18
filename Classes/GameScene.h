@@ -160,6 +160,16 @@ struct ResourceCollectionStruct
 	int numOfFarmer;
 };
 
+struct AttackTextureStruct{
+	Texture2D * LR1T;
+	Texture2D * LR1E;
+	Texture2D * LR2T;
+	Texture2D * LR2E;
+	Texture2D * LR3E;
+	Texture2D * SR2T;
+	Texture2D * SR2E;
+};
+
 class GameScene : public Scene
 {
 public:
@@ -364,6 +374,8 @@ private:
 	void moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool showAttachRange = false);
 	//tF是攻击来源的所有方
 	void attackUnit(const MyPointStruct & from, const MyPointStruct & attackedUnitPositionto, const int & tF);
+	AttackTextureStruct mAttackTexture;
+	void initAttackTexture();
 
 	//Tech Influence
 	void setTechInfluence(const int & flag, TechEnum tech);
