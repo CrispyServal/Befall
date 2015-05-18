@@ -812,6 +812,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	unit.sprite->runAction(sequence);
 }
 
+//--attackUnit
 void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & attackedUnitPosition, const int & tF)
 {
 	auto typeFrom = mGameState[tF].unitMap[from].type;
@@ -827,15 +828,28 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	}
 	//action
 
+	bool attackedBase = false;
+	auto baseNearing = getNearPoint(mBasePosition[1 - tF]);
+	for (const auto & i : baseNearing)
+	{
+		if (attackedUnitPosition == i)
+		{
+			attackedBase = true;
+		}
+	}
 	//base
 	if (attackedUnitPosition == mBasePosition[1 - tF])
 	{
-		auto & HP = mResourceMap[attackedUnitPosition].property.numHitPoint;
-		HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[attackedUnitPosition].property.numDefence);
+		attackedBase = true;
+	}
+	if (attackedBase)
+	{
+		auto & HP = mResourceMap[mBasePosition[1 - tF]].property.numHitPoint;
+		HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[mBasePosition[1 - tF]].property.numDefence);
 		//die?
 		if (HP <= 0)
 		{
-			die(attackedUnitPosition, 1 - tF);
+			die(mBasePosition[1 - tF], 1 - tF);
 		}
 	}
 	else
@@ -2808,6 +2822,15 @@ void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
 		{
 			mAttackRange.insert(attacking.point);
 			mTiledMapLayer->setTileColor(attacking.point, 3);
+		}
+		//near base
+		for (const auto & i : getNearPoint(mBasePosition[1 - tF]))
+		{
+			if (attacking.point == i)
+			{
+				mAttackRange.insert(attacking.point);
+				mTiledMapLayer->setTileColor(attacking.point, 3);
+			}
 		}
 		for (auto enemy : mGameState[1 - tF].unitMap)
 		{
