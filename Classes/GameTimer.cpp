@@ -92,6 +92,7 @@ bool GameTimer::isEnded()// f
 	else
 		return false;
 }
+
 void GameTimer::refresh(float deltaTime)//f ?
 {
 	mNowTime -= deltaTime;

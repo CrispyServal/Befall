@@ -56,6 +56,7 @@
 	<string>投降</string>
 	<key>menu</key>
 	<string>菜单</string>
+
 	<key>HP</key>
 	<string>生命值:    </string>
 	<key>DEF</key>
@@ -76,11 +77,42 @@
 	<string>生产力:    </string>
 	<key>TECH</key>
 	<string>科技值:    </string>
+
 	<key>Predict</key>
 	<string>预计</string>
 	<key>Turn</key>
 	<string>回合</string>
 	<key>Going</key>
 	<string>已进行</string>
+	<key>Left</key>
+	<string>剩余</string>
+	<key>Second</key>
+	<string>秒</string>
+	<key>Timer</key>
+	<string>计时器</string>
+	<key>TimerIntro</key>
+	<string>每方每回合均有60秒的时间</string>
+
+	<key>productivity</key>
+	<string>生产力</string>
+	<key>productivityIntro</key>
+	<string>基地生产能力衡量指标，决定单位建造速度</string>
+	<key>research</key>
+	<string>科技值</string>
+	<key>researchIntro</key>
+	<string>基地科研能力衡量指标，决定科技解锁速度</string>
+	<key>population</key>
+	<string>主控数</string>
+	<key>populationIntro</key>
+	<string>基地可控单位数，决定可建造单位上限</string>
+
+	<key>TechTree</key>
+	<string>聚能研究所</string>
+	<key>TechTreeIntro</key>
+	<string>用于新科技研究</string>
+	<key>UnitCamp</key>
+	<string>械能工厂</string>
+	<key>UnitCampIntro</key>
+	<string>用于新单位建造</string>
 
 </dict>

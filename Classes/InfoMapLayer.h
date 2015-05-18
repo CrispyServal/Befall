@@ -12,6 +12,7 @@ class InfoMapLayer : public cocos2d::Layer
 	float height;
 	DrawNode * mBackground;
 	Label * mUnitNameLabel;
+	Label * mUnitInfoLabel;
 	Sprite * mUnitSprite;
 	DrawNode * mHpBarBg;
 	DrawNode * mHPBar;
@@ -31,6 +32,8 @@ public:
 	void displayUnitInfo(string unitName, int hpNow, int hpAll);
 	//DisplayText in narrative format
 	void displayText(string techName, string techIntroduction, string techTurnLeft);
+	//DisplayUnitProperty unitName, hpBar, ATK ,DEF ,ATKRANGE
+	void displayUnitProperty(string unitName, int hpNow, int hpAll, string mUnitProperty);
 	//Clear Info Display
 	void clearAllInfo();
 };

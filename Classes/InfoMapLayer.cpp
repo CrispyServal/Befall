@@ -32,10 +32,18 @@ bool InfoMapLayer::init()
 	//mUnitSprite->setPosition(width / 2 - 25, height / 2 -10);
 	//addChild(mUnitSprite, 2);
 
+	//Unit Info Display
+	mUnitInfoLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 16);
+	mUnitInfoLabel->setPosition(width / 2, height / 2);
+	mUnitInfoLabel->setDimensions(134, 108);//
+	mUnitInfoLabel->setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
+	addChild(mUnitInfoLabel, 2);
+
 	//unitname
 	mUnitNameLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
-	mUnitNameLabel->setPosition(width / 2, height / 2 + 50);
+	mUnitNameLabel->setPosition(width / 2, height / 2 + 70);
 	addChild(mUnitNameLabel, 3);
+
 	//
 	mHpBarBg = DrawNode::create();
 	mHpBarBg->drawSolidRect(Vec2(-2, -12), Vec2(102, 12), Color4F(1, 1, 1, 1));
@@ -70,6 +78,7 @@ bool InfoMapLayer::init()
 	mTechIntroLabel->setVisible(false);
 	mTechTurnLeft->setVisible(false);
 	mUnitNameLabel->setVisible(false);
+	mUnitInfoLabel->setVisible(false);
 //	mUnitSprite->setVisible(false);
 	mHpBarBg->setVisible(false);
 	mHPBar->setVisible(false);
@@ -98,9 +107,18 @@ void InfoMapLayer::displayUnitInfo(string unitName, int hpNow, int hpAll)
 	mNowHpBar->setVisible(true);
 }
 
+void InfoMapLayer::displayUnitProperty(string unitName, int hpNow, int hpAll, string mUnitProperty)
+{
+	displayUnitInfo(unitName, hpNow, hpAll);
+	mUnitInfoLabel->setString(mUnitProperty);
+	mUnitInfoLabel->setVisible(true);
+
+}
+
 void InfoMapLayer::displayText(string techName, string techIntroduction, string techTurnLeft)
 {
 	mUnitNameLabel -> setVisible(false);
+	mUnitInfoLabel->setVisible(false);
 //	mUnitSprite -> setVisible(false);
 	mHpBarBg->setVisible(false);
 	mHPBar -> setVisible(false);
@@ -126,4 +144,5 @@ void InfoMapLayer::clearAllInfo()
 	mHpBarBg->setVisible(false);
 	mHPBar->setVisible(false);
 	mNowHpBar->setVisible(false);
+	mUnitInfoLabel->setVisible(false);
 }

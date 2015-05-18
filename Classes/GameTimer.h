@@ -33,6 +33,9 @@ public:
 	{
 		mBgCircle->setTexture(mbgTexture[turnF]);
 	}
+	float getNowTime(){
+		return mNowTime;
+	}
 private:
 	float width;
 	float  height;

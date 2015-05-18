@@ -1,6 +1,20 @@
 #ifndef MYENUMS_H
 #define MYENUMS_H
 
+enum ResourcesIconEnum
+{
+	fixedResourceL = 0,
+	randomResourceL = 1,
+	productivityL = 2,
+	researchL = 3,
+	populationL = 4,
+	fixedResourceI = 5,
+	randomResourceI = 6,
+	productivityI = 7,
+	researchI = 8,
+	populationI = 9
+};
+
 enum GameModeEnum
 {
 	server = 0,

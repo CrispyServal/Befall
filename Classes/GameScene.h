@@ -188,15 +188,24 @@ private:
 	YypNoBlockingNet mNet;
 	MenuItemLabel * mBackToMainSceneItem;
 	DrawNode * mGrayBar;
+	std::vector<Rect> mGrayBarRect;
+	Node * resourcesIcons;
 	Label * mFixedResourceLabel;
 	Label * mRandomResourceLabel;
 	Label * mProductivityLabel;
 	Label * mResearchLabel;
 	Label * mPopulationLabel;
+	Sprite * fixedResourceIcon;
+	Sprite * randomResourceIcon;
+	Sprite * productivityIcon;
+	Sprite * researchIcon;
+	Sprite * populationIcon;
+	//Chceck contains
+	bool isGrayBarContains(Vec2 mMouseCoordinate);
+	bool isResourcesIconsContains(Vec2 mMouseCoordinate, ResourcesIconEnum tag);
 
-	std::string stringTurn;
-	std::string stringPredict;
-	std::string stringGoing;
+	//DisplayString
+	map<string, string> mDisplayInfoMap;
 
 	void initResourcesIcons();
 	void refreshResourcesIcons(const int & turnFlag);
