@@ -225,6 +225,7 @@ private:
 	void checkUnitCampLayerOnTouchEnded();
 	TiledMapLayer * mTiledMapLayer;
 	void checkTiledMapOnTouchMoved();
+	Sprite * mStarMap;
 	Sprite * mTechTreeLayerButton;
 	buttonTextureStruct mTechTreeLayerButtonTexture;
 	Sprite * mUnitCampLayerButton;
@@ -258,6 +259,7 @@ private:
 	EventListenerKeyboard * mKeyboardListener;
 	//distance per press for map
 	const float moveDis = 40;
+	const float starMovePerMove = 0.5;
 	keyStruct mKeyStruct;
 
 	void initWelcomeLayer();

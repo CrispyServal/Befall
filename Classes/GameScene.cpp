@@ -147,11 +147,16 @@ bool GameScene::init()
 	//gamemode
 	mGameMode = static_cast<GameModeEnum>(mUserDefault->getIntegerForKey("gamemode"));
 	CCLOG("gameMode: %d", mGameMode);
+
 	//tiledMapLayer
 	mTiledMapLayer = TiledMapLayer::create();
 	//init MapSize
 	mMapSize = mTiledMapLayer->getMapSize();
 	addChild(mTiledMapLayer,1);
+	//startMap
+	mStarMap = Sprite::create("uiComponent/starmap.jpg");
+	mStarMap->setPosition(mWinWidth / 2, mWinHeight / 2);
+	addChild(mStarMap, -1);
 	//menu
 	initGameMenu();
 	auto startMenu = Menu::create(MenuItemLabel::create( 
@@ -526,6 +531,11 @@ void GameScene::update(float delta)
 			switchTurn();
 		}
 	}
+	auto p0 = Vec2(
+		mTiledMapLayer->getPosition().x/* * starMovePerMove*/ + (mTiledMapLayer->getMapSizeF().width + mWinWidth) / 2,
+		mTiledMapLayer->getPosition().y/* * starMovePerMove*/ + (mTiledMapLayer->getMapSizeF().height + mWinHeight) / 2
+	);
+	mStarMap->setPosition(p0.x * starMovePerMove, p0.y * starMovePerMove);
 }
 
 //--switchTurn
