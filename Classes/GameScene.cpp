@@ -9,7 +9,6 @@ GameScene::~GameScene()
 {
 }
 
-
 std::string GameScene::getDicValue(char * str)
 {
 	 CCLOG("getdicValue: result: %s",mDictionary->valueForKey(str)->getCString());
@@ -1804,8 +1803,7 @@ void GameScene::checkLayersOnMouseMoved()
 			&& mTechTreeLayer->containPoint(mMouseCoordinate))
 		{
 				auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinate);
-				if (mGameState[tF].techTree.isUnlocked(tech) || 
-					mGameState[tF].techTree.unlockable(tech))
+				if (mGameState[tF].techTree.unlockable(tech))
 				{
 				mInfoMapLayer->displayText(mTechDisplayMap[tech].techName, 
 					mTechDisplayMap[tech].techIntroduction, 
@@ -1813,6 +1811,13 @@ void GameScene::checkLayersOnMouseMoved()
 					mTechInitDataMap[tech].numResearchLevel,
 					mResources[tF].numResearchLevel)) + mDisplayInfoMap["Turn"]);
 				clearFlag = false;
+				}
+				if (mGameState[tF].techTree.isUnlocked(tech))
+				{
+					mInfoMapLayer->displayText(mTechDisplayMap[tech].techName,
+						mTechDisplayMap[tech].techIntroduction,
+						"");
+					clearFlag = false;
 				}
 		}
 

@@ -31,7 +31,7 @@
 				"numDefence" : 5,
 				"numAttack" : 5,
 				"numAttackRange" : 1,
-				"numMoveRange" : 3,
+				"numMoveRange" : 4,
 				"numPopulation" : 1
 			},
 			"consumption" :
@@ -51,7 +51,7 @@
 				"numDefence" : 10,
 				"numAttack" : 20,
 				"numAttackRange" : 1,
-				"numMoveRange" : 4,
+				"numMoveRange" : 5,
 				"numPopulation" : 5
 			} ,
 			"consumption" :
@@ -71,7 +71,7 @@
 				"numDefence" : 15,
 				"numAttack" : 30,
 				"numAttackRange" : 1,
-				"numMoveRange" : 4,
+				"numMoveRange" : 5,
 				"numPopulation" : 10
 			},
 			"consumption" :
@@ -90,8 +90,8 @@
 				"numHitPoint" : 30,
 				"numDefence" : 5,
 				"numAttack" : 25,
-				"numAttackRange" : 2,
-				"numMoveRange" : 3,
+				"numAttackRange" : 4,
+				"numMoveRange" : 4,
 				"numPopulation" : 8
 			} ,
 			"consumption" :
@@ -110,8 +110,8 @@
 				"numHitPoint" : 30,
 				"numDefence" : 5,
 				"numAttack" : 35,
-				"numAttackRange" : 3,
-				"numMoveRange" : 3,
+				"numAttackRange" : 5,
+				"numMoveRange" : 4,
 				"numPopulation" : 16
 			},
 			"consumption" :
@@ -130,8 +130,8 @@
 				"numHitPoint" : 120,
 				"numDefence" : 20,
 				"numAttack" : 20,
-				"numAttackRange" : 3,
-				"numMoveRange" : 3,
+				"numAttackRange" : 5,
+				"numMoveRange" : 4,
 				"numPopulation" : 20
 			},
 			"consumption" :
