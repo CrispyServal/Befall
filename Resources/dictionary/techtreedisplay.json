@@ -715,7 +715,7 @@
 {
 "type" : "numHitPoint",
 "target" : "base",
-"value" : 400
+"value" : 1000
 },
 "consumption" :
 {
@@ -738,7 +738,7 @@
 {
 "type" : "numHitPoint",
 "target" : "base",
-"value" : 800
+"value" : 2000
 },
 "consumption" :
 {

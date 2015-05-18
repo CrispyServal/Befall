@@ -1432,6 +1432,7 @@ void GameScene::startGame()
 	refreshMiniMap();
 	//refresh resources
 	refreshResourcesTexture();
+	refreshPopulationIcons(0);
 	//Test for info map
 	//mInfoMapLayer->displayText("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
 	//update
@@ -2014,7 +2015,7 @@ void GameScene::initGameState()
 		mUnitCampLayer->setUnitResourceAndProperty(i.first, i.second.consumption, i.second.property);
 	}
 	//mResources
-	mResources[0] = mResources[1] = ResourcesStruct{ 100, 100, 10, 10 };
+	mResources[0] = mResources[1] = ResourcesStruct{ 30, 30, 10, 10 };
 	//extra resources
 	mExtraResources[0] = mExtraResources[1] = ResourcesStruct{ 0, 0, 0, 0 };
 	//set Label value
