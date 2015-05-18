@@ -375,8 +375,16 @@ void GameScene::startConnecting(float delta)
 
 void GameScene::netUpdate(float delta)
 {
+	static int count = 0;
 	//CCLOG("net update");
 	//test
+	while (mNet.sendOnePoint({count,count}));
+	++count;
+	if (count == 100)
+	{
+		system("pause");
+	}
+	//
 
 	int tF = mGameMode == server ? 0 : 1;
 	if (mNet.read())
@@ -386,38 +394,49 @@ void GameScene::netUpdate(float delta)
 		{
 			//read something
 			whichEnum which = mNet.getWhich();
+			if (which == onePoint)
+			{
+				CCLOG("readed count = %d", mNet.getOnePoint().x);
+			}
+			/*
 			if (which == newTech)
 			{
 				CCLOG("new tech");
+				while (mNet.sendTech(mNet.getTech()));
 				unlockTechTree(1 - tF, mNet.getTech());
 			}
 			else if (which == newSoldier)
 			{
 				CCLOG("new unit");
 				//place soldier to enemy's spawn
+				while (mNet.sendNewSoldier(mNet.getNewSoldier()));
 				spawnUnit(mNet.getNewSoldier().unit, 1 - tF);
 			}
 			else if (which == twoPoints)
 			{
 				CCLOG("2 p");
+				while (mNet.sendTwoPoint(mNet.getPoints()));
 				readTwoPoint(tF);
 			}
 			else if (which == end)
 			{
 				CCLOG("end");
+				while (mNet.sendEnd());
 				switchTurn();
 			}
 			else if (which == youwin)
 			{
+				while (mNet.sendYouWin());
 				CCLOG("i win");
 			}
+			*/
 			mNet.lockOn();
 		}
 	}
 	else
 	{
 		auto err = WSAGetLastError();
-		CCLOG("net err: %d", err);
+		//CCLOG("net err: %d", err);
 		if (err != WSAEWOULDBLOCK)
 		{
 			CCLOG("he GGed!!!");
