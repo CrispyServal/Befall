@@ -261,6 +261,7 @@ private:
 	keyStruct mKeyStruct;
 
 	void initWelcomeLayer();
+	bool mWelcomeLayerDisplay;
 	void initYypNet();
 	void initResourceTexture();
 	void initUnitTexture();

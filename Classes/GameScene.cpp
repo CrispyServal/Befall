@@ -293,10 +293,12 @@ bool GameScene::init()
 	
 	if (mGameMode == vsPlayer)
 	{
+		mWelcomeLayerDisplay = false;
 		startGame();
 	}
 	else if (mGameMode == server || mGameMode == client)
 	{
+		mWelcomeLayerDisplay = true;
 		initWelcomeLayer();
 	}
 	initYypNet();
@@ -409,8 +411,8 @@ void GameScene::netUpdate(float delta)
 	}
 	else
 	{
-		CCLOG("read error");
 		auto err = WSAGetLastError();
+		CCLOG("net err: %d", err);
 		if (err != WSAEWOULDBLOCK)
 		{
 			CCLOG("he GGed!!!");
@@ -477,6 +479,7 @@ void GameScene::readTwoPoint(const int & tF)
 	}
 }
 
+//--update
 void GameScene::update(float delta)
 {
 	//move
@@ -515,14 +518,17 @@ void GameScene::update(float delta)
 	}
 	else
 	{
+		//ended
 		if (!mUpdateTimerLock)
 		{
+			//first time to end
 			mUpdateTimerLock = true;
 			switchTurn();
 		}
 	}
 }
 
+//--switchTurn
 void GameScene::switchTurn()
 {
 	//end turn
@@ -541,6 +547,7 @@ void GameScene::switchTurn()
 	//start turn
 	if (mGameMode == vsPlayer)
 	{
+		mUpdateTimerLock = false;
 		mUnitCampLayer->setVisible(false);
 		mTechTreeLayer->setVisible(false);
 		int tF = mBlueTurn ? 0 : 1;
@@ -560,15 +567,6 @@ void GameScene::switchTurn()
 	}
 	else if (mGameMode == server || mGameMode == client)
 	{
-		//send end
-		while (!mNet.sendEnd())
-		{
-			auto err = WSAGetLastError();
-			if (err != WSAEWOULDBLOCK)
-			{
-				//mDirector->popScene();
-			}
-		}
 		//set OE
 		int tF = -1;
 		if (mGameMode == server)
@@ -601,6 +599,15 @@ void GameScene::switchTurn()
 		{
 			CCLOG("OE false");
 			mTimer->shutDown();
+			//send end
+			while (!mNet.sendEnd())
+			{
+				auto err = WSAGetLastError();
+				if (err != WSAEWOULDBLOCK)
+				{
+					//mDirector->popScene();
+				}
+			}
 		}
 	}
 	mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.off);
@@ -1376,17 +1383,23 @@ void GameScene::onMouseMoved(Event * event)
 	//CCLOG("%f,%f", mMouseCoordinate.x, mMouseCoordinate.y);
 	if ((mGameMode == GameModeEnum::client) || (mGameMode == GameModeEnum::server))
 	{
-		checkBackToMainSceneItemOnMouseMoved();
+		if (mWelcomeLayerDisplay)
+		{
+			checkBackToMainSceneItemOnMouseMoved();
+		}
 	}
 	checkLayersOnMouseMoved();
 }
 
+//--startGame
 void GameScene::startGame()
 {
 	//
 	if (mGameMode == server || mGameMode == client)
 	{
-		mWelcomeLayer->setVisible(false);
+		//mWelcomeLayer->setVisible(false);
+		mWelcomeLayerDisplay = false;
+		mWelcomeLayer->removeFromParentAndCleanup(true);
 	}
 	initGameState();
 	//turn
@@ -1394,11 +1407,18 @@ void GameScene::startGame()
 	{
 		mBlueTurn = true;
 		mOperateEnable = true;
+		//update timer lock
+		mUpdateTimerLock = false;
+		mTimer->start();
 	}
 	else
 	{
+		CCLOG("in startGame(): client");
+		//client
 		mBlueTurn = false;
 		mOperateEnable = false;
+		mTimer->shutDown();
+		mUpdateTimerLock = true;
 	}
 	//init farmer
 	spawnUnit(farmer, 0);
@@ -1415,7 +1435,6 @@ void GameScene::startGame()
 	//Test for info map
 	//mInfoMapLayer->displayText("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
 	//update
-	mTimer->start();
 	scheduleUpdate();
 
 	//TechTreeLayerRefreshing
@@ -1978,8 +1997,6 @@ void GameScene::checkTechAndUnitButton()
 
 void GameScene::initGameState()
 {
-	//update timer lock
-	mUpdateTimerLock = false;
 	//num turn
 	mNumTurn = 0;
 	//spawn
@@ -2081,6 +2098,7 @@ void GameScene::initGameState()
 
 }
 
+//--initResourceMap
 void GameScene::initResourceMap()
 {
 	//const float ranScale = 0.5;
@@ -2257,9 +2275,18 @@ void GameScene::initResourceMap()
 						}
 						*/
 					}
+					//check send back
+					while (!mNet.read())
+					{
+					}
+					if (mNet.getWhich() != onePoint)
+					{
+						//error
+						CCLOG("read back error");
+					}
+					CCLOG("read back :%d,%d", mNet.getOnePoint().x, mNet.getOnePoint().y);
 					CCLOG("Sleep sended. %d,%d", ranP.x, ranP.y);
 					Sleep(500);
-					CCLOG("sended. %d,%d", ranP.x, ranP.y);
 				}
 				mResourceMap[ranP] = Unit{
 					UnitEnum::randomResource,
@@ -2279,14 +2306,12 @@ void GameScene::initResourceMap()
 		{
 			while (!mNet.sendEnd())
 			{
-				/*
 				auto err = WSAGetLastError();
 				if (err != WSAEWOULDBLOCK)
 				{
 					CCLOG("he GGed so fast!!!");
 					mDirector->popScene();
 				}
-				*/
 			}
 			CCLOG("sended end");
 		}
@@ -2296,6 +2321,7 @@ void GameScene::initResourceMap()
 		//client: read ranP
 		while (true)
 		{
+			//read a ranP
 			while (!mNet.read())
 			{
 				//auto err = WSAGetLastError();
@@ -2306,6 +2332,17 @@ void GameScene::initResourceMap()
 					mDirector->popScene();
 				}
 				*/
+			}
+			if (mNet.getWhich() == end)
+			{
+				CCLOG("read end");
+				//“‘∑¿ÕÚ“ª
+				mNet.lockOn();
+				break;
+			}
+			//send back
+			while (!mNet.sendOnePoint(mNet.getOnePoint()))
+			{
 			}
 			if (mNet.getWhich() == onePoint)
 			{
@@ -2322,10 +2359,7 @@ void GameScene::initResourceMap()
 				};
 				CCLOG("read: %d,%d", mNet.getOnePoint().x, mNet.getOnePoint().y);
 			}
-			if (mNet.getWhich() == end)
-				break;
 		}
-		CCLOG("read end");
 	}
 	//place them
 	for (const auto & i : mResourceMap)
