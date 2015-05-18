@@ -36,7 +36,7 @@ bool MainScene::init()
 	vHeight = director->getVisibleSize().height;
 	vWidth= director->getVisibleSize().width;
 	//bg
-	bgSprite = Sprite::create("bg.png");
+	bgSprite = Sprite::create("uiComponent/bg.png");
 	bgSprite->setPosition(vWidth / 2, vHeight / 2);
 	bgSprite->setColor(Color3B(120,120,120));
 	mainLayer->addChild(bgSprite, -2);
