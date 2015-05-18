@@ -375,12 +375,17 @@ void GameScene::startConnecting(float delta)
 
 void GameScene::netUpdate(float delta)
 {
-	static int count = 0;
+	static int sendCount = 0;
+	static int readCount = 0;
 	//CCLOG("net update");
 	//test
-	while (mNet.sendOnePoint({count,count}));
-	++count;
-	if (count == 100)
+	if (mGameMode == server)
+	{
+		while (mNet.sendOnePoint({ sendCount, sendCount }));
+		CCLOG("sended count");
+	}
+	++sendCount;
+	if (sendCount == 100)
 	{
 		system("pause");
 	}
@@ -396,7 +401,8 @@ void GameScene::netUpdate(float delta)
 			whichEnum which = mNet.getWhich();
 			if (which == onePoint)
 			{
-				CCLOG("readed count = %d", mNet.getOnePoint().x);
+				++readCount;
+				CCLOG("read! data = %d. read count = %d", mNet.getOnePoint().x, readCount);
 			}
 			/*
 			if (which == newTech)
@@ -1520,7 +1526,7 @@ void GameScene::startGame()
 	//net update, 0.5s
 	if (mGameMode == server || mGameMode == client)
 	{
-		schedule(schedule_selector(GameScene::netUpdate), 0.5, CC_REPEAT_FOREVER, 0);
+		schedule(schedule_selector(GameScene::netUpdate), 0.1, CC_REPEAT_FOREVER, 0);
 	}
 }
 
