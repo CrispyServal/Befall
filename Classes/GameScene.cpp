@@ -375,7 +375,7 @@ void GameScene::startConnecting(float delta)
 
 void GameScene::netUpdate(float delta)
 {
-	CCLOG("net update");
+	//CCLOG("net update");
 	//test
 
 	int tF = mGameMode == server ? 0 : 1;
@@ -578,15 +578,14 @@ void GameScene::switchTurn()
 	else if (mGameMode == server || mGameMode == client)
 	{
 		//set OE
+		mOperateEnable = mBlueTurn;
 		int tF = -1;
 		if (mGameMode == server)
 		{
-			mOperateEnable = mBlueTurn;
 			tF = 0;
 		}
 		else if (mGameMode == client)
 		{
-			mOperateEnable = !mBlueTurn;
 			tF = 1;
 		}
 		checkTechFactory(tF);
@@ -2356,8 +2355,6 @@ void GameScene::initResourceMap()
 						CCLOG("read back error");
 					}
 					CCLOG("read back :%d,%d", mNet.getOnePoint().x, mNet.getOnePoint().y);
-					CCLOG("Sleep sended. %d,%d", ranP.x, ranP.y);
-					Sleep(500);
 				}
 				mResourceMap[ranP] = Unit{
 					UnitEnum::randomResource,
