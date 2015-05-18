@@ -578,16 +578,18 @@ void GameScene::switchTurn()
 	else if (mGameMode == server || mGameMode == client)
 	{
 		//set OE
-		mOperateEnable = mBlueTurn;
 		int tF = -1;
 		if (mGameMode == server)
 		{
+			mOperateEnable = mBlueTurn;
 			tF = 0;
 		}
 		else if (mGameMode == client)
 		{
+			mOperateEnable = !mBlueTurn;
 			tF = 1;
 		}
+		CCLOG("in switch Turn tF = %d", tF);
 		checkTechFactory(tF);
 		checkUnitFactory(tF);
 		refreshTechTreeLayer(tF);
@@ -1140,7 +1142,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			{
 				int tF = mBlueTurn ? 0 : 1;
 				auto mapPoint = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinateTouch);
-				CCLOG("tiled coor touched: %d,%d", mapPoint.x, mapPoint.y);
+				CCLOG("tiled coor touched: %d,%d, tF = %d", mapPoint.x, mapPoint.y, tF);
 				if (mOperateEnable)
 				{
 					unitAction(mapPoint, tF);
@@ -1452,9 +1454,9 @@ void GameScene::startGame()
 	}
 	initGameState();
 	//turn
+	mBlueTurn = true;
 	if (mGameMode != client)
 	{
-		mBlueTurn = true;
 		mOperateEnable = true;
 		//update timer lock
 		mUpdateTimerLock = false;
@@ -1464,7 +1466,6 @@ void GameScene::startGame()
 	{
 		CCLOG("in startGame(): client");
 		//client
-		mBlueTurn = false;
 		mOperateEnable = false;
 		mTimer->shutDown();
 		mUpdateTimerLock = true;
@@ -2929,8 +2930,10 @@ void GameScene::deleteAttackRange()
 	mAttackRange.clear();
 }
 
+//--unitAction
 void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 {	
+	CCLOG("in unitAction: tF = %d", tF);
 	//mUnitActionFSM[tF] = 0;
 	CCLOG("%d", mUnitActionFSM[tF]);
 	switch (mUnitActionFSM[tF])
