@@ -383,8 +383,8 @@ void GameScene::netUpdate(float delta)
 	{
 		while (mNet.sendOnePoint({ sendCount, sendCount }));
 		CCLOG("sended count");
+		++sendCount;
 	}
-	++sendCount;
 	if (sendCount == 100)
 	{
 		system("pause");
