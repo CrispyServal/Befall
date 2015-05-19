@@ -381,7 +381,7 @@ void GameScene::netUpdate(float delta)
 	//test
 	if (mGameMode == server)
 	{
-		while (mNet.sendOnePoint({ sendCount, sendCount }));
+		while (!mNet.sendOnePoint({ sendCount, sendCount }));
 		CCLOG("sended count");
 		++sendCount;
 	}
@@ -394,16 +394,18 @@ void GameScene::netUpdate(float delta)
 	int tF = mGameMode == server ? 0 : 1;
 	if (mNet.read())
 	{
-		CCLOG("read!");
+		whichEnum which = mNet.getWhich();
+		CCLOG("which: %d", which);
+		if (which == onePoint)
+		{
+			++readCount;
+			CCLOG("read! data = %d. read count = %d", mNet.getOnePoint().x, readCount);
+		}
 		if (!mNet.isLocked())
 		{
+			CCLOG("read!");
 			//read something
-			whichEnum which = mNet.getWhich();
-			if (which == onePoint)
-			{
-				++readCount;
-				CCLOG("read! data = %d. read count = %d", mNet.getOnePoint().x, readCount);
-			}
+			
 			/*
 			if (which == newTech)
 			{
