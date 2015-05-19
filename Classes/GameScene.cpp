@@ -375,62 +375,48 @@ void GameScene::startConnecting(float delta)
 
 void GameScene::netUpdate(float delta)
 {
-	static int count = 0;
 	//CCLOG("net update");
 	//test
-	while (mNet.sendOnePoint({count,count}));
-	++count;
-	if (count == 100)
-	{
-		system("pause");
-	}
-	//
-
 	int tF = mGameMode == server ? 0 : 1;
 	if (mNet.read())
 	{
 		CCLOG("read!");
-		if (!mNet.isLocked())
+		//read something
+		auto which = mNet.getWhich();
+		CCLOG("which : %d", which);
+		if (which == newTech)
 		{
-			//read something
-			whichEnum which = mNet.getWhich();
-			if (which == onePoint)
-			{
-				CCLOG("readed count = %d", mNet.getOnePoint().x);
-			}
-			/*
-			if (which == newTech)
-			{
-				CCLOG("new tech");
-				while (mNet.sendTech(mNet.getTech()));
-				unlockTechTree(1 - tF, mNet.getTech());
-			}
-			else if (which == newSoldier)
-			{
-				CCLOG("new unit");
-				//place soldier to enemy's spawn
-				while (mNet.sendNewSoldier(mNet.getNewSoldier()));
-				spawnUnit(mNet.getNewSoldier().unit, 1 - tF);
-			}
-			else if (which == twoPoints)
-			{
-				CCLOG("2 p");
-				while (mNet.sendTwoPoint(mNet.getPoints()));
-				readTwoPoint(tF);
-			}
-			else if (which == end)
-			{
-				CCLOG("end");
-				while (mNet.sendEnd());
-				switchTurn();
-			}
-			else if (which == youwin)
-			{
-				while (mNet.sendYouWin());
-				CCLOG("i win");
-			}
-			*/
-			mNet.lockOn();
+			CCLOG("new tech");
+			while (!mNet.sendTech(mNet.getTech()));
+			CCLOG("sended back");
+			unlockTechTree(1 - tF, mNet.getTech());
+		}
+		else if (which == newSoldier)
+		{
+			CCLOG("new unit");
+			//place soldier to enemy's spawn
+			while (!mNet.sendNewSoldier(mNet.getNewSoldier()));
+			CCLOG("sended back");
+			spawnUnit(mNet.getNewSoldier().unit, 1 - tF);
+		}
+		else if (which == twoPoints)
+		{
+			CCLOG("2 p");
+			while (!mNet.sendTwoPoint(mNet.getPoints()));
+			CCLOG("sended back");
+			readTwoPoint(tF);
+		}
+		else if (which == end)
+		{
+			CCLOG("end");
+			//while (mNet.sendEnd());
+			switchTurn();
+		}
+		else if (which == youwin)
+		{
+			while (!mNet.sendYouWin());
+			CCLOG("sended back");
+			CCLOG("i win");
 		}
 	}
 	else
@@ -455,8 +441,9 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack my unit
+			CCLOG("read 2 p: attack my unit");
 			attack = true;
-			return;
+			break;
 		}
 	}
 	//
@@ -465,13 +452,14 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack resource
+			CCLOG("read 2 p: attack resources or base");
 			attack = true;
-			return;
+			break;
 		}
 	}
 	if (attack)
 	{
-		attackUnit(twoPoint.first, twoPoint.first, 1 - tF);
+		attackUnit(twoPoint.first, twoPoint.second, 1 - tF);
 	}
 	else
 	{
@@ -679,6 +667,8 @@ void GameScene::checkTechFactory(int turnFlag)
 					//mDirector->popScene();
 				}
 			}
+			while (!mNet.read()){}
+			CCLOG("read send back!");
 		}
 	}
 }
@@ -715,6 +705,8 @@ void GameScene::checkUnitFactory(int turnFlag)
 					//mDirector->popScene();
 				}
 			}
+			while (!mNet.read()){}
+			CCLOG("read send back!");
 		}
 	}
 }
@@ -870,7 +862,7 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	}
 	else if ( (!up) && (hDis < vDis))
 	{
-		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].back);
+		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].front);
 	}
 	//check attackedUnitPosition type
 	for (auto & reP : mResourceMap)
@@ -1520,7 +1512,7 @@ void GameScene::startGame()
 	//net update, 0.5s
 	if (mGameMode == server || mGameMode == client)
 	{
-		schedule(schedule_selector(GameScene::netUpdate), 0.5, CC_REPEAT_FOREVER, 0);
+		schedule(schedule_selector(GameScene::netUpdate), 0.1, CC_REPEAT_FOREVER, 0);
 	}
 }
 
@@ -2369,6 +2361,7 @@ void GameScene::initResourceMap()
 					while (!mNet.read())
 					{
 					}
+					CCLOG("read send back!");
 					if (mNet.getWhich() != onePoint)
 					{
 						//error
@@ -2695,6 +2688,8 @@ void GameScene::initGameMenu()
 					//mDirector->popScene();
 				}
 			}
+			while (!mNet.read()){}
+			CCLOG("read send back!");
 		}
 		//lose
 		CCLOG("i lose!");
@@ -3000,6 +2995,8 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 							//mDirector->popScene();
 						}
 					}
+					while (!mNet.read()){}
+					CCLOG("read send back!");
 				}
 				//attack
 				attackUnit(mOriginalPoint, nowPoint, tF);
@@ -3030,6 +3027,8 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 							//mDirector->popScene();
 						}
 					}
+					while (!mNet.read()){}
+					CCLOG("read send back!");
 				}
 				//move
 				moveUnit(movePath, tF, true);
@@ -3080,6 +3079,8 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 							//mDirector->popScene();
 						}
 					}
+					while (!mNet.read()){}
+					CCLOG("read send back!");
 				}
 				//attack
 				attackUnit(mOriginalPoint, nowPoint, tF);
