@@ -947,8 +947,9 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	}
 	if (foundU)
 	{
+		mPopulation[tF] -= mGameState[tF].unitMap[point].property.numPopulation;//yyp mark
 		mGameState[tF].unitMap[point].sprite->removeFromParentAndCleanup(true);
-		mGameState[tF].unitMap.erase(point);
+		mGameState[tF].unitMap.erase(point);	
 		return;
 	}
 	//resources
