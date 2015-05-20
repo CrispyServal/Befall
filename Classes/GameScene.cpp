@@ -1329,7 +1329,11 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			{
 				CCLOG("timer contain");
 				//timer contain bug
-				mTimer->shutDown();
+				if (mOperateEnable)
+				{
+					mTimer->shutDown();
+					mOperateEnable = false;
+				}
 				break;
 			}
 			else if (mTimer->blockClick())
