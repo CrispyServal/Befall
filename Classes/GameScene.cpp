@@ -1689,7 +1689,7 @@ void GameScene::startGame()
 	}
 	//init farmer
 	//spawnUnit(farmer, 0);
-	spawnUnit(longrangeunit3, 0);
+	spawnUnit(farmer, 0);
 	spawnUnit(farmer, 1);
 	//change Population
 	mPopulation[0] += (mUnitInitDataMap[farmer].property.numPopulation 
