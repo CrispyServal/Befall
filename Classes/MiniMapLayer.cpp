@@ -154,11 +154,14 @@ void MiniMapLayer::setViewPosition(Vec2 rate)
 
 //传入4个集合，刷新小地图中的小方块，即重画一遍
 void MiniMapLayer::refresh(
-	std::set<MyPointStruct> unitSet0,//blue
-	std::set<MyPointStruct> unitSet1,//red
-	std::set<MyPointStruct> fixedResourceSet,//yellow
-	std::set<MyPointStruct> randomResourceSet//green
-	)
+		std::set<MyPointStruct> unitSet0,
+		std::set<MyPointStruct> unitSet0N,
+		std::set<MyPointStruct> unitSet1,
+		std::set<MyPointStruct> unitSet1N,
+		std::set<MyPointStruct> fixedResourceSet,
+		std::set<MyPointStruct> randomResourceSet
+		)
+
 {
 	mMiniMap->clear();
 	float red, green, blue;
@@ -176,7 +179,7 @@ void MiniMapLayer::refresh(
 	{
 		red = 0;
 		green = 1;
-		blue = 1;
+		blue = 0;
 		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
 		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
 		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
@@ -195,6 +198,24 @@ void MiniMapLayer::refresh(
 		red = 1;
 		green = 0;
 		blue = 0;
+		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
+		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
+		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+	}
+	for (auto point : unitSet0N)
+	{
+		red = 0.22;
+		green = 0.6;
+		blue = 0.78;
+		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
+		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
+		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+	}
+	for (auto point : unitSet1N)
+	{
+		red = 0.85;
+		green = 0.22;
+		blue = 0.39;
 		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
 		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
 		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));

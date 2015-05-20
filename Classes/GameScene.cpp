@@ -572,6 +572,7 @@ void GameScene::switchTurn()
 	//start turn
 	if (mGameMode == vsPlayer)
 	{
+		mOperateEnable = true;
 		mUpdateTimerLock = false;
 		mUnitCampLayer->setVisible(false);
 		mTechTreeLayer->setVisible(false);
@@ -1741,11 +1742,19 @@ void GameScene::startGame()
 void GameScene::refreshMiniMap()
 {
 	std::set<MyPointStruct> unitSet[2];
+	std::set<MyPointStruct> unitSetN[2];
 	for (int k = 0; k < 2; ++ k)
 	{
 		for (const auto & i : mGameState[k].unitMap)
 		{
-			unitSet[k].insert(i.first);
+			if (i.second.state == fresh)
+			{
+				unitSet[k].insert(i.first);
+			}
+			else
+			{
+				unitSetN[k].insert(i.first);
+			}
 		}
 		//base
 		unitSet[k].insert(mBasePosition[k]);
@@ -1769,7 +1778,7 @@ void GameScene::refreshMiniMap()
 			continue;
 		}
 	}
-	mMiniMapLayer->refresh(unitSet[0], unitSet[1], fixedRSet, randomRSet);
+	mMiniMapLayer->refresh(unitSet[0], unitSetN[0], unitSet[1], unitSetN[1], fixedRSet, randomRSet);
 }
 
 void GameScene::checkMiniMap()
