@@ -606,10 +606,11 @@ void GameScene::switchTurn()
 		}
 		CCLOG("in switch Turn tF = %d", tF);
 		
+		refreshResource(tF);
 		//timer
 		if (mOperateEnable)
 		{
-			refreshResource(tF);
+			CCLOG("OE true");
 			refreshResourcesIcons(tF);
 			refreshMakingButton(tF);
 			refreshUnitState(tF);
@@ -617,7 +618,6 @@ void GameScene::switchTurn()
 			checkUnitFactory(tF);
 			refreshTechTreeLayer(tF);
 			refreshUnitCamp(tF);
-			CCLOG("OE true");
 			mTimer->start();
 			mTimer->setTimerColor(tF);
 			mUpdateTimerLock = false;
@@ -1380,7 +1380,10 @@ void GameScene::unlockTechTree(const int & flag, TechEnum tech)
 	mGameState[flag].techTree.unlock(tech);
 	//CCLOG("ssss: %d", mGameState[flag].techTree.isUnlocked(tech));
 	setTechInfluence(flag,tech);
-	refreshTechTreeLayer(flag);
+	if (mOperateEnable)
+	{
+		refreshTechTreeLayer(flag);
+	}
 }
 
 void GameScene::setTechInfluence(const int & flag, TechEnum tech)
