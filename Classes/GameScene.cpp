@@ -605,8 +605,6 @@ void GameScene::switchTurn()
 			tF = 1;
 		}
 		CCLOG("in switch Turn tF = %d", tF);
-		checkTechFactory(tF);
-		checkUnitFactory(tF);
 		refreshTechTreeLayer(tF);
 		refreshUnitCamp(tF);
 		refreshResource(tF);
@@ -616,6 +614,8 @@ void GameScene::switchTurn()
 		//timer
 		if (mOperateEnable)
 		{
+			checkTechFactory(tF);
+			checkUnitFactory(tF);
 			CCLOG("OE true");
 			mTimer->start();
 			mTimer->setTimerColor(tF);
@@ -900,7 +900,11 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	//explore
 	auto Explode = Sequence::create(
 		Spawn::create(
-			FadeOut::create(0.5),
+		Sequence::create(
+			DelayTime::create(0.2),
+			FadeOut::create(0.3),
+			NULL
+		),
 			ScaleTo::create(0.5, 2.5),
 			NULL
 		),
@@ -958,7 +962,15 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 		if (attackedBase)
 		{
 			auto & HP = mResourceMap[mBasePosition[1 - tF]].property.numHitPoint;
-			HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[mBasePosition[1 - tF]].property.numDefence);
+			auto deltaHP = abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[mBasePosition[1 - tF]].property.numDefence);
+			if (typeFrom == longrangeunit3)
+			{
+				HP -= (5 + (int)(CCRANDOM_0_1() * 20)) * deltaHP;
+			}
+			else
+			{
+				HP -= deltaHP;
+			}
 			//die?
 			if (HP <= 0)
 			{
@@ -1063,14 +1075,26 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	{
 		//whiteLine->clear();
 		Vec2 fromP = Vec2(fromP0.x + 64 * (toP.x - fromP0.x) / abs(toP.x - fromP0.x + 0.1), fromP0.y + 64 * (toP.y - fromP0.y) / abs(toP.y - fromP0.y + 0.1));
-		float drawCount = 100;
+		float drawCount = 200;
 		float drawDeltaX = (toP.x - fromP.x) / drawCount;
 		float drawDeltaY = (toP.y - fromP.y) / drawCount;
 		float x = fromP.x;
 		float y = fromP.y;
-		while (abs(x - toP.x) > 1)
+		while (abs(x - toP.x) > 1 || abs(y - toP.y) > 1)
 		{
 			whiteLine->drawSolidCircle(Vec2(x, y), 10, 10, 10, Color4F(1, 1, 1, 1));
+			if ( (int)x % 2 < 1)
+			{
+				whiteLine->drawSolidCircle(Vec2(x + (CCRANDOM_0_1() - 0.5) * 12, y + (CCRANDOM_0_1() - 0.5) * 12), 8, 10, 10, Color4F(1, 1, 1, 0.9));
+			}
+			if ( (int)x % 4 < 2)
+			{
+				whiteLine->drawSolidCircle(Vec2(x + (CCRANDOM_0_1() - 0.5) * 64, y + (CCRANDOM_0_1() - 0.5) * 64), 4, 10, 10, Color4F(1, 1, 1, 0.7));
+			}
+			if ( (int)x % 12 < 2)
+			{
+				whiteLine->drawSolidCircle(Vec2(x + (CCRANDOM_0_1() - 0.5) * 128, y + (CCRANDOM_0_1() - 0.5) * 128), 4, 10, 10, Color4F(1, 1, 1, 0.4));
+			}
 			x += drawDeltaX;
 			y += drawDeltaY;
 		}
@@ -1664,7 +1688,8 @@ void GameScene::startGame()
 		mUpdateTimerLock = true;
 	}
 	//init farmer
-	spawnUnit(farmer, 0);
+	//spawnUnit(farmer, 0);
+	spawnUnit(longrangeunit3, 0);
 	spawnUnit(farmer, 1);
 	//change Population
 	mPopulation[0] += (mUnitInitDataMap[farmer].property.numPopulation 
@@ -1905,6 +1930,7 @@ void GameScene::checkMakingButtonOnTouchEnded()
 		{
 			mTechMakingButton->setVisible(false);
 			mTechFactory[tF].cancelNowTech();
+			refreshTechTreeLayer(tF);
 		}
 	}
 }
