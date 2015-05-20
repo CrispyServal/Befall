@@ -36,7 +36,9 @@ public:
 	//传入4个集合，刷新小地图中的小方块，即重画一遍
 	void refresh(
 		std::set<MyPointStruct> unitSet0,
+		std::set<MyPointStruct> unitSet0N,
 		std::set<MyPointStruct> unitSet1,
+		std::set<MyPointStruct> unitSet1N,
 		std::set<MyPointStruct> fixedResourceSet,
 		std::set<MyPointStruct> randomResourceSet
 		);

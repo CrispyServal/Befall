@@ -973,7 +973,7 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 			auto deltaHP = abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[mBasePosition[1 - tF]].property.numDefence);
 			if (typeFrom == longrangeunit3)
 			{
-				HP -= (5 + (int)(CCRANDOM_0_1() * 20)) * deltaHP;
+				HP -= 10 * deltaHP;
 			}
 			else
 			{
