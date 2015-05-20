@@ -605,8 +605,15 @@ void GameScene::switchTurn()
 			tF = 1;
 		}
 		CCLOG("in switch Turn tF = %d", tF);
+		if (mBlueTurn)
+		{
+			refreshResource(0);
+		}
+		else
+		{
+			refreshResource(1);
+		}
 		
-		refreshResource(tF);
 		//timer
 		if (mOperateEnable)
 		{
