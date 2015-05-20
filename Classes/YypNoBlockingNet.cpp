@@ -7,6 +7,8 @@ YypNoBlockingNet::YypNoBlockingNet()
 
 YypNoBlockingNet::~YypNoBlockingNet()
 {
+	CCLOG("yyp net: ~XXX();");
+	endServer();
 }
 
 TechEnum YypNoBlockingNet::getTech()
@@ -225,7 +227,7 @@ bool YypNoBlockingNet::acceptConnect()
 
 bool YypNoBlockingNet::endServer()
 {
-	if (!closesocket(sclient) && !WSACleanup())
+	if (!closesocket(sclient) && !closesocket(slisten) && !WSACleanup())
 		return true;
 	else
 		return false;;

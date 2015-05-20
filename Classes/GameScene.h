@@ -422,6 +422,10 @@ private:
 
 	//
 	int whosUnit(MyPointStruct unitPoint);
+	//animation items
+	Sprite * ball;
+	Sprite * explosives;
+	DrawNode * whiteLine;
 };
 
 #endif // !GAMESCENE_H

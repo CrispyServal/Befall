@@ -133,6 +133,11 @@ bool GameScene::init()
 		false
 	};
 	initAttackTexture();
+	ball = Sprite::createWithTexture(mAttackTexture.LR2T);
+	ball->setOpacity(0);
+	explosives = Sprite::createWithTexture(mAttackTexture.LR2E);
+	explosives->setOpacity(0);
+	whiteLine = DrawNode::create();
     //mDictionary->retain();
 	mDispatcher = mDirector->getEventDispatcher();
 	mWinHeight = mDirector->getWinSize().height;
@@ -150,6 +155,9 @@ bool GameScene::init()
 
 	//tiledMapLayer
 	mTiledMapLayer = TiledMapLayer::create();
+	mTiledMapLayer->addChild(ball, 10);
+	mTiledMapLayer->addChild(explosives, 10);
+	mTiledMapLayer->addChild(whiteLine, 10);
 	//init MapSize
 	mMapSize = mTiledMapLayer->getMapSize();
 	addChild(mTiledMapLayer,1);
@@ -835,6 +843,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 }
 
 //--attackUnit
+//from->tF
 void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & attackedUnitPosition, const int & tF)
 {
 	auto typeFrom = mGameState[tF].unitMap[from].type;
@@ -842,25 +851,25 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	int rightDis = attackedUnitPosition.x - from.x;
 	bool right = rightDis > 0;
 	int upDis = attackedUnitPosition.y - from.y;
-	bool up = upDis > 0;
-	int hDis = right ? rightDis : -rightDis;
-	int vDis = up ? upDis : -upDis;
+	bool up = upDis < 0;
+	int hDis = abs(rightDis);
+	int vDis = abs(upDis);
 	//change direction
-	if ( right && (hDis > vDis) )
+	if ( right && (hDis >= vDis) )
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].side);
 		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
 	}
-	else if ( (!right) && (hDis > vDis) ) 
+	else if ( (!right) && (hDis >= vDis) ) 
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].side);
 		mGameState[tF].unitMap[from].sprite->setFlippedX(true);
 	}
-	else if ( up && (hDis < vDis))
+	else if ( up && (hDis <= vDis))
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].back);
 	}
-	else if ( (!up) && (hDis < vDis))
+	else if ( (!up) && (hDis <= vDis))
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].front);
 	}
@@ -874,44 +883,207 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 			return;
 		}
 	}
-	//action
+	//animate
+	bool oeBak = mOperateEnable;
+	mOperateEnable = false;
 
-	bool attackedBase = false;
-	auto baseNearing = getNearPoint(mBasePosition[1 - tF]);
-	for (const auto & i : baseNearing)
+	Vec2 fromP0 = Vec2(mTiledMapLayer->floatNodeCoorForPosition(from).x,mTiledMapLayer->floatNodeCoorForPosition(from).y);
+	Vec2 toP = mTiledMapLayer->floatNodeCoorForPosition(attackedUnitPosition);
+	//ball->setOpacity(0);
+	ball->setPosition(fromP0);
+	explosives->setPosition(toP);
+	
+	//Actions
+	//moveball and blink
+	auto moveBall = MoveTo::create(0.3,mTiledMapLayer->floatNodeCoorForPosition(attackedUnitPosition));
+	
+	//explore
+	auto Explode = Sequence::create(
+		Spawn::create(
+			FadeOut::create(0.5),
+			ScaleTo::create(0.5, 2.5),
+			NULL
+		),
+		NULL
+	);
+	Explode->retain();
+	//move
+	float moveDisX = mTiledMapLayer->getTileSize().width;
+	CCLOG("moveDisX: %f", moveDisX);
+	float moveDisY = mTiledMapLayer->getTileSize().height;
+	CCLOG("moveDisY: %f", moveDisY);
+	auto attackUp = Sequence::create(
+		MoveBy::create(0.3, Vec2(0,-moveDisY)),
+		MoveBy::create(0.1, Vec2(0,1.5 * moveDisY)),
+		MoveBy::create(0.1, Vec2(0,- 0.5 * moveDisY)),
+		NULL
+	);
+	auto attackDown = Sequence::create(
+		MoveBy::create(0.3, Vec2(0,moveDisY)),
+		MoveBy::create(0.1, Vec2(0,-1.5*moveDisY)),
+		MoveBy::create(0.1, Vec2(0,0.5*moveDisY)),
+		NULL
+	);
+	auto attackLeft = Sequence::create(
+		MoveBy::create(0.3, Vec2(moveDisX,0)),
+		MoveBy::create(0.1, Vec2(-1.5*moveDisX,0)),
+		MoveBy::create(0.1, Vec2(0.5*moveDisX,0)),
+		NULL
+	);
+	auto attackRight = Sequence::create(
+		MoveBy::create(0.3, Vec2(-moveDisX,0)),
+		MoveBy::create(0.1, Vec2(1.5*moveDisX,0)),
+		MoveBy::create(0.1, Vec2(-0.5*moveDisX,0)),
+		NULL
+	);
+	//callFuncs
+	//callthis after
+	auto afterFunc = CallFunc::create([this, tF,from,typeFrom,attackedUnitPosition]()->void
 	{
-		if (attackedUnitPosition == i)
+		CCLOG("after Func called");
+		bool attackedBase = false;
+		auto baseNearing = getNearPoint(mBasePosition[1 - tF]);
+		for (const auto & i : baseNearing)
+		{
+			if (attackedUnitPosition == i)
+			{
+				attackedBase = true;
+			}
+		}
+		//base
+		if (attackedUnitPosition == mBasePosition[1 - tF])
 		{
 			attackedBase = true;
 		}
-	}
-	//base
-	if (attackedUnitPosition == mBasePosition[1 - tF])
-	{
-		attackedBase = true;
-	}
-	if (attackedBase)
-	{
-		auto & HP = mResourceMap[mBasePosition[1 - tF]].property.numHitPoint;
-		HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[mBasePosition[1 - tF]].property.numDefence);
-		//die?
-		if (HP <= 0)
+		if (attackedBase)
 		{
-			die(mBasePosition[1 - tF], 1 - tF);
+			auto & HP = mResourceMap[mBasePosition[1 - tF]].property.numHitPoint;
+			HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[mBasePosition[1 - tF]].property.numDefence);
+			//die?
+			if (HP <= 0)
+			{
+				die(mBasePosition[1 - tF], 1 - tF);
+			}
 		}
-	}
-	else
-	{
-		auto typeTo = mGameState[1 - tF].unitMap[attackedUnitPosition].type;
-		//unit
-		auto & HP = mGameState[1 - tF].unitMap[attackedUnitPosition].property.numHitPoint;
-		CCLOG("unit a unit: HP: %d", HP);
-		HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mGameState[1 - tF].unitMap[attackedUnitPosition].property.numDefence -mGameState[1-tF].extraProperty[typeTo].numDefence);
-		CCLOG("aftar a, HP: %d", HP);
-		if (HP <= 0)
+		else
 		{
-			die(attackedUnitPosition, 1 - tF);
+			auto typeTo = mGameState[1 - tF].unitMap[attackedUnitPosition].type;
+			//unit
+			auto & HP = mGameState[1 - tF].unitMap[attackedUnitPosition].property.numHitPoint;
+			CCLOG("unit a unit: HP: %d", HP);
+			HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mGameState[1 - tF].unitMap[attackedUnitPosition].property.numDefence - mGameState[1 - tF].extraProperty[typeTo].numDefence);
+			CCLOG("aftar a, HP: %d", HP);
+			if (HP <= 0)
+			{
+				die(attackedUnitPosition, 1 - tF);
+			}
 		}
+	});
+	afterFunc->retain();
+	auto unlockOE = CallFunc::create(
+		[this, oeBak]()->void{
+			CCLOG("unlockOE called");
+			mOperateEnable = oeBak;
+		}
+	);
+	unlockOE->retain();
+	
+	
+	auto runExplode = CallFunc::create(
+		[this,Explode,afterFunc,unlockOE]()->void
+		{
+			CCLOG("runing explode!");
+			explosives->setOpacity(255);
+			explosives->setScale(0.1);
+			explosives->runAction(
+			Sequence::create(
+				Explode,
+				afterFunc,
+				unlockOE,
+				NULL)
+			);
+		}
+	);
+	//switch
+	if (typeFrom == shortrangeunit2 || typeFrom == longrangeunit1 || typeFrom == longrangeunit2)
+	{
+		if (typeFrom == shortrangeunit2)
+		{
+			ball->setTexture(mAttackTexture.SR2T);
+			explosives->setTexture(mAttackTexture.SR2E);
+		}
+		else if (typeFrom == longrangeunit1)
+		{
+			ball->setTexture(mAttackTexture.LR1T);
+			explosives->setTexture(mAttackTexture.LR1E);
+		}
+		else if (typeFrom == longrangeunit2)
+		{
+			ball->setTexture(mAttackTexture.LR2T);
+			explosives->setTexture(mAttackTexture.LR2E);
+		}
+		ball->setOpacity(255);
+		ball->runAction(
+			Sequence::create(
+				moveBall,
+				CallFunc::create([this]()->void{ball->setOpacity(0); }),
+				runExplode,
+				NULL
+			)
+		);
+	}
+	else if (typeFrom == shortrangeunit1 || typeFrom == farmer)
+	{
+		Vector<FiniteTimeAction*> hitAnimation;
+		//sr1, move
+		if (right && (hDis > vDis))
+		{
+			//right
+			hitAnimation.pushBack(attackRight);
+		}
+		else if ((!right) && (hDis > vDis))
+		{
+			hitAnimation.pushBack(attackLeft);
+		}
+		else if (up && (hDis < vDis))
+		{
+			hitAnimation.pushBack(attackUp);
+		}
+		else if ((!up) && (hDis < vDis))
+		{
+			hitAnimation.pushBack(attackDown);
+		}
+		hitAnimation.pushBack(afterFunc);
+		hitAnimation.pushBack(unlockOE);
+		mGameState[tF].unitMap[from].sprite->runAction(
+			Sequence::create(hitAnimation)
+		);
+	}
+	else if (typeFrom == longrangeunit3)
+	{
+		//whiteLine->clear();
+		Vec2 fromP = Vec2(fromP0.x + 64 * (toP.x - fromP0.x) / abs(toP.x - fromP0.x + 0.1), fromP0.y + 64 * (toP.y - fromP0.y) / abs(toP.y - fromP0.y + 0.1));
+		float drawCount = 100;
+		float drawDeltaX = (toP.x - fromP.x) / drawCount;
+		float drawDeltaY = (toP.y - fromP.y) / drawCount;
+		float x = fromP.x;
+		float y = fromP.y;
+		while (abs(x - toP.x) > 1)
+		{
+			whiteLine->drawSolidCircle(Vec2(x, y), 10, 10, 10, Color4F(1, 1, 1, 1));
+			x += drawDeltaX;
+			y += drawDeltaY;
+		}
+		explosives->setTexture(mAttackTexture.LR3E);
+		CCLOG("before action!");
+		whiteLine->runAction(
+			Sequence::create(
+				DelayTime::create(0.3),
+				CallFunc::create([this]()->void{whiteLine->clear(); }),
+				runExplode,
+				NULL
+			)
+		);
 	}
 }
 //need to be tested
@@ -997,6 +1169,16 @@ bool GameScene::spawnOccupied(int turnFlag)
 
 void GameScene::backToMainScene(Ref * sender)
 {
+	/*
+	if (mGameMode == server)
+	{
+		mNet.endServer();
+	}
+	else if (mGameMode == client)
+	{
+		mNet.deleteConnect();
+	}
+	*/
 	mDirector->popScene();
 	//mDirector->popToRootScene();
 }
@@ -2999,9 +3181,9 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 					CCLOG("read send back!");
 				}
 				//attack
+				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				attackUnit(mOriginalPoint, nowPoint, tF);
 				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
-				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				mUnitActionFSM[tF] = 0;
 				return;
 			}
@@ -3083,9 +3265,9 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 					CCLOG("read send back!");
 				}
 				//attack
+				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				attackUnit(mOriginalPoint, nowPoint, tF);
 				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
-				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				mUnitActionFSM[tF] = 0;
 				return;
 			}
