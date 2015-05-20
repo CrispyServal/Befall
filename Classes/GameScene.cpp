@@ -605,17 +605,18 @@ void GameScene::switchTurn()
 			tF = 1;
 		}
 		CCLOG("in switch Turn tF = %d", tF);
-		refreshTechTreeLayer(tF);
-		refreshUnitCamp(tF);
-		refreshResource(tF);
-		refreshResourcesIcons(tF);
-		refreshMakingButton(tF);
-		refreshUnitState(tF);
+		
 		//timer
 		if (mOperateEnable)
 		{
+			refreshResource(tF);
+			refreshResourcesIcons(tF);
+			refreshMakingButton(tF);
+			refreshUnitState(tF);
 			checkTechFactory(tF);
 			checkUnitFactory(tF);
+			refreshTechTreeLayer(tF);
+			refreshUnitCamp(tF);
 			CCLOG("OE true");
 			mTimer->start();
 			mTimer->setTimerColor(tF);
