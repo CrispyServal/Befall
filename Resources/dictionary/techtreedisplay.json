@@ -533,7 +533,7 @@
 {
 "numFixedResource" : 40,
 "numRandomResource" : 20,
-"absResearchLevel" : 40
+"absResearchLevel" : 60
 }
 },
 {
@@ -557,7 +557,7 @@
 {
 "numFixedResource" : 80,
 "numRandomResource" : 40,
-"absResearchLevel" : 80
+"absResearchLevel" : 160
 }
 },
 {

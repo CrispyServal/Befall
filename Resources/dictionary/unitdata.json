@@ -7,7 +7,7 @@
 			"introduction" : "己方大本营，摧毁对方基地为胜利标志",
 			"attributes" :
 			{
-				"numHitPoint" : 2500,
+				"numHitPoint" : 1500,
 				"numDefence" : 10,
 				"numAttack" : 0,
 				"numAttackRange" : 0,
@@ -27,9 +27,9 @@
 			"introduction" :  "用于资源的收集，可在聚能研究所中研究相应的科技以提高资源采集效率",
 			"attributes" :
 			{
-				"numHitPoint" : 30,
+				"numHitPoint" : 20,
 				"numDefence" : 5,
-				"numAttack" : 5,
+				"numAttack" : 10,
 				"numAttackRange" : 1,
 				"numMoveRange" : 4,
 				"numPopulation" : 1
@@ -48,7 +48,7 @@
 			"attributes" :
 			{
 				"numHitPoint" : 50,
-				"numDefence" : 10,
+				"numDefence" : 20,
 				"numAttack" : 20,
 				"numAttackRange" : 1,
 				"numMoveRange" : 5,
@@ -68,7 +68,7 @@
 			"attributes" :
 			{
 				"numHitPoint" : 80,
-				"numDefence" : 15,
+				"numDefence" : 25,
 				"numAttack" : 30,
 				"numAttackRange" : 1,
 				"numMoveRange" : 5,
@@ -89,7 +89,7 @@
 			{
 				"numHitPoint" : 30,
 				"numDefence" : 5,
-				"numAttack" : 25,
+				"numAttack" : 30,
 				"numAttackRange" : 4,
 				"numMoveRange" : 4,
 				"numPopulation" : 8
@@ -107,9 +107,9 @@
 			"introduction" :  "利用引力波发动远程打击，灵活的运动性，能在战场上发挥不小的优势",
 			"attributes" :
 			{
-				"numHitPoint" : 30,
+				"numHitPoint" : 50,
 				"numDefence" : 5,
-				"numAttack" : 35,
+				"numAttack" : 40,
 				"numAttackRange" : 5,
 				"numMoveRange" : 4,
 				"numPopulation" : 16
@@ -129,7 +129,7 @@
 			{
 				"numHitPoint" : 120,
 				"numDefence" : 20,
-				"numAttack" : 20,
+				"numAttack" : 40,
 				"numAttackRange" : 5,
 				"numMoveRange" : 4,
 				"numPopulation" : 20
