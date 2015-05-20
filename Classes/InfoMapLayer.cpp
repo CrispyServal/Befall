@@ -91,6 +91,7 @@ void InfoMapLayer::displayUnitInfo(string unitName, int hpNow, int hpAll)
 	mTechNameLabel->setVisible(false); 
 	mTechIntroLabel->setVisible(false);
 	mTechTurnLeft->setVisible(false);
+	mUnitInfoLabel->setVisible(false);
 	// pic
 	//CCTexture2D* texture = CCTextureCache::sharedTextureCache()->addImage(fileName);
 	//mUnitSprite->setTexture(texture);
