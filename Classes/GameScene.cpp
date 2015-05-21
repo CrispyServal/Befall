@@ -1211,9 +1211,9 @@ void GameScene::win(const int & tF)
 		}
 		else
 		{
-			mFailImage[tF]->setOpacity(0);
-			mFailImage[tF]->setVisible(true);
-			mFailImage[tF]->runAction(show);
+			mFailImage[1 - tF]->setOpacity(0);
+			mFailImage[1 - tF]->setVisible(true);
+			mFailImage[1 - tF]->runAction(show);
 		}
 	}
 	scheduleOnce(schedule_selector(GameScene::delayAndQuit), 3);
