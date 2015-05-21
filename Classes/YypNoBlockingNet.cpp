@@ -259,6 +259,7 @@ bool YypNoBlockingNet::startConnect(char *IP, int pot)
 	serAddr.sin_addr.S_un.S_addr = inet_addr(IP);
 	return true;
 }
+
 bool YypNoBlockingNet::makeConnect()
 {
 	if (connect(sclient, (sockaddr *)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
@@ -267,6 +268,7 @@ bool YypNoBlockingNet::makeConnect()
 	}
 	return true;
 }
+
 bool YypNoBlockingNet::deleteConnect()
 {
 	if (!closesocket(sclient) && !WSACleanup())

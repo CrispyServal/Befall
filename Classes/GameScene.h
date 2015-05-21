@@ -426,6 +426,11 @@ private:
 	Sprite * ball;
 	Sprite * explosives;
 	DrawNode * whiteLine;
+	Sprite * mWinImage[2];
+	Sprite * mFailImage[2];
+	bool mWinFlag;
+	void win(const int & tF);
+	void delayAndQuit(float delta);
 };
 
 #endif // !GAMESCENE_H

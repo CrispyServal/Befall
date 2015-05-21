@@ -303,6 +303,24 @@ bool GameScene::init()
 		mUnitCampLayerButton->getPosition().y);
 	mUnitMakingButton->setVisible(false);
 	addChild(mUnitMakingButton, 8);
+	//win and fail image
+	mWinImage[0] = Sprite::createWithTexture(mDirector->getTextureCache()->addImage("uiComponent/victory_blue.jpg"));
+	mWinImage[1] = Sprite::createWithTexture(mDirector->getTextureCache()->addImage("uiComponent/victory_red.jpg"));
+	mFailImage[0] = Sprite::createWithTexture(mDirector->getTextureCache()->addImage("uiComponent/fail_blue.jpg"));
+	mFailImage[1] = Sprite::createWithTexture(mDirector->getTextureCache()->addImage("uiComponent/fail_red.jpg"));
+	mWinImage[0]->setPosition(mWinWidth / 2, mWinHeight / 2);
+	mWinImage[1]->setPosition(mWinWidth / 2, mWinHeight / 2);
+	mFailImage[0]->setPosition(mWinWidth / 2, mWinHeight / 2);
+	mFailImage[1]->setPosition(mWinWidth / 2, mWinHeight / 2);
+	mWinImage[0]->setVisible(false);
+	mWinImage[1]->setVisible(false);
+	mFailImage[0]->setVisible(false);
+	mFailImage[1]->setVisible(false);
+	addChild(mWinImage[0], 12);
+	addChild(mWinImage[1], 12);
+	addChild(mFailImage[0], 12);
+	addChild(mFailImage[1], 12);
+	mWinFlag = false;
 	
 	if (mGameMode == vsPlayer)
 	{
@@ -425,6 +443,7 @@ void GameScene::netUpdate(float delta)
 			while (!mNet.sendYouWin());
 			CCLOG("sended back");
 			CCLOG("i win");
+			win(tF);
 		}
 	}
 	else
@@ -1119,7 +1138,7 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 		);
 	}
 }
-//need to be tested
+
 void GameScene::die(const MyPointStruct & point, const int & tF)
 {
 	CCLOG("die point: %d,%d", point.x, point.y);
@@ -1127,6 +1146,7 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	if (point == mBasePosition[tF])
 	{
 		//win(tF);
+		win(1 - tF);
 		return;
 	}
 	//unit
@@ -1166,6 +1186,43 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	}
 }
 
+void GameScene::win(const int & tF)
+{
+	auto show = Sequence::create(
+		FadeIn::create(0.5),
+		NULL
+		);
+	mWinFlag = true;
+	mOperateEnable = false;
+	if (mGameMode == vsPlayer)
+	{
+		mWinImage[tF]->setOpacity(0);
+		mWinImage[tF]->setVisible(true);
+		mWinImage[tF]->runAction(show);
+	}
+	else if (mGameMode == client || mGameMode == server)
+	{
+		int tFN = mGameMode == server ? 0 : 1;
+		if (tF == tFN)
+		{
+			mWinImage[tF]->setOpacity(0);
+			mWinImage[tF]->setVisible(true);
+			mWinImage[tF]->runAction(show);
+		}
+		else
+		{
+			mFailImage[tF]->setOpacity(0);
+			mFailImage[tF]->setVisible(true);
+			mFailImage[tF]->runAction(show);
+		}
+	}
+	scheduleOnce(schedule_selector(GameScene::delayAndQuit), 3);
+}
+
+void GameScene::delayAndQuit(float delta)
+{
+	backToMainScene(NULL);
+}
 void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 {
 	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] );
@@ -1311,6 +1368,11 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 	const int offset = 5;
 	if ((abs(mMouseCoordinate.x - mMouseCoordinateTouch.x) <= offset) && (abs(mMouseCoordinate.y - mMouseCoordinateTouch.y) <= offset))
 	{
+		//win
+		if (mWinFlag)
+		{
+			backToMainScene(NULL);
+		}
 		checkTechAndUnitButton();
 		checkMakingButtonOnTouchEnded();
 		do
@@ -2922,9 +2984,16 @@ void GameScene::initGameMenu()
 			}
 			while (!mNet.read()){}
 			CCLOG("read send back!");
+			int tF = mGameMode == server ? 0 : 1;
+			win(1 - tF);
 		}
-		//lose
-		CCLOG("i lose!");
+		else if (mGameMode == vsPlayer)
+		{
+			//lose
+			CCLOG("i lose!");
+			int tF = mBlueTurn ? 0 : 1;
+			win(1 - tF);
+		}
 	});
 	auto GGItem = MenuItemLabel::create(GGLabel, [&](Ref * sender)->void{
 		mDirector->popScene();
