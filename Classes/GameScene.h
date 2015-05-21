@@ -363,6 +363,7 @@ private:
 	//if false, cannot do any thing about data
 	bool mOperateEnable;
 	//method
+	std::vector<MyPointStruct> spawnPoint;
 	//初始静态数据在这里面。此函数初始化双方的GameState。可能会读字典。
 	void initGameState();
 	std::vector<MyPointStruct> getNearPoint(const MyPointStruct & point);
@@ -370,6 +371,7 @@ private:
 	std::vector<MyPointStruct> getPath(const std::vector<PathNodeStruct> & pathTree, MyPointStruct pointTo);
 	//spawn unit
 	void spawnUnit(UnitEnum unit, int turnFlag);
+	void spawnUnit(UnitEnum unit, int turnFlag, const MyPointStruct & pos);
 	//unit moving
 	void moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool showAttachRange = false);
 	//tF是攻击来源的所有方
@@ -422,6 +424,15 @@ private:
 
 	//
 	int whosUnit(MyPointStruct unitPoint);
+	//animation items
+	Sprite * ball;
+	Sprite * explosives;
+	DrawNode * whiteLine;
+	Sprite * mWinImage[2];
+	Sprite * mFailImage[2];
+	bool mWinFlag;
+	void win(const int & tF);
+	void delayAndQuit(float delta);
 };
 
 #endif // !GAMESCENE_H

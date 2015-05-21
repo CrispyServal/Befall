@@ -340,7 +340,7 @@
 {
 "type" : "numFixedResource",
 "target" : "",
-"value" : 40
+"value" : 20
 },
 "consumption" :
 {
@@ -434,7 +434,7 @@
 {
 "type" : "numHitPoint",
 "target" : "longRange",
-"value" : 10
+"value" : 20
 },
 "consumption" :
 {
@@ -457,7 +457,7 @@
 {
 "type" : "numHitPoint",
 "target" : "longRange",
-"value" : 20
+"value" : 30
 },
 "consumption" :
 {
@@ -533,7 +533,7 @@
 {
 "numFixedResource" : 40,
 "numRandomResource" : 20,
-"absResearchLevel" : 40
+"absResearchLevel" : 60
 }
 },
 {
@@ -557,7 +557,7 @@
 {
 "numFixedResource" : 80,
 "numRandomResource" : 40,
-"absResearchLevel" : 80
+"absResearchLevel" : 160
 }
 },
 {

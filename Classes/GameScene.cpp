@@ -133,6 +133,11 @@ bool GameScene::init()
 		false
 	};
 	initAttackTexture();
+	ball = Sprite::createWithTexture(mAttackTexture.LR2T);
+	ball->setOpacity(0);
+	explosives = Sprite::createWithTexture(mAttackTexture.LR2E);
+	explosives->setOpacity(0);
+	whiteLine = DrawNode::create();
     //mDictionary->retain();
 	mDispatcher = mDirector->getEventDispatcher();
 	mWinHeight = mDirector->getWinSize().height;
@@ -150,6 +155,9 @@ bool GameScene::init()
 
 	//tiledMapLayer
 	mTiledMapLayer = TiledMapLayer::create();
+	mTiledMapLayer->addChild(ball, 10);
+	mTiledMapLayer->addChild(explosives, 10);
+	mTiledMapLayer->addChild(whiteLine, 10);
 	//init MapSize
 	mMapSize = mTiledMapLayer->getMapSize();
 	addChild(mTiledMapLayer,1);
@@ -295,6 +303,24 @@ bool GameScene::init()
 		mUnitCampLayerButton->getPosition().y);
 	mUnitMakingButton->setVisible(false);
 	addChild(mUnitMakingButton, 8);
+	//win and fail image
+	mWinImage[0] = Sprite::createWithTexture(mDirector->getTextureCache()->addImage("uiComponent/victory_blue.jpg"));
+	mWinImage[1] = Sprite::createWithTexture(mDirector->getTextureCache()->addImage("uiComponent/victory_red.jpg"));
+	mFailImage[0] = Sprite::createWithTexture(mDirector->getTextureCache()->addImage("uiComponent/fail_blue.jpg"));
+	mFailImage[1] = Sprite::createWithTexture(mDirector->getTextureCache()->addImage("uiComponent/fail_red.jpg"));
+	mWinImage[0]->setPosition(mWinWidth / 2, mWinHeight / 2);
+	mWinImage[1]->setPosition(mWinWidth / 2, mWinHeight / 2);
+	mFailImage[0]->setPosition(mWinWidth / 2, mWinHeight / 2);
+	mFailImage[1]->setPosition(mWinWidth / 2, mWinHeight / 2);
+	mWinImage[0]->setVisible(false);
+	mWinImage[1]->setVisible(false);
+	mFailImage[0]->setVisible(false);
+	mFailImage[1]->setVisible(false);
+	addChild(mWinImage[0], 12);
+	addChild(mWinImage[1], 12);
+	addChild(mFailImage[0], 12);
+	addChild(mFailImage[1], 12);
+	mWinFlag = false;
 	
 	if (mGameMode == vsPlayer)
 	{
@@ -375,62 +401,49 @@ void GameScene::startConnecting(float delta)
 
 void GameScene::netUpdate(float delta)
 {
-	static int count = 0;
 	//CCLOG("net update");
 	//test
-	while (mNet.sendOnePoint({count,count}));
-	++count;
-	if (count == 100)
-	{
-		system("pause");
-	}
-	//
-
 	int tF = mGameMode == server ? 0 : 1;
 	if (mNet.read())
 	{
 		CCLOG("read!");
-		if (!mNet.isLocked())
+		//read something
+		auto which = mNet.getWhich();
+		CCLOG("which : %d", which);
+		if (which == newTech)
 		{
-			//read something
-			whichEnum which = mNet.getWhich();
-			if (which == onePoint)
-			{
-				CCLOG("readed count = %d", mNet.getOnePoint().x);
-			}
-			/*
-			if (which == newTech)
-			{
-				CCLOG("new tech");
-				while (mNet.sendTech(mNet.getTech()));
-				unlockTechTree(1 - tF, mNet.getTech());
-			}
-			else if (which == newSoldier)
-			{
-				CCLOG("new unit");
-				//place soldier to enemy's spawn
-				while (mNet.sendNewSoldier(mNet.getNewSoldier()));
-				spawnUnit(mNet.getNewSoldier().unit, 1 - tF);
-			}
-			else if (which == twoPoints)
-			{
-				CCLOG("2 p");
-				while (mNet.sendTwoPoint(mNet.getPoints()));
-				readTwoPoint(tF);
-			}
-			else if (which == end)
-			{
-				CCLOG("end");
-				while (mNet.sendEnd());
-				switchTurn();
-			}
-			else if (which == youwin)
-			{
-				while (mNet.sendYouWin());
-				CCLOG("i win");
-			}
-			*/
-			mNet.lockOn();
+			CCLOG("new tech");
+			while (!mNet.sendTech(mNet.getTech()));
+			CCLOG("sended back");
+			unlockTechTree(1 - tF, mNet.getTech());
+		}
+		else if (which == newSoldier)
+		{
+			CCLOG("new unit");
+			//place soldier to enemy's spawn
+			while (!mNet.sendNewSoldier(mNet.getNewSoldier()));
+			CCLOG("sended back");
+			spawnUnit(mNet.getNewSoldier().unit, 1 - tF);
+		}
+		else if (which == twoPoints)
+		{
+			CCLOG("2 p");
+			while (!mNet.sendTwoPoint(mNet.getPoints()));
+			CCLOG("sended back");
+			readTwoPoint(tF);
+		}
+		else if (which == end)
+		{
+			CCLOG("end");
+			//while (mNet.sendEnd());
+			switchTurn();
+		}
+		else if (which == youwin)
+		{
+			while (!mNet.sendYouWin());
+			CCLOG("sended back");
+			CCLOG("i win");
+			win(tF);
 		}
 	}
 	else
@@ -455,8 +468,9 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack my unit
+			CCLOG("read 2 p: attack my unit");
 			attack = true;
-			return;
+			break;
 		}
 	}
 	//
@@ -465,13 +479,14 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack resource
+			CCLOG("read 2 p: attack resources or base");
 			attack = true;
-			return;
+			break;
 		}
 	}
 	if (attack)
 	{
-		attackUnit(twoPoint.first, twoPoint.first, 1 - tF);
+		attackUnit(twoPoint.first, twoPoint.second, 1 - tF);
 	}
 	else
 	{
@@ -499,6 +514,12 @@ void GameScene::readTwoPoint(const int & tF)
 		auto unit = mGameState[1 - tF].unitMap[twoPoint.first];
 		auto pathTree = getPathTree(twoPoint.first, unit.property.numRangeMove, barrier);
 		auto path = getPath(pathTree, twoPoint.second);
+		//debug
+		CCLOG("path:  ");
+		for (const auto & pN : path)
+		{
+			CCLOG("node: %d,%d", pN.x, pN.y);
+		}
 		moveUnit(path, 1 - tF);
 	}
 }
@@ -563,6 +584,8 @@ void GameScene::switchTurn()
 	//end turn
 	mBlueTurn = !mBlueTurn;
 	CCLOG("now turn: %d", mBlueTurn);
+	mUnitCampLayer->setVisible(false);
+	mTechTreeLayer->setVisible(false);
 	//refresh NumTurn
 	if (mBlueTurn)
 	{
@@ -576,9 +599,8 @@ void GameScene::switchTurn()
 	//start turn
 	if (mGameMode == vsPlayer)
 	{
+		mOperateEnable = true;
 		mUpdateTimerLock = false;
-		mUnitCampLayer->setVisible(false);
-		mTechTreeLayer->setVisible(false);
 		int tF = mBlueTurn ? 0 : 1;
 		//CCLOG("vsPlayer,tF: %d", tF);
 		checkTechFactory(tF);
@@ -609,18 +631,27 @@ void GameScene::switchTurn()
 			tF = 1;
 		}
 		CCLOG("in switch Turn tF = %d", tF);
-		checkTechFactory(tF);
-		checkUnitFactory(tF);
-		refreshTechTreeLayer(tF);
-		refreshUnitCamp(tF);
-		refreshResource(tF);
-		refreshResourcesIcons(tF);
-		refreshMakingButton(tF);
-		refreshUnitState(tF);
+		if (mBlueTurn)
+		{
+			refreshResource(0);
+		}
+		else
+		{
+			refreshResource(1);
+		}
+		
 		//timer
 		if (mOperateEnable)
 		{
 			CCLOG("OE true");
+			refreshResourcesIcons(tF);
+			refreshMakingButton(tF);
+			refreshUnitState(tF);
+			refreshMiniMap();
+			checkTechFactory(tF);
+			checkUnitFactory(tF);
+			refreshTechTreeLayer(tF);
+			refreshUnitCamp(tF);
 			mTimer->start();
 			mTimer->setTimerColor(tF);
 			mUpdateTimerLock = false;
@@ -679,6 +710,8 @@ void GameScene::checkTechFactory(int turnFlag)
 					//mDirector->popScene();
 				}
 			}
+			while (!mNet.read()){}
+			CCLOG("read send back!");
 		}
 	}
 }
@@ -715,6 +748,8 @@ void GameScene::checkUnitFactory(int turnFlag)
 					//mDirector->popScene();
 				}
 			}
+			while (!mNet.read()){}
+			CCLOG("read send back!");
 		}
 	}
 }
@@ -724,6 +759,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	if (path.size() < 2)
 	{
 		CCLOG("invalid path");
+		system("pause");
 		return;
 	}
 	bool oeBak = mOperateEnable;
@@ -843,6 +879,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 }
 
 //--attackUnit
+//from->tF
 void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & attackedUnitPosition, const int & tF)
 {
 	auto typeFrom = mGameState[tF].unitMap[from].type;
@@ -850,27 +887,29 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	int rightDis = attackedUnitPosition.x - from.x;
 	bool right = rightDis > 0;
 	int upDis = attackedUnitPosition.y - from.y;
-	bool up = upDis > 0;
-	int hDis = right ? rightDis : -rightDis;
-	int vDis = up ? upDis : -upDis;
+	bool up = upDis < 0;
+	int hDis = abs(rightDis);
+	int vDis = abs(upDis);
 	//change direction
-	if ( right && (hDis > vDis) )
+	if ( right && (hDis >= vDis) )
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].side);
 		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
 	}
-	else if ( (!right) && (hDis > vDis) ) 
+	else if ( (!right) && (hDis >= vDis) ) 
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].side);
 		mGameState[tF].unitMap[from].sprite->setFlippedX(true);
 	}
-	else if ( up && (hDis < vDis))
+	else if ( up && (hDis <= vDis))
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].back);
+		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
 	}
-	else if ( (!up) && (hDis < vDis))
+	else if ( (!up) && (hDis <= vDis))
 	{
-		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].back);
+		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].front);
+		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
 	}
 	//check attackedUnitPosition type
 	for (auto & reP : mResourceMap)
@@ -882,47 +921,239 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 			return;
 		}
 	}
-	//action
+	//animate
+	bool oeBak = mOperateEnable;
+	mOperateEnable = false;
 
-	bool attackedBase = false;
-	auto baseNearing = getNearPoint(mBasePosition[1 - tF]);
-	for (const auto & i : baseNearing)
+	Vec2 fromP0 = Vec2(mTiledMapLayer->floatNodeCoorForPosition(from).x,mTiledMapLayer->floatNodeCoorForPosition(from).y);
+	Vec2 toP = mTiledMapLayer->floatNodeCoorForPosition(attackedUnitPosition);
+	//ball->setOpacity(0);
+	ball->setPosition(fromP0);
+	explosives->setPosition(toP);
+	
+	//Actions
+	//moveball and blink
+	auto moveBall = MoveTo::create(0.3,mTiledMapLayer->floatNodeCoorForPosition(attackedUnitPosition));
+	
+	//explore
+	auto Explode = Sequence::create(
+		Spawn::create(
+		Sequence::create(
+			DelayTime::create(0.2),
+			FadeOut::create(0.3),
+			NULL
+		),
+			ScaleTo::create(0.5, 2.5),
+			NULL
+		),
+		NULL
+	);
+	Explode->retain();
+	//move
+	float moveDisX = mTiledMapLayer->getTileSize().width;
+	CCLOG("moveDisX: %f", moveDisX);
+	float moveDisY = mTiledMapLayer->getTileSize().height;
+	CCLOG("moveDisY: %f", moveDisY);
+	auto attackUp = Sequence::create(
+		MoveBy::create(0.3, Vec2(0,-moveDisY)),
+		MoveBy::create(0.1, Vec2(0,1.5 * moveDisY)),
+		MoveBy::create(0.1, Vec2(0,- 0.5 * moveDisY)),
+		NULL
+	);
+	auto attackDown = Sequence::create(
+		MoveBy::create(0.3, Vec2(0,moveDisY)),
+		MoveBy::create(0.1, Vec2(0,-1.5*moveDisY)),
+		MoveBy::create(0.1, Vec2(0,0.5*moveDisY)),
+		NULL
+	);
+	auto attackLeft = Sequence::create(
+		MoveBy::create(0.3, Vec2(moveDisX,0)),
+		MoveBy::create(0.1, Vec2(-1.5*moveDisX,0)),
+		MoveBy::create(0.1, Vec2(0.5*moveDisX,0)),
+		NULL
+	);
+	auto attackRight = Sequence::create(
+		MoveBy::create(0.3, Vec2(-moveDisX,0)),
+		MoveBy::create(0.1, Vec2(1.5*moveDisX,0)),
+		MoveBy::create(0.1, Vec2(-0.5*moveDisX,0)),
+		NULL
+	);
+	//callFuncs
+	//callthis after
+	auto afterFunc = CallFunc::create([this, tF,from,typeFrom,attackedUnitPosition]()->void
 	{
-		if (attackedUnitPosition == i)
+		CCLOG("after Func called");
+		bool attackedBase = false;
+		auto baseNearing = getNearPoint(mBasePosition[1 - tF]);
+		for (const auto & i : baseNearing)
+		{
+			if (attackedUnitPosition == i)
+			{
+				attackedBase = true;
+			}
+		}
+		//base
+		if (attackedUnitPosition == mBasePosition[1 - tF])
 		{
 			attackedBase = true;
 		}
-	}
-	//base
-	if (attackedUnitPosition == mBasePosition[1 - tF])
-	{
-		attackedBase = true;
-	}
-	if (attackedBase)
-	{
-		auto & HP = mResourceMap[mBasePosition[1 - tF]].property.numHitPoint;
-		HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[mBasePosition[1 - tF]].property.numDefence);
-		//die?
-		if (HP <= 0)
+		if (attackedBase)
 		{
-			die(mBasePosition[1 - tF], 1 - tF);
+			auto & HP = mResourceMap[mBasePosition[1 - tF]].property.numHitPoint;
+			auto deltaHP = abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mResourceMap[mBasePosition[1 - tF]].property.numDefence);
+			if (typeFrom == longrangeunit3)
+			{
+				HP -= 10 * deltaHP;
+			}
+			else
+			{
+				HP -= deltaHP;
+			}
+			//die?
+			if (HP <= 0)
+			{
+				die(mBasePosition[1 - tF], 1 - tF);
+			}
 		}
-	}
-	else
-	{
-		auto typeTo = mGameState[1 - tF].unitMap[attackedUnitPosition].type;
-		//unit
-		auto & HP = mGameState[1 - tF].unitMap[attackedUnitPosition].property.numHitPoint;
-		CCLOG("unit a unit: HP: %d", HP);
-		HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mGameState[1 - tF].unitMap[attackedUnitPosition].property.numDefence -mGameState[1-tF].extraProperty[typeTo].numDefence);
-		CCLOG("aftar a, HP: %d", HP);
-		if (HP <= 0)
+		else
 		{
-			die(attackedUnitPosition, 1 - tF);
+			auto typeTo = mGameState[1 - tF].unitMap[attackedUnitPosition].type;
+			//unit
+			auto & HP = mGameState[1 - tF].unitMap[attackedUnitPosition].property.numHitPoint;
+			CCLOG("unit a unit: HP: %d", HP);
+			auto atk = mGameState[tF].unitMap[from].property.numAttack;
+			auto atkE = mGameState[tF].extraProperty[typeFrom].numAttack;
+			auto def = mGameState[1 - tF].unitMap[attackedUnitPosition].property.numDefence;
+			auto defE = mGameState[1 - tF].extraProperty[typeTo].numDefence;
+			CCLOG("atk = %d + %d;  def = %d + %d", atk, atkE, def, defE);
+			HP -= abs(atk + atkE - def - defE);
+			CCLOG("aftar a, HP: %d", HP);
+			if (HP <= 0)
+			{
+				die(attackedUnitPosition, 1 - tF);
+			}
 		}
+	});
+	afterFunc->retain();
+	auto unlockOE = CallFunc::create(
+		[this, oeBak]()->void{
+			CCLOG("unlockOE called");
+			mOperateEnable = oeBak;
+		}
+	);
+	unlockOE->retain();
+	
+	
+	auto runExplode = CallFunc::create(
+		[this,Explode,afterFunc,unlockOE]()->void
+		{
+			CCLOG("runing explode!");
+			explosives->setOpacity(255);
+			explosives->setScale(0.1);
+			explosives->runAction(
+			Sequence::create(
+				Explode,
+				afterFunc,
+				unlockOE,
+				NULL)
+			);
+		}
+	);
+	//switch
+	if (typeFrom == shortrangeunit2 || typeFrom == longrangeunit1 || typeFrom == longrangeunit2)
+	{
+		if (typeFrom == shortrangeunit2)
+		{
+			ball->setTexture(mAttackTexture.SR2T);
+			explosives->setTexture(mAttackTexture.SR2E);
+		}
+		else if (typeFrom == longrangeunit1)
+		{
+			ball->setTexture(mAttackTexture.LR1T);
+			explosives->setTexture(mAttackTexture.LR1E);
+		}
+		else if (typeFrom == longrangeunit2)
+		{
+			ball->setTexture(mAttackTexture.LR2T);
+			explosives->setTexture(mAttackTexture.LR2E);
+		}
+		ball->setOpacity(255);
+		ball->runAction(
+			Sequence::create(
+				moveBall,
+				CallFunc::create([this]()->void{ball->setOpacity(0); }),
+				runExplode,
+				NULL
+			)
+		);
+	}
+	else if (typeFrom == shortrangeunit1 || typeFrom == farmer)
+	{
+		Vector<FiniteTimeAction*> hitAnimation;
+		//sr1, move
+		if (right && (hDis > vDis))
+		{
+			//right
+			hitAnimation.pushBack(attackRight);
+		}
+		else if ((!right) && (hDis > vDis))
+		{
+			hitAnimation.pushBack(attackLeft);
+		}
+		else if (up && (hDis < vDis))
+		{
+			hitAnimation.pushBack(attackUp);
+		}
+		else if ((!up) && (hDis < vDis))
+		{
+			hitAnimation.pushBack(attackDown);
+		}
+		hitAnimation.pushBack(afterFunc);
+		hitAnimation.pushBack(unlockOE);
+		mGameState[tF].unitMap[from].sprite->runAction(
+			Sequence::create(hitAnimation)
+		);
+	}
+	else if (typeFrom == longrangeunit3)
+	{
+		//whiteLine->clear();
+		Vec2 fromP = Vec2(fromP0.x + 64 * (toP.x - fromP0.x) / abs(toP.x - fromP0.x + 0.1), fromP0.y + 64 * (toP.y - fromP0.y) / abs(toP.y - fromP0.y + 0.1));
+		float drawCount = 200;
+		float drawDeltaX = (toP.x - fromP.x) / drawCount;
+		float drawDeltaY = (toP.y - fromP.y) / drawCount;
+		float x = fromP.x;
+		float y = fromP.y;
+		while (abs(x - toP.x) > 1 || abs(y - toP.y) > 1)
+		{
+			whiteLine->drawSolidCircle(Vec2(x, y), 10, 10, 10, Color4F(1, 1, 1, 1));
+			if ( (int)x % 2 < 1)
+			{
+				whiteLine->drawSolidCircle(Vec2(x + (CCRANDOM_0_1() - 0.5) * 12, y + (CCRANDOM_0_1() - 0.5) * 12), 8, 10, 10, Color4F(1, 1, 1, 0.9));
+			}
+			if ( (int)x % 4 < 2)
+			{
+				whiteLine->drawSolidCircle(Vec2(x + (CCRANDOM_0_1() - 0.5) * 64, y + (CCRANDOM_0_1() - 0.5) * 64), 4, 10, 10, Color4F(1, 1, 1, 0.7));
+			}
+			if ( (int)x % 12 < 2)
+			{
+				whiteLine->drawSolidCircle(Vec2(x + (CCRANDOM_0_1() - 0.5) * 128, y + (CCRANDOM_0_1() - 0.5) * 128), 4, 10, 10, Color4F(1, 1, 1, 0.4));
+			}
+			x += drawDeltaX;
+			y += drawDeltaY;
+		}
+		explosives->setTexture(mAttackTexture.LR3E);
+		CCLOG("before action!");
+		whiteLine->runAction(
+			Sequence::create(
+				DelayTime::create(0.3),
+				CallFunc::create([this]()->void{whiteLine->clear(); }),
+				runExplode,
+				NULL
+			)
+		);
 	}
 }
-//need to be tested
+
 void GameScene::die(const MyPointStruct & point, const int & tF)
 {
 	CCLOG("die point: %d,%d", point.x, point.y);
@@ -930,6 +1161,7 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	if (point == mBasePosition[tF])
 	{
 		//win(tF);
+		win(1 - tF);
 		return;
 	}
 	//unit
@@ -947,7 +1179,16 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	}
 	if (foundU)
 	{
+<<<<<<< HEAD
 		mPopulation[tF] -= mGameState[tF].unitMap[point].property.numPopulation;//yyp mark
+=======
+		mPopulation[tF] -= mGameState[tF].unitMap[point].property.numPopulation;
+		if (mGameMode == server || mGameMode == client)
+		{
+			int tFT = mGameMode == server ? 0 : 1;
+			refreshResourcesIcons(tFT);
+		}
+>>>>>>> 720d3b7a4b172e1d3344a301da9b4cd9fca7fe9f
 		mGameState[tF].unitMap[point].sprite->removeFromParentAndCleanup(true);
 		mGameState[tF].unitMap.erase(point);	
 		return;
@@ -968,15 +1209,54 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 		mResourceMap.erase(point);
 		return;
 	}
+	refreshMiniMap();
+}
+
+void GameScene::win(const int & tF)
+{
+	auto show = Sequence::create(
+		FadeIn::create(0.5),
+		NULL
+		);
+	mWinFlag = true;
+	mOperateEnable = false;
+	if (mGameMode == vsPlayer)
+	{
+		mWinImage[tF]->setOpacity(0);
+		mWinImage[tF]->setVisible(true);
+		mWinImage[tF]->runAction(show);
+	}
+	else if (mGameMode == client || mGameMode == server)
+	{
+		int tFN = mGameMode == server ? 0 : 1;
+		if (tF == tFN)
+		{
+			mWinImage[tF]->setOpacity(0);
+			mWinImage[tF]->setVisible(true);
+			mWinImage[tF]->runAction(show);
+		}
+		else
+		{
+			mFailImage[tF]->setOpacity(0);
+			mFailImage[tF]->setVisible(true);
+			mFailImage[tF]->runAction(show);
+		}
+	}
+	scheduleOnce(schedule_selector(GameScene::delayAndQuit), 3);
+}
+
+void GameScene::delayAndQuit(float delta)
+{
+	backToMainScene(NULL);
 }
 
 void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 {
-	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] );
+	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property);
 	CCLOG("spawning property: {hp:%d,atk:%d,def:%d,movR:%d,atR:%d,po:%d,}", pro.numHitPoint,pro.numAttack,pro.numDefence,pro.numRangeMove,pro.numRangeAttack,pro.numPopulation);
 	Unit newUnit = {
 		unit,
-		UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] ),
+		UnitPropertyStruct(mUnitInitDataMap[unit].property),
 		UnitStateEnum::fresh,
 		[&]()->Sprite*
 		{
@@ -988,6 +1268,26 @@ void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 		};
 	//add to unitMap
 	mGameState[turnFlag].unitMap[mSpawn[turnFlag]] = newUnit;
+}
+
+void GameScene::spawnUnit(UnitEnum unit, int turnFlag, const MyPointStruct & pos)
+{
+	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property);
+	CCLOG("spawning property: {hp:%d,atk:%d,def:%d,movR:%d,atR:%d,po:%d,}", pro.numHitPoint, pro.numAttack, pro.numDefence, pro.numRangeMove, pro.numRangeAttack, pro.numPopulation);
+	Unit newUnit = {
+		unit,
+		UnitPropertyStruct(mUnitInitDataMap[unit].property),
+		UnitStateEnum::fresh,
+		[&]()->Sprite*
+		{
+			auto sprite = Sprite::createWithTexture(mUnitTextureMap[turnFlag][unit].front);
+			sprite->setPosition(mTiledMapLayer->floatNodeCoorForPosition(pos));
+			mTiledMapLayer->addChild(sprite, 2);
+			return sprite;
+		}()
+	};
+	//add to unitMap
+	mGameState[turnFlag].unitMap[pos] = newUnit;
 }
 
 //testing
@@ -1006,6 +1306,16 @@ bool GameScene::spawnOccupied(int turnFlag)
 
 void GameScene::backToMainScene(Ref * sender)
 {
+	/*
+	if (mGameMode == server)
+	{
+		mNet.endServer();
+	}
+	else if (mGameMode == client)
+	{
+		mNet.deleteConnect();
+	}
+	*/
 	mDirector->popScene();
 	//mDirector->popToRootScene();
 }
@@ -1105,6 +1415,11 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 	const int offset = 5;
 	if ((abs(mMouseCoordinate.x - mMouseCoordinateTouch.x) <= offset) && (abs(mMouseCoordinate.y - mMouseCoordinateTouch.y) <= offset))
 	{
+		//win
+		if (mWinFlag)
+		{
+			backToMainScene(NULL);
+		}
 		checkTechAndUnitButton();
 		checkMakingButtonOnTouchEnded();
 		do
@@ -1124,7 +1439,11 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 			{
 				CCLOG("timer contain");
 				//timer contain bug
-				mTimer->shutDown();
+				if (mOperateEnable)
+				{
+					mTimer->shutDown();
+					mOperateEnable = false;
+				}
 				break;
 			}
 			else if (mTimer->blockClick())
@@ -1182,7 +1501,10 @@ void GameScene::unlockTechTree(const int & flag, TechEnum tech)
 	mGameState[flag].techTree.unlock(tech);
 	//CCLOG("ssss: %d", mGameState[flag].techTree.isUnlocked(tech));
 	setTechInfluence(flag,tech);
-	refreshTechTreeLayer(flag);
+	if (mOperateEnable)
+	{
+		refreshTechTreeLayer(flag);
+	}
 }
 
 void GameScene::setTechInfluence(const int & flag, TechEnum tech)
@@ -1221,13 +1543,13 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 				mGameState[flag].extraProperty[longrangeunit2].numAttack += mValue;
 				mGameState[flag].extraProperty[longrangeunit3].numAttack += mValue;
 			}
-			if (mType == "numRangeAttack")
+			if (mType == "numAttackRange")
 			{
 				mGameState[flag].extraProperty[longrangeunit1].numRangeAttack += mValue;
 				mGameState[flag].extraProperty[longrangeunit2].numRangeAttack += mValue;
 				mGameState[flag].extraProperty[longrangeunit3].numRangeAttack += mValue;
 			}
-			if (mType == "numRangeMove")
+			if (mType == "numMoveRange")
 			{
 				mGameState[flag].extraProperty[longrangeunit1].numRangeMove += mValue;
 				mGameState[flag].extraProperty[longrangeunit2].numRangeMove += mValue;
@@ -1257,12 +1579,12 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 				mGameState[flag].extraProperty[shortrangeunit1].numAttack += mValue;
 				mGameState[flag].extraProperty[shortrangeunit2].numAttack += mValue;
 			}
-			if (mType == "numRangeAttack")
+			if (mType == "numAttackRange")
 			{
 				mGameState[flag].extraProperty[shortrangeunit1].numRangeAttack += mValue;
 				mGameState[flag].extraProperty[shortrangeunit2].numRangeAttack += mValue;
 			}
-			if (mType == "numRangeMove")
+			if (mType == "numMoveRange")
 			{
 				mGameState[flag].extraProperty[shortrangeunit1].numRangeMove += mValue;
 				mGameState[flag].extraProperty[shortrangeunit2].numRangeMove += mValue;
@@ -1491,12 +1813,19 @@ void GameScene::startGame()
 		mUpdateTimerLock = true;
 	}
 	//init farmer
+	//spawnUnit(farmer, 0);
 	spawnUnit(farmer, 0);
 	spawnUnit(farmer, 1);
+	spawnUnit(farmer, 1, MyPointStruct{	19,	2 });
+	spawnUnit(farmer, 1, MyPointStruct{ 17, 2 });
+	spawnUnit(farmer, 1, MyPointStruct{ 19, 4 });
+	spawnUnit(farmer, 0, MyPointStruct{ 2, 19 });
+	spawnUnit(farmer, 0, MyPointStruct{ 4, 19 });
+	spawnUnit(farmer, 0, MyPointStruct{ 2, 17 });
 	//change Population
-	mPopulation[0] += (mUnitInitDataMap[farmer].property.numPopulation 
+	mPopulation[0] += 4 * (mUnitInitDataMap[farmer].property.numPopulation 
 		+ mGameState[0].extraProperty[farmer].numPopulation);
-	mPopulation[1] += (mUnitInitDataMap[farmer].property.numPopulation
+	mPopulation[1] += 4 * (mUnitInitDataMap[farmer].property.numPopulation
 		+ mGameState[1].extraProperty[farmer].numPopulation);
 	//refresh minimap
 	refreshMiniMap();
@@ -1521,18 +1850,26 @@ void GameScene::startGame()
 	//net update, 0.5s
 	if (mGameMode == server || mGameMode == client)
 	{
-		schedule(schedule_selector(GameScene::netUpdate), 0.5, CC_REPEAT_FOREVER, 0);
+		schedule(schedule_selector(GameScene::netUpdate), 0.1, CC_REPEAT_FOREVER, 0);
 	}
 }
 
 void GameScene::refreshMiniMap()
 {
 	std::set<MyPointStruct> unitSet[2];
+	std::set<MyPointStruct> unitSetN[2];
 	for (int k = 0; k < 2; ++ k)
 	{
 		for (const auto & i : mGameState[k].unitMap)
 		{
-			unitSet[k].insert(i.first);
+			if (i.second.state == fresh)
+			{
+				unitSet[k].insert(i.first);
+			}
+			else
+			{
+				unitSetN[k].insert(i.first);
+			}
 		}
 		//base
 		unitSet[k].insert(mBasePosition[k]);
@@ -1556,7 +1893,7 @@ void GameScene::refreshMiniMap()
 			continue;
 		}
 	}
-	mMiniMapLayer->refresh(unitSet[0], unitSet[1], fixedRSet, randomRSet);
+	mMiniMapLayer->refresh(unitSet[0], unitSetN[0], unitSet[1], unitSetN[1], fixedRSet, randomRSet);
 }
 
 void GameScene::checkMiniMap()
@@ -1732,6 +2069,7 @@ void GameScene::checkMakingButtonOnTouchEnded()
 		{
 			mTechMakingButton->setVisible(false);
 			mTechFactory[tF].cancelNowTech();
+			refreshTechTreeLayer(tF);
 		}
 	}
 }
@@ -1792,16 +2130,26 @@ void GameScene::checkLayersOnMouseMoved()
 			&& !mTechTreeLayer->isVisible() && !mUnitCampLayer->isVisible()
 			&& !isGrayBarContains(mMouseCoordinate))
 		{
+			int whosbase = -1;
 			auto mPos = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinate);
+
 			auto unitInfo = existUnitOnTiledMap(mPos);
 			if (unitInfo.exist)
 			{
 				if (unitInfo.mUnitEnum == base)
 				{
+					if (mPos == mBasePosition[0])
+					{
+						whosbase = 0;
+					}
+					else
+					{
+						whosbase = 1;
+					}
 					mInfoMapLayer->displayUnitInfo(
 						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
 						unitInfo.property.numHitPoint,
-						mMaxHitPointOfBase[tF].numHitPoint);
+						mMaxHitPointOfBase[whosbase].numHitPoint);
 					clearFlag = false;
 				}
 				else if (unitInfo.mUnitEnum == fixedResource || unitInfo.mUnitEnum == randomResource)
@@ -1817,7 +2165,8 @@ void GameScene::checkLayersOnMouseMoved()
 				{
 					mInfoMapLayer->displayUnitProperty(
 						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
-						unitInfo.property.numHitPoint,
+						unitInfo.property.numHitPoint 
+						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
 						mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint
 						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
 						mDisplayInfoMap["ATK"] + std::to_string(unitInfo.property.numAttack) + "\n"
@@ -2187,6 +2536,15 @@ void GameScene::initGameState()
 	mUnitActionFSM[0] = 0;
 	mUnitActionFSM[1] = 0;
 
+	spawnPoint.push_back(MyPointStruct{ 17, 2 });
+	spawnPoint.push_back(MyPointStruct{ 19, 2 });
+	spawnPoint.push_back(MyPointStruct{ 17, 4 });
+	spawnPoint.push_back(MyPointStruct{ 19, 2 });
+	spawnPoint.push_back(MyPointStruct{ 2, 17 });
+	spawnPoint.push_back(MyPointStruct{ 4, 17 });
+	spawnPoint.push_back(MyPointStruct{ 2, 19 });
+	spawnPoint.push_back(MyPointStruct{ 4, 19 });
+
 }
 
 //--initResourceMap
@@ -2329,6 +2687,14 @@ void GameScene::initResourceMap()
 						break;
 					}
 				}
+				for (auto pp : spawnPoint)
+				{
+					if ((pp.x == ranP.x) && (pp.y == ranP.y))
+					{
+						occupied = true;
+						break;
+					}
+				}
 			}
 			for (const auto & i : mResourceMap)
 			{
@@ -2370,6 +2736,7 @@ void GameScene::initResourceMap()
 					while (!mNet.read())
 					{
 					}
+					CCLOG("read send back!");
 					if (mNet.getWhich() != onePoint)
 					{
 						//error
@@ -2685,20 +3052,32 @@ void GameScene::initGameMenu()
 	auto youWinLabel = Label::createWithTTF(getDicValue("youWin"), "fonts/STXIHEI.TTF", 30);
 	auto GGLabel = Label::createWithTTF(getDicValue("GG"), "fonts/STXIHEI.TTF", 30);
 	auto youWinItem = MenuItemLabel::create(youWinLabel, [&](Ref * sender)->void{
-		if (mGameMode == server || mGameMode == client)
+		if (mOperateEnable)
 		{
-			while (!mNet.sendYouWin())
+			if (mGameMode == server || mGameMode == client)
 			{
-				auto err = WSAGetLastError();
-				if (err != WSAEWOULDBLOCK)
+				while (!mNet.sendYouWin())
 				{
-					CCLOG("he GG!!");
-					//mDirector->popScene();
+					auto err = WSAGetLastError();
+					if (err != WSAEWOULDBLOCK)
+					{
+						CCLOG("he GG!!");
+						//mDirector->popScene();
+					}
 				}
+				while (!mNet.read()){}
+				CCLOG("read send back!");
+				int tF = mGameMode == server ? 0 : 1;
+				win(1 - tF);
+			}
+			else if (mGameMode == vsPlayer)
+			{
+				//lose
+				CCLOG("i lose!");
+				int tF = mBlueTurn ? 0 : 1;
+				win(1 - tF);
 			}
 		}
-		//lose
-		CCLOG("i lose!");
 	});
 	auto GGItem = MenuItemLabel::create(GGLabel, [&](Ref * sender)->void{
 		mDirector->popScene();
@@ -2770,7 +3149,7 @@ void GameScene::initWelcomeLayer()
 	mWelcomeLayer->addChild(welcomeMenu);
 	mWelcomeLayer->addChild(juFlower[0]);
 	mWelcomeLayer->addChild(juFlower[1]);
-	addChild(mWelcomeLayer, 6);
+	addChild(mWelcomeLayer, 10);
 }
 
 void GameScene::initYypNet()
@@ -2876,7 +3255,7 @@ void GameScene::showMoveRange(const MyPointStruct & unitPoint, const int & tF)//
 		barrier.insert(ob.first);
 	}
 	auto unit = mGameState[tF].unitMap[unitPoint];
-	mMoveRange = getPathTree(unitPoint, unit.property.numRangeMove, barrier);
+	mMoveRange = getPathTree(unitPoint, unit.property.numRangeMove + mGameState[tF].extraProperty[unit.type].numRangeMove, barrier);
 	for (auto unitPath : mMoveRange)
 	{
 			mTiledMapLayer->setTileColor(unitPath.point, 2);
@@ -2889,7 +3268,7 @@ void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
 	CCLOG("he base P : %d,%d", mBasePosition[1 - tF].x, mBasePosition[1 - tF].y);
 	std::set <MyPointStruct> barrier;
 	auto unit = mGameState[tF].unitMap[unitPoint];
-	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack, barrier);
+	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack + mGameState[tF].extraProperty[unit.type].numRangeAttack, barrier);
 	CCLOG("my atk range: %d", unit.property.numRangeAttack);
 	for (auto attacking : attackTree)
 	{ 
@@ -3001,11 +3380,13 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 							//mDirector->popScene();
 						}
 					}
+					while (!mNet.read()){}
+					CCLOG("read send back!");
 				}
 				//attack
+				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				attackUnit(mOriginalPoint, nowPoint, tF);
 				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
-				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				mUnitActionFSM[tF] = 0;
 				return;
 			}
@@ -3031,6 +3412,8 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 							//mDirector->popScene();
 						}
 					}
+					while (!mNet.read()){}
+					CCLOG("read send back!");
 				}
 				//move
 				moveUnit(movePath, tF, true);
@@ -3081,11 +3464,13 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 							//mDirector->popScene();
 						}
 					}
+					while (!mNet.read()){}
+					CCLOG("read send back!");
 				}
 				//attack
+				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				attackUnit(mOriginalPoint, nowPoint, tF);
 				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
-				mGameState[tF].unitMap[mOriginalPoint].state = attacked;
 				mUnitActionFSM[tF] = 0;
 				return;
 			}

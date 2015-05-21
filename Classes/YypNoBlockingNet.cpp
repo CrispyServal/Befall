@@ -7,6 +7,8 @@ YypNoBlockingNet::YypNoBlockingNet()
 
 YypNoBlockingNet::~YypNoBlockingNet()
 {
+	CCLOG("yyp net: ~XXX();");
+	endServer();
 }
 
 TechEnum YypNoBlockingNet::getTech()
@@ -225,7 +227,7 @@ bool YypNoBlockingNet::acceptConnect()
 
 bool YypNoBlockingNet::endServer()
 {
-	if (!closesocket(sclient) && !WSACleanup())
+	if (!closesocket(sclient) && !closesocket(slisten) && !WSACleanup())
 		return true;
 	else
 		return false;;
@@ -257,6 +259,7 @@ bool YypNoBlockingNet::startConnect(char *IP, int pot)
 	serAddr.sin_addr.S_un.S_addr = inet_addr(IP);
 	return true;
 }
+
 bool YypNoBlockingNet::makeConnect()
 {
 	if (connect(sclient, (sockaddr *)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
@@ -265,6 +268,7 @@ bool YypNoBlockingNet::makeConnect()
 	}
 	return true;
 }
+
 bool YypNoBlockingNet::deleteConnect()
 {
 	if (!closesocket(sclient) && !WSACleanup())

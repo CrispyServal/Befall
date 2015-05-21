@@ -65,7 +65,7 @@ bool MainScene::init()
 			de = -10;
 		}
 		//duration
-		int ringSpeed = CCRANDOM_0_1() + 1;
+		int ringSpeed = (4) / (CCRANDOM_0_1() * 3 + 1);
 		//CCLOG("%f", ringSpeed);
 		ringRotate[i] = RotateBy::create(ringSpeed, de);
 		ringRepeat[i] = RepeatForever::create(ringRotate[i]);
