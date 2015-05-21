@@ -1179,18 +1179,14 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	}
 	if (foundU)
 	{
-<<<<<<< HEAD
-		mPopulation[tF] -= mGameState[tF].unitMap[point].property.numPopulation;//yyp mark
-=======
 		mPopulation[tF] -= mGameState[tF].unitMap[point].property.numPopulation;
 		if (mGameMode == server || mGameMode == client)
 		{
 			int tFT = mGameMode == server ? 0 : 1;
 			refreshResourcesIcons(tFT);
 		}
->>>>>>> 720d3b7a4b172e1d3344a301da9b4cd9fca7fe9f
 		mGameState[tF].unitMap[point].sprite->removeFromParentAndCleanup(true);
-		mGameState[tF].unitMap.erase(point);	
+		mGameState[tF].unitMap.erase(point);
 		return;
 	}
 	//resources
@@ -3438,6 +3434,26 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				return;
 			}
 		}
+		for (auto i : mGameState[tF].unitMap)
+		{
+			if (i.first == nowPoint && nowPoint != mOriginalPoint)
+			{
+				if (i.second.state == fresh)
+				{
+					deleteMoveRange();
+					deleteAttackRange();
+					mOriginalPoint = nowPoint;
+					showMoveRange(mOriginalPoint, tF);
+					showAttackRange(mOriginalPoint, tF);
+					mUnitActionFSM[tF] = 1;
+					return;
+				}
+			}
+		}
+		//else yyp
+		deleteMoveRange();
+		deleteAttackRange();
+		mUnitActionFSM[tF] = 0;
 		break;
 		//after move
 	case 2:
