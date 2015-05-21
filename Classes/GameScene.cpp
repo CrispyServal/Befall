@@ -1244,6 +1244,7 @@ void GameScene::delayAndQuit(float delta)
 {
 	backToMainScene(NULL);
 }
+
 void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 {
 	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property);
@@ -1262,6 +1263,26 @@ void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 		};
 	//add to unitMap
 	mGameState[turnFlag].unitMap[mSpawn[turnFlag]] = newUnit;
+}
+
+void GameScene::spawnUnit(UnitEnum unit, int turnFlag, const MyPointStruct & pos)
+{
+	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property);
+	CCLOG("spawning property: {hp:%d,atk:%d,def:%d,movR:%d,atR:%d,po:%d,}", pro.numHitPoint, pro.numAttack, pro.numDefence, pro.numRangeMove, pro.numRangeAttack, pro.numPopulation);
+	Unit newUnit = {
+		unit,
+		UnitPropertyStruct(mUnitInitDataMap[unit].property),
+		UnitStateEnum::fresh,
+		[&]()->Sprite*
+		{
+			auto sprite = Sprite::createWithTexture(mUnitTextureMap[turnFlag][unit].front);
+			sprite->setPosition(mTiledMapLayer->floatNodeCoorForPosition(pos));
+			mTiledMapLayer->addChild(sprite, 2);
+			return sprite;
+		}()
+	};
+	//add to unitMap
+	mGameState[turnFlag].unitMap[pos] = newUnit;
 }
 
 //testing
@@ -1790,10 +1811,16 @@ void GameScene::startGame()
 	//spawnUnit(farmer, 0);
 	spawnUnit(farmer, 0);
 	spawnUnit(farmer, 1);
+	spawnUnit(farmer, 1, MyPointStruct{	19,	2 });
+	spawnUnit(farmer, 1, MyPointStruct{ 17, 2 });
+	spawnUnit(farmer, 1, MyPointStruct{ 19, 4 });
+	spawnUnit(farmer, 0, MyPointStruct{ 2, 19 });
+	spawnUnit(farmer, 0, MyPointStruct{ 4, 19 });
+	spawnUnit(farmer, 0, MyPointStruct{ 2, 17 });
 	//change Population
-	mPopulation[0] += (mUnitInitDataMap[farmer].property.numPopulation 
+	mPopulation[0] += 4 * (mUnitInitDataMap[farmer].property.numPopulation 
 		+ mGameState[0].extraProperty[farmer].numPopulation);
-	mPopulation[1] += (mUnitInitDataMap[farmer].property.numPopulation
+	mPopulation[1] += 4 * (mUnitInitDataMap[farmer].property.numPopulation
 		+ mGameState[1].extraProperty[farmer].numPopulation);
 	//refresh minimap
 	refreshMiniMap();
@@ -2133,7 +2160,8 @@ void GameScene::checkLayersOnMouseMoved()
 				{
 					mInfoMapLayer->displayUnitProperty(
 						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
-						unitInfo.property.numHitPoint,
+						unitInfo.property.numHitPoint 
+						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
 						mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint
 						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
 						mDisplayInfoMap["ATK"] + std::to_string(unitInfo.property.numAttack) + "\n"
@@ -2503,6 +2531,15 @@ void GameScene::initGameState()
 	mUnitActionFSM[0] = 0;
 	mUnitActionFSM[1] = 0;
 
+	spawnPoint.push_back(MyPointStruct{ 17, 2 });
+	spawnPoint.push_back(MyPointStruct{ 19, 2 });
+	spawnPoint.push_back(MyPointStruct{ 17, 4 });
+	spawnPoint.push_back(MyPointStruct{ 19, 2 });
+	spawnPoint.push_back(MyPointStruct{ 2, 17 });
+	spawnPoint.push_back(MyPointStruct{ 4, 17 });
+	spawnPoint.push_back(MyPointStruct{ 2, 19 });
+	spawnPoint.push_back(MyPointStruct{ 4, 19 });
+
 }
 
 //--initResourceMap
@@ -2640,6 +2677,14 @@ void GameScene::initResourceMap()
 				for (auto p : getNearPoint(spawn))
 				{
 					if ((p.x == ranP.x) && (p.y == ranP.y))
+					{
+						occupied = true;
+						break;
+					}
+				}
+				for (auto pp : spawnPoint)
+				{
+					if ((pp.x == ranP.x) && (pp.y == ranP.y))
 					{
 						occupied = true;
 						break;
@@ -3202,7 +3247,7 @@ void GameScene::showMoveRange(const MyPointStruct & unitPoint, const int & tF)//
 		barrier.insert(ob.first);
 	}
 	auto unit = mGameState[tF].unitMap[unitPoint];
-	mMoveRange = getPathTree(unitPoint, unit.property.numRangeMove, barrier);
+	mMoveRange = getPathTree(unitPoint, unit.property.numRangeMove + mGameState[tF].extraProperty[unit.type].numRangeMove, barrier);
 	for (auto unitPath : mMoveRange)
 	{
 			mTiledMapLayer->setTileColor(unitPath.point, 2);
@@ -3215,7 +3260,7 @@ void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
 	CCLOG("he base P : %d,%d", mBasePosition[1 - tF].x, mBasePosition[1 - tF].y);
 	std::set <MyPointStruct> barrier;
 	auto unit = mGameState[tF].unitMap[unitPoint];
-	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack, barrier);
+	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack + mGameState[tF].extraProperty[unit.type].numRangeAttack, barrier);
 	CCLOG("my atk range: %d", unit.property.numRangeAttack);
 	for (auto attacking : attackTree)
 	{ 
