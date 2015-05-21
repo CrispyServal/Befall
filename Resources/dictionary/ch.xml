@@ -115,4 +115,9 @@
 	<key>UnitCampIntro</key>
 	<string>用于新单位建造</string>
 
+	<key>Version</key>
+	<string>版本： </string>
+	<key>VersionNumber</key>
+	<string>0.9.4</string>
+
 </dict>
