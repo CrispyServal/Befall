@@ -468,7 +468,7 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack my unit
-			CCLOG("read 2 p: attack my unit: %d,%d",twoPoint.first,twoPoint.second);
+			CCLOG("read 2 p: attack my unit");
 			attack = true;
 			break;
 		}
@@ -479,7 +479,7 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack resource
-			CCLOG("read 2 p: attack resources or base: %d,%d",twoPoint.first,twoPoint.second);
+			CCLOG("read 2 p: attack resources or base");
 			attack = true;
 			break;
 		}
@@ -1211,9 +1211,9 @@ void GameScene::win(const int & tF)
 		}
 		else
 		{
-			mFailImage[1 - tF]->setOpacity(0);
-			mFailImage[1 - tF]->setVisible(true);
-			mFailImage[1 - tF]->runAction(show);
+			mFailImage[tF]->setOpacity(0);
+			mFailImage[tF]->setVisible(true);
+			mFailImage[tF]->runAction(show);
 		}
 	}
 	scheduleOnce(schedule_selector(GameScene::delayAndQuit), 3);
@@ -2079,19 +2079,20 @@ void GameScene::checkLayersOnMouseMoved()
 		{
 			int whosbase = -1;
 			auto mPos = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinate);
-			if (mPos == mBasePosition[0])
-			{
-				whosbase = 0;
-			}
-			else
-			{
-				whosbase = 1;
-			}
+
 			auto unitInfo = existUnitOnTiledMap(mPos);
 			if (unitInfo.exist)
 			{
 				if (unitInfo.mUnitEnum == base)
 				{
+					if (mPos == mBasePosition[0])
+					{
+						whosbase = 0;
+					}
+					else
+					{
+						whosbase = 1;
+					}
 					mInfoMapLayer->displayUnitInfo(
 						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
 						unitInfo.property.numHitPoint,
@@ -3074,7 +3075,7 @@ void GameScene::initWelcomeLayer()
 	mWelcomeLayer->addChild(welcomeMenu);
 	mWelcomeLayer->addChild(juFlower[0]);
 	mWelcomeLayer->addChild(juFlower[1]);
-	addChild(mWelcomeLayer, 6);
+	addChild(mWelcomeLayer, 10);
 }
 
 void GameScene::initYypNet()
