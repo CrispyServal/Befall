@@ -58,7 +58,7 @@
 			{
 				"numFixedResource" : 10,
 				"numRandomResource" : 20,
-				"absProductivity" : 20
+				"absProductivity" : 40
 			}
 		},
 		{
@@ -92,13 +92,13 @@
 				"numAttack" : 30,
 				"numAttackRange" : 4,
 				"numMoveRange" : 4,
-				"numPopulation" : 8
+				"numPopulation" : 5
 			} ,
 			"consumption" :
 			{
 				"numFixedResource" : 20,
 				"numRandomResource" : 10,
-				"absProductivity" : 20
+				"absProductivity" : 40
 			}
 		},
 		{
@@ -118,7 +118,7 @@
 			{
 				"numFixedResource" : 40,
 				"numRandomResource" : 20,
-				"absProductivity" : 80
+				"absProductivity" : 10
 			}
 		},
 		{
