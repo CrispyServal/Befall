@@ -11,7 +11,7 @@ GameScene::~GameScene()
 
 std::string GameScene::getDicValue(char * str)
 {
-	 CCLOG("getdicValue: result: %s",mDictionary->valueForKey(str)->getCString());
+	 //CCLOG("getdicValue: result: %s",mDictionary->valueForKey(str)->getCString());
 	 return std::string{mDictionary->valueForKey(str)->getCString()};
 }
 
@@ -151,7 +151,7 @@ bool GameScene::init()
 	srand(static_cast<unsigned>(time(NULL)));
 	//gamemode
 	mGameMode = static_cast<GameModeEnum>(mUserDefault->getIntegerForKey("gamemode"));
-	CCLOG("gameMode: %d", mGameMode);
+	//CCLOG("gameMode: %d", mGameMode);
 
 	//tiledMapLayer
 	mTiledMapLayer = TiledMapLayer::create();
@@ -452,7 +452,7 @@ void GameScene::netUpdate(float delta)
 		//CCLOG("net err: %d", err);
 		if (err != WSAEWOULDBLOCK)
 		{
-			CCLOG("he GGed!!!");
+			//CCLOG("he GGed!!!");
 		}
 	}
 }
@@ -468,7 +468,7 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack my unit
-			CCLOG("read 2 p: attack my unit: %d,%d",twoPoint.first,twoPoint.second);
+			CCLOG("read 2 p: attack my unit: (%d,%d)(%d,%d)",twoPoint.first.x,twoPoint.first.y,twoPoint.second.x,twoPoint.second.y);
 			attack = true;
 			break;
 		}
@@ -479,7 +479,7 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack resource
-			CCLOG("read 2 p: attack resources or base: %d,%d",twoPoint.first,twoPoint.second);
+			CCLOG("read 2 p: attack resources or base: (%d,%d)(%d,%d)",twoPoint.first.x,twoPoint.first.y,twoPoint.second.x,twoPoint.second.y);
 			attack = true;
 			break;
 		}
@@ -577,7 +577,7 @@ void GameScene::switchTurn()
 {
 	//end turn
 	mBlueTurn = !mBlueTurn;
-	CCLOG("now turn: %d", mBlueTurn);
+	CCLOG("\nnow turn: %d", mBlueTurn);
 	//refresh NumTurn
 	if (mBlueTurn)
 	{
@@ -624,13 +624,15 @@ void GameScene::switchTurn()
 			mOperateEnable = !mBlueTurn;
 			tF = 1;
 		}
-		CCLOG("in switch Turn tF = %d", tF);
+		//CCLOG("in switch Turn tF = %d", tF);
 		if (mBlueTurn)
 		{
+			CCLOG("refresh blue resources");
 			refreshResource(0);
 		}
 		else
 		{
+			CCLOG("refresh red resources");
 			refreshResource(1);
 		}
 		
@@ -752,6 +754,9 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	if (path.size() < 2)
 	{
 		CCLOG("invalid path");
+		//debug
+		system("pause");
+		//
 		return;
 	}
 	bool oeBak = mOperateEnable;
@@ -1013,7 +1018,7 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 			CCLOG("unit a unit: HP: %d", HP);
 			HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mGameState[1 - tF].unitMap[attackedUnitPosition].property.numDefence - mGameState[1 - tF].extraProperty[typeTo].numDefence);
 			CCLOG("aftar a, HP: %d", HP);
-			if (HP <= 0)
+			if (HP + mGameState[tF].extraProperty[typeTo].numHitPoint <= 0)
 			{
 				die(attackedUnitPosition, 1 - tF);
 			}
@@ -1229,7 +1234,7 @@ void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 	CCLOG("spawning property: {hp:%d,atk:%d,def:%d,movR:%d,atR:%d,po:%d,}", pro.numHitPoint,pro.numAttack,pro.numDefence,pro.numRangeMove,pro.numRangeAttack,pro.numPopulation);
 	Unit newUnit = {
 		unit,
-		UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] ),
+		UnitPropertyStruct(mUnitInitDataMap[unit].property /*+ mGameState[turnFlag].extraProperty[unit] */),
 		UnitStateEnum::fresh,
 		[&]()->Sprite*
 		{
@@ -3412,6 +3417,7 @@ bool GameScene::collecable(const MyPointStruct & resourcePosition, const int & t
 		if (i.first == resourcePosition)
 		{
 			//found
+			CCLOG("collecable: found!");
 			if (i.second.owner == -1 || i.second.owner == tF)
 			{
 				return true;
@@ -3423,6 +3429,7 @@ bool GameScene::collecable(const MyPointStruct & resourcePosition, const int & t
 		}
 	}
 	//not found
+	CCLOG("collecable: wild resource!");
 	return true;
 }
 
@@ -3471,6 +3478,7 @@ void GameScene::collectionFarmerMove(const MyPointStruct & farmerFrom, const int
 	}
 	if (found)
 	{
+		CCLOG("farmer leaf from a resource");
 		refreshResourceCollectionState(resourcePosition, false, tF);
 		mFarmerResourceMap[tF].erase(farmerFrom);
 	}
@@ -3479,9 +3487,11 @@ void GameScene::collectionFarmerMove(const MyPointStruct & farmerFrom, const int
 //need test
 void GameScene::collectionFamerAttack(const MyPointStruct & farmerFrom, const MyPointStruct & farmerTo, const int & tF)
 {
+	CCLOG("colleFarmerAttack: (%d,%d),(%d,%d)", farmerFrom.x, farmerFrom.y, farmerTo.x, farmerTo.y);
 	//check collecable
 	if (!collecable(farmerTo, tF))
 	{
+		CCLOG("can not colle");
 		return;
 	}
 	bool found = false;
@@ -3501,9 +3511,11 @@ void GameScene::collectionFamerAttack(const MyPointStruct & farmerFrom, const My
 	if (found)
 	{
 		//decrease numOfFarmer
-		refreshResourceCollectionState(farmerTo, false, tF);
+		CCLOG("change to another resource");
+		refreshResourceCollectionState(farmerFrom, false, tF);
 		mFarmerResourceMap[tF].erase(farmerFrom);
 	}
+	CCLOG("add to new resource || change");
 	mFarmerResourceMap[tF][farmerFrom] = farmerTo;
 	refreshResourceCollectionState(farmerTo, true, tF);
 }
@@ -3517,29 +3529,35 @@ void GameScene::refreshResource(const int & tF)
 	{
 		if (i.second.owner == tF)
 		{
+			CCLOG("refreshR: owner: %d", tF);
 			auto type = mResourceMap[i.first].type;
 			int extraPro;
 			if (type == fixedResource)
 			{
 				extraPro = mExtraResources[tF].numFixedResource;
+				CCLOG("refreshR: type=fixed.");
 			}
 			else if (type == randomResource)
 			{
 				extraPro = mExtraResources[tF].numRandomResource;
+				CCLOG("refreshR: type=ran.");
 			}
 			int & leftHP = mResourceMap[i.first].property.numHitPoint;
-			CCLOG("leftHP: %d", leftHP);
+			CCLOG("refreshR: leftHP: %d", leftHP);
 			int deltaHP = i.second.numOfFarmer * (mUnitInitDataMap[farmer].property.numAttack + mGameState[tF].extraProperty[farmer].numAttack + extraPro);
-			CCLOG("deltaHP: %d", deltaHP);
+			CCLOG("refreshR: deltaHP: %d", deltaHP);
 			if (leftHP > deltaHP)
 			{
 				leftHP -= deltaHP;
+				CCLOG("refreshR: collected. leftHP: %d", leftHP);
 			}
 			else
 			{
 				//dried
 				//die
+				CCLOG("refreshR: die");
 				die(i.first, tF);
+				CCLOG("to delete resource: %d,%d", i.first.x, i.first.y);
 				toDeleteResourceP.push_back(i.first);
 				//erase from farmer->resource map
 				std::vector<MyPointStruct> toDeleteFarmerP;
@@ -3548,6 +3566,7 @@ void GameScene::refreshResource(const int & tF)
 					if (F2R.second == i.first)
 					{
 						//found 
+						CCLOG("to delete farmer data: %d,%d", F2R.first.x, F2R.first.y);
 						toDeleteFarmerP.push_back(F2R.first);
 					}
 				}
