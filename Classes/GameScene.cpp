@@ -584,6 +584,8 @@ void GameScene::switchTurn()
 	//end turn
 	mBlueTurn = !mBlueTurn;
 	CCLOG("now turn: %d", mBlueTurn);
+	mUnitCampLayer->setVisible(false);
+	mTechTreeLayer->setVisible(false);
 	//refresh NumTurn
 	if (mBlueTurn)
 	{
@@ -599,8 +601,6 @@ void GameScene::switchTurn()
 	{
 		mOperateEnable = true;
 		mUpdateTimerLock = false;
-		mUnitCampLayer->setVisible(false);
-		mTechTreeLayer->setVisible(false);
 		int tF = mBlueTurn ? 0 : 1;
 		//CCLOG("vsPlayer,tF: %d", tF);
 		checkTechFactory(tF);
@@ -647,6 +647,7 @@ void GameScene::switchTurn()
 			refreshResourcesIcons(tF);
 			refreshMakingButton(tF);
 			refreshUnitState(tF);
+			refreshMiniMap();
 			checkTechFactory(tF);
 			checkUnitFactory(tF);
 			refreshTechTreeLayer(tF);
@@ -3047,28 +3048,31 @@ void GameScene::initGameMenu()
 	auto youWinLabel = Label::createWithTTF(getDicValue("youWin"), "fonts/STXIHEI.TTF", 30);
 	auto GGLabel = Label::createWithTTF(getDicValue("GG"), "fonts/STXIHEI.TTF", 30);
 	auto youWinItem = MenuItemLabel::create(youWinLabel, [&](Ref * sender)->void{
-		if (mGameMode == server || mGameMode == client)
+		if (mOperateEnable)
 		{
-			while (!mNet.sendYouWin())
+			if (mGameMode == server || mGameMode == client)
 			{
-				auto err = WSAGetLastError();
-				if (err != WSAEWOULDBLOCK)
+				while (!mNet.sendYouWin())
 				{
-					CCLOG("he GG!!");
-					//mDirector->popScene();
+					auto err = WSAGetLastError();
+					if (err != WSAEWOULDBLOCK)
+					{
+						CCLOG("he GG!!");
+						//mDirector->popScene();
+					}
 				}
+				while (!mNet.read()){}
+				CCLOG("read send back!");
+				int tF = mGameMode == server ? 0 : 1;
+				win(1 - tF);
 			}
-			while (!mNet.read()){}
-			CCLOG("read send back!");
-			int tF = mGameMode == server ? 0 : 1;
-			win(1 - tF);
-		}
-		else if (mGameMode == vsPlayer)
-		{
-			//lose
-			CCLOG("i lose!");
-			int tF = mBlueTurn ? 0 : 1;
-			win(1 - tF);
+			else if (mGameMode == vsPlayer)
+			{
+				//lose
+				CCLOG("i lose!");
+				int tF = mBlueTurn ? 0 : 1;
+				win(1 - tF);
+			}
 		}
 	});
 	auto GGItem = MenuItemLabel::create(GGLabel, [&](Ref * sender)->void{
