@@ -896,10 +896,12 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	else if ( up && (hDis <= vDis))
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].back);
+		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
 	}
 	else if ( (!up) && (hDis <= vDis))
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].front);
+		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
 	}
 	//check attackedUnitPosition type
 	for (auto & reP : mResourceMap)
@@ -1011,7 +1013,12 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 			//unit
 			auto & HP = mGameState[1 - tF].unitMap[attackedUnitPosition].property.numHitPoint;
 			CCLOG("unit a unit: HP: %d", HP);
-			HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mGameState[1 - tF].unitMap[attackedUnitPosition].property.numDefence - mGameState[1 - tF].extraProperty[typeTo].numDefence);
+			auto atk = mGameState[tF].unitMap[from].property.numAttack;
+			auto atkE = mGameState[tF].extraProperty[typeFrom].numAttack;
+			auto def = mGameState[1 - tF].unitMap[attackedUnitPosition].property.numDefence;
+			auto defE = mGameState[1 - tF].extraProperty[typeTo].numDefence;
+			CCLOG("atk = %d + %d;  def = %d + %d", atk, atkE, def, defE);
+			HP -= abs(atk + atkE - def - defE);
 			CCLOG("aftar a, HP: %d", HP);
 			if (HP <= 0)
 			{
@@ -1164,6 +1171,12 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	}
 	if (foundU)
 	{
+		mPopulation[tF] -= mGameState[tF].unitMap[point].property.numPopulation;
+		if (mGameMode == server || mGameMode == client)
+		{
+			int tFT = mGameMode == server ? 0 : 1;
+			refreshResourcesIcons(tFT);
+		}
 		mGameState[tF].unitMap[point].sprite->removeFromParentAndCleanup(true);
 		mGameState[tF].unitMap.erase(point);
 		return;
@@ -1184,6 +1197,7 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 		mResourceMap.erase(point);
 		return;
 	}
+	refreshMiniMap();
 }
 
 void GameScene::win(const int & tF)
