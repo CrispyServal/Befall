@@ -468,7 +468,7 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack my unit
-			CCLOG("read 2 p: attack my unit");
+			CCLOG("read 2 p: attack my unit: %d,%d",twoPoint.first,twoPoint.second);
 			attack = true;
 			break;
 		}
@@ -479,7 +479,7 @@ void GameScene::readTwoPoint(const int & tF)
 		if (i.first == twoPoint.second)
 		{
 			//attack resource
-			CCLOG("read 2 p: attack resources or base");
+			CCLOG("read 2 p: attack resources or base: %d,%d",twoPoint.first,twoPoint.second);
 			attack = true;
 			break;
 		}
