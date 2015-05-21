@@ -112,7 +112,7 @@
 				"numAttack" : 40,
 				"numAttackRange" : 5,
 				"numMoveRange" : 4,
-				"numPopulation" : 16
+				"numPopulation" : 10
 			},
 			"consumption" :
 			{

@@ -514,6 +514,12 @@ void GameScene::readTwoPoint(const int & tF)
 		auto unit = mGameState[1 - tF].unitMap[twoPoint.first];
 		auto pathTree = getPathTree(twoPoint.first, unit.property.numRangeMove, barrier);
 		auto path = getPath(pathTree, twoPoint.second);
+		//debug
+		CCLOG("path:  ");
+		for (const auto & pN : path)
+		{
+			CCLOG("node: %d,%d", pN.x, pN.y);
+		}
 		moveUnit(path, 1 - tF);
 	}
 }
@@ -752,6 +758,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	if (path.size() < 2)
 	{
 		CCLOG("invalid path");
+		system("pause");
 		return;
 	}
 	bool oeBak = mOperateEnable;
@@ -1239,11 +1246,11 @@ void GameScene::delayAndQuit(float delta)
 }
 void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 {
-	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] );
+	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property);
 	CCLOG("spawning property: {hp:%d,atk:%d,def:%d,movR:%d,atR:%d,po:%d,}", pro.numHitPoint,pro.numAttack,pro.numDefence,pro.numRangeMove,pro.numRangeAttack,pro.numPopulation);
 	Unit newUnit = {
 		unit,
-		UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] ),
+		UnitPropertyStruct(mUnitInitDataMap[unit].property),
 		UnitStateEnum::fresh,
 		[&]()->Sprite*
 		{
