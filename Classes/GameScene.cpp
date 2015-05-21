@@ -1496,13 +1496,13 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 				mGameState[flag].extraProperty[longrangeunit2].numAttack += mValue;
 				mGameState[flag].extraProperty[longrangeunit3].numAttack += mValue;
 			}
-			if (mType == "numRangeAttack")
+			if (mType == "numAttackRange")
 			{
 				mGameState[flag].extraProperty[longrangeunit1].numRangeAttack += mValue;
 				mGameState[flag].extraProperty[longrangeunit2].numRangeAttack += mValue;
 				mGameState[flag].extraProperty[longrangeunit3].numRangeAttack += mValue;
 			}
-			if (mType == "numRangeMove")
+			if (mType == "numMoveRange")
 			{
 				mGameState[flag].extraProperty[longrangeunit1].numRangeMove += mValue;
 				mGameState[flag].extraProperty[longrangeunit2].numRangeMove += mValue;
@@ -1532,12 +1532,12 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 				mGameState[flag].extraProperty[shortrangeunit1].numAttack += mValue;
 				mGameState[flag].extraProperty[shortrangeunit2].numAttack += mValue;
 			}
-			if (mType == "numRangeAttack")
+			if (mType == "numAttackRange")
 			{
 				mGameState[flag].extraProperty[shortrangeunit1].numRangeAttack += mValue;
 				mGameState[flag].extraProperty[shortrangeunit2].numRangeAttack += mValue;
 			}
-			if (mType == "numRangeMove")
+			if (mType == "numMoveRange")
 			{
 				mGameState[flag].extraProperty[shortrangeunit1].numRangeMove += mValue;
 				mGameState[flag].extraProperty[shortrangeunit2].numRangeMove += mValue;
@@ -2077,7 +2077,16 @@ void GameScene::checkLayersOnMouseMoved()
 			&& !mTechTreeLayer->isVisible() && !mUnitCampLayer->isVisible()
 			&& !isGrayBarContains(mMouseCoordinate))
 		{
+			int whosbase = -1;
 			auto mPos = mTiledMapLayer->tiledCoorForPostion(mMouseCoordinate);
+			if (mPos == mBasePosition[0])
+			{
+				whosbase = 0;
+			}
+			else
+			{
+				whosbase = 1;
+			}
 			auto unitInfo = existUnitOnTiledMap(mPos);
 			if (unitInfo.exist)
 			{
@@ -2086,7 +2095,7 @@ void GameScene::checkLayersOnMouseMoved()
 					mInfoMapLayer->displayUnitInfo(
 						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
 						unitInfo.property.numHitPoint,
-						mMaxHitPointOfBase[tF].numHitPoint);
+						mMaxHitPointOfBase[whosbase].numHitPoint);
 					clearFlag = false;
 				}
 				else if (unitInfo.mUnitEnum == fixedResource || unitInfo.mUnitEnum == randomResource)
@@ -2390,7 +2399,7 @@ void GameScene::initGameState()
 		mUnitCampLayer->setUnitResourceAndProperty(i.first, i.second.consumption, i.second.property);
 	}
 	//mResources
-	mResources[0] = mResources[1] = ResourcesStruct{ 30, 30, 10, 10 };
+	mResources[0] = mResources[1] = ResourcesStruct{ 30, 30, 10, 10};
 	//extra resources
 	mExtraResources[0] = mExtraResources[1] = ResourcesStruct{ 0, 0, 0, 0 };
 	//set Label value
@@ -3171,7 +3180,7 @@ void GameScene::showMoveRange(const MyPointStruct & unitPoint, const int & tF)//
 		barrier.insert(ob.first);
 	}
 	auto unit = mGameState[tF].unitMap[unitPoint];
-	mMoveRange = getPathTree(unitPoint, unit.property.numRangeMove, barrier);
+	mMoveRange = getPathTree(unitPoint, unit.property.numRangeMove + mGameState[tF].extraProperty[unit.type].numRangeMove, barrier);
 	for (auto unitPath : mMoveRange)
 	{
 			mTiledMapLayer->setTileColor(unitPath.point, 2);
@@ -3184,7 +3193,7 @@ void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
 	CCLOG("he base P : %d,%d", mBasePosition[1 - tF].x, mBasePosition[1 - tF].y);
 	std::set <MyPointStruct> barrier;
 	auto unit = mGameState[tF].unitMap[unitPoint];
-	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack, barrier);
+	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack + mGameState[tF].extraProperty[unit.type].numRangeAttack, barrier);
 	CCLOG("my atk range: %d", unit.property.numRangeAttack);
 	for (auto attacking : attackTree)
 	{ 
