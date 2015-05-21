@@ -27,7 +27,7 @@
 			"introduction" :  "用于资源的收集，可在聚能研究所中研究相应的科技以提高资源采集效率",
 			"attributes" :
 			{
-				"numHitPoint" : 20,
+				"numHitPoint" : 10,
 				"numDefence" : 5,
 				"numAttack" : 10,
 				"numAttackRange" : 1,
@@ -58,7 +58,7 @@
 			{
 				"numFixedResource" : 10,
 				"numRandomResource" : 20,
-				"absProductivity" : 40
+				"absProductivity" : 20
 			}
 		},
 		{
