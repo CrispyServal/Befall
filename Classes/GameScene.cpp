@@ -1018,7 +1018,7 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 			CCLOG("unit a unit: HP: %d", HP);
 			HP -= abs(mGameState[tF].unitMap[from].property.numAttack + mGameState[tF].extraProperty[typeFrom].numAttack - mGameState[1 - tF].unitMap[attackedUnitPosition].property.numDefence - mGameState[1 - tF].extraProperty[typeTo].numDefence);
 			CCLOG("aftar a, HP: %d", HP);
-			if (HP <= 0)
+			if (HP + mGameState[tF].extraProperty[typeTo].numHitPoint <= 0)
 			{
 				die(attackedUnitPosition, 1 - tF);
 			}
@@ -1234,7 +1234,7 @@ void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 	CCLOG("spawning property: {hp:%d,atk:%d,def:%d,movR:%d,atR:%d,po:%d,}", pro.numHitPoint,pro.numAttack,pro.numDefence,pro.numRangeMove,pro.numRangeAttack,pro.numPopulation);
 	Unit newUnit = {
 		unit,
-		UnitPropertyStruct(mUnitInitDataMap[unit].property + mGameState[turnFlag].extraProperty[unit] ),
+		UnitPropertyStruct(mUnitInitDataMap[unit].property /*+ mGameState[turnFlag].extraProperty[unit] */),
 		UnitStateEnum::fresh,
 		[&]()->Sprite*
 		{
