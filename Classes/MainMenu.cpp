@@ -30,6 +30,13 @@ bool MainMenu::init()
 	mTitle->setOpacity(0);
 	addChild(mTitle);
 	mTitle->runAction(EaseExponentialInOut::create(FadeIn::create(1)));
+	//version
+	mVersionLabel = Label::createWithTTF(getDicValue("Version") + getDicValue("VersionNumber"), "fonts/STXIHEI.TTF", 16);
+	mVersionLabel->setPosition(Director::getInstance()->getWinSize().width / 2, Director::getInstance()->getWinSize().height / 8);
+	mVersionLabel->setColor(Color3B(100,100,100));
+	mVersionLabel->setOpacity(0);
+	addChild(mVersionLabel);
+	mVersionLabel->runAction(EaseExponentialInOut::create(FadeIn::create(1)));
 	//菜单共两级，根菜单叫做root，以root中的选项命名二级菜单
 	//root
 	auto startLabel = createMenuLabel("start");
