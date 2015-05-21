@@ -58,7 +58,7 @@
 			{
 				"numFixedResource" : 10,
 				"numRandomResource" : 20,
-				"absProductivity" : 20
+				"absProductivity" : 40
 			}
 		},
 		{
@@ -98,7 +98,7 @@
 			{
 				"numFixedResource" : 20,
 				"numRandomResource" : 10,
-				"absProductivity" : 20
+				"absProductivity" : 40
 			}
 		},
 		{
