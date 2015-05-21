@@ -92,7 +92,7 @@
 				"numAttack" : 30,
 				"numAttackRange" : 4,
 				"numMoveRange" : 4,
-				"numPopulation" : 8
+				"numPopulation" : 5
 			} ,
 			"consumption" :
 			{
@@ -118,7 +118,7 @@
 			{
 				"numFixedResource" : 40,
 				"numRandomResource" : 20,
-				"absProductivity" : 80
+				"absProductivity" : 10
 			}
 		},
 		{
