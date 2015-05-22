@@ -3434,6 +3434,26 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				return;
 			}
 		}
+		for (auto i : mGameState[tF].unitMap)
+		{
+			if (i.first == nowPoint && nowPoint != mOriginalPoint)
+			{
+				if (i.second.state == fresh)
+				{
+					deleteMoveRange();
+					deleteAttackRange();
+					mOriginalPoint = nowPoint;
+					showMoveRange(mOriginalPoint, tF);
+					showAttackRange(mOriginalPoint, tF);
+					mUnitActionFSM[tF] = 1;
+					return;
+				}
+			}
+		}
+		//else yyp
+		deleteMoveRange();
+		deleteAttackRange();
+		mUnitActionFSM[tF] = 0;
 		break;
 		//after move
 	case 2:
