@@ -2535,7 +2535,7 @@ void GameScene::initGameState()
 	spawnPoint.push_back(MyPointStruct{ 17, 2 });
 	spawnPoint.push_back(MyPointStruct{ 19, 2 });
 	spawnPoint.push_back(MyPointStruct{ 17, 4 });
-	spawnPoint.push_back(MyPointStruct{ 19, 2 });
+	spawnPoint.push_back(MyPointStruct{ 19, 4 });
 	spawnPoint.push_back(MyPointStruct{ 2, 17 });
 	spawnPoint.push_back(MyPointStruct{ 4, 17 });
 	spawnPoint.push_back(MyPointStruct{ 2, 19 });
