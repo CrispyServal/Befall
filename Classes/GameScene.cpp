@@ -366,6 +366,18 @@ bool GameScene::init()
 	mKeyboardListener->onKeyPressed = CC_CALLBACK_2(GameScene::onKeyPressed, this);
 	mKeyboardListener->onKeyReleased= CC_CALLBACK_2(GameScene::onKeyReleased, this);
 	mDispatcher->addEventListenerWithSceneGraphPriority(mKeyboardListener,this);
+
+	//test mist
+	if (mUserDefault->getBoolForKey("mistOn"))
+	{
+		mist = true;
+	}
+	else
+	{
+		mist = false;
+	}
+	sightRange = 7;
+
 	return true;
 }
 
@@ -551,27 +563,27 @@ void GameScene::update(float delta)
 	//CCLOG("mapP %f,%f", mapP.x, mapP.y);
 	Size mapS = mTiledMapLayer->getMapSizeF();
 	//CCLOG("mapS %f,%f", mapS.width, mapS.height);
-	if ( mKeyStruct.w && (mapP.y >= mWinHeight - mapS.height - mWinHeight / 2 + moveDis /* - mapS.height + moveDis - 50*/) )
+	if (mKeyStruct.w && (mapP.y >= mWinHeight - mapS.height - mWinHeight / 2 + moveDis /* - mapS.height + moveDis - 50*/))
 	{
 		mTiledMapLayer->setPosition(mapP.x, mapP.y - moveDis);
 		mapP = mTiledMapLayer->getPosition();
 	}
-	if ( mKeyStruct.s && (mapP.y <= 0 + mWinHeight / 2 - moveDis /* - moveDis + 280*/) )
+	if (mKeyStruct.s && (mapP.y <= 0 + mWinHeight / 2 - moveDis /* - moveDis + 280*/))
 	{
 		mTiledMapLayer->setPosition(mapP.x, mapP.y + moveDis);
 		mapP = mTiledMapLayer->getPosition();
 	}
-	if ( mKeyStruct.a && (mapP.x <= 0 + mWinHeight / 2 - moveDis/* - moveDis*/) )
+	if (mKeyStruct.a && (mapP.x <= 0 + mWinHeight / 2 - moveDis/* - moveDis*/))
 	{
 		mTiledMapLayer->setPosition(mapP.x + moveDis, mapP.y);
 		mapP = mTiledMapLayer->getPosition();
 	}
-	if ( mKeyStruct.d && (mapP.x >= mWinWidth - mapS.width - mWinHeight / 2 + moveDis/* - mapS.width + moveDis*/) )
+	if (mKeyStruct.d && (mapP.x >= mWinWidth - mapS.width - mWinHeight / 2 + moveDis/* - mapS.width + moveDis*/))
 	{
 		mTiledMapLayer->setPosition(mapP.x - moveDis, mapP.y);
 		mapP = mTiledMapLayer->getPosition();
 	}
-	Vec2 position = Vec2((mWinWidth / 2 - mTiledMapLayer->getPosition().x) / mTiledMapLayer->getMapSizeF().width,(mWinHeight / 2 - mTiledMapLayer->getPosition().y) / mTiledMapLayer->getMapSizeF().height);
+	Vec2 position = Vec2((mWinWidth / 2 - mTiledMapLayer->getPosition().x) / mTiledMapLayer->getMapSizeF().width, (mWinHeight / 2 - mTiledMapLayer->getPosition().y) / mTiledMapLayer->getMapSizeF().height);
 	//setViewPosition
 	mMiniMapLayer->setViewPosition(position);
 
@@ -594,7 +606,7 @@ void GameScene::update(float delta)
 	auto p0 = Vec2(
 		mTiledMapLayer->getPosition().x/* * starMovePerMove*/ + (mTiledMapLayer->getMapSizeF().width + mWinWidth) / 2,
 		mTiledMapLayer->getPosition().y/* * starMovePerMove*/ + (mTiledMapLayer->getMapSizeF().height + mWinHeight) / 2
-	);
+		);
 	mStarMap->setPosition(p0.x * starMovePerMove, p0.y * starMovePerMove);
 	if (mPopulation[0] > 60 || mPopulation[1] > 60)
 	{
@@ -616,6 +628,7 @@ void GameScene::update(float delta)
 //--switchTurn
 void GameScene::switchTurn()
 {
+	surpriseEgg();
 	//end turn
 	mBlueTurn = !mBlueTurn;
 	CCLOG("now turn: %d", mBlueTurn);
@@ -647,6 +660,7 @@ void GameScene::switchTurn()
 		refreshMakingButton(tF);
 		refreshUnitState(tF);
 		refreshPopulationIcons(tF);
+		refreshMiniMap();
 		mTimer->start();
 		mTimer->setTimerColor(tF);
 		//refresh 2 layer display from gamestate
@@ -715,6 +729,8 @@ void GameScene::switchTurn()
 	deleteAttackRange();
 	deleteMoveRange();
 	mUnitActionFSM[0] = mUnitActionFSM[1] = 0;
+
+	addMist();
 }
 
 void GameScene::refreshUnitState(const int & turnFlag)
@@ -896,6 +912,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 		//CCLOG("path test: %d,%d", path[0].x, path[0].y);
 		mGameState[turnFlag].unitMap.erase(path[0]);
 		mGameState[turnFlag].unitMap[path[path.size() - 1]] = unit;
+		addMist();
 	}
 	);
 	auto showAttackRangeC = CallFunc::create(
@@ -910,7 +927,6 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 		{
 			mUnitActionFSM[turnFlag] = 2;
 		}
-
 	}
 	);
 	auto refreshMiniMapC = CallFunc::create(CC_CALLBACK_0(GameScene::refreshMiniMap, this));
@@ -1888,12 +1904,31 @@ void GameScene::startGame()
 	//refresh resources
 	refreshResourcesTexture();
 	refreshPopulationIcons(0);
+
+	//if (mist)
+	//{
+	//	int tF = -1;
+	//	if (mGameMode == server)
+	//	{
+	//		tF = 0;
+	//	}
+	//	else if (mGameMode == vsPlayer)
+	//	{
+	//		tF = mBlueTurn ? 0 : 1;
+	//	}
+	//	else if (mGameMode == client)
+	//	{
+	//		tF = 1;
+	//	}
+	//	addMist(1 - tF);
+	//}
+
 	//Test for info map
 	//mInfoMapLayer->displayText("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
 	//update
 	scheduleUpdate();
 
-	//TechTreeLayerRefreshing
+	//TechTreeLayerRefreshing & add Mist
 	if (mGameMode == server || mGameMode == vsPlayer)
 	{
 		refreshTechTreeLayer(0);
@@ -1914,42 +1949,103 @@ void GameScene::refreshMiniMap()
 {
 	std::set<MyPointStruct> unitSet[2];
 	std::set<MyPointStruct> unitSetN[2];
-	for (int k = 0; k < 2; ++ k)
+	int tF = -1;
+	if (!mist)
 	{
-		for (const auto & i : mGameState[k].unitMap)
+		for (int k = 0; k < 2; ++k)
+		{
+			for (const auto & i : mGameState[k].unitMap)
+			{
+				if (i.second.state == fresh)
+				{
+					unitSet[k].insert(i.first);
+				}
+				else
+				{
+					unitSetN[k].insert(i.first);
+				}
+			}
+			//base
+			unitSet[k].insert(mBasePosition[k]);
+			for (auto i : getNearPoint(mBasePosition[k]))
+			{
+				unitSet[k].insert(i);
+			}
+		}
+	}
+	else
+	{
+		if (mGameMode == server || mGameMode == client)
+		{
+			if (mGameMode == server)
+			{
+				tF = 0;
+			}
+			else if (mGameMode == client)
+			{
+				tF = 1;
+			}
+		}
+		else if (mGameMode == vsPlayer)
+		{
+			tF = mBlueTurn ? 0 : 1;
+		}
+		for (const auto & i : mGameState[tF].unitMap)
 		{
 			if (i.second.state == fresh)
 			{
-				unitSet[k].insert(i.first);
+				unitSet[tF].insert(i.first);
 			}
 			else
 			{
-				unitSetN[k].insert(i.first);
+				unitSetN[tF].insert(i.first);
 			}
 		}
 		//base
-		unitSet[k].insert(mBasePosition[k]);
-		for (auto i : getNearPoint(mBasePosition[k]))
+		unitSet[tF].insert(mBasePosition[tF]);
+		unitSet[1 - tF].insert(mBasePosition[1-tF]);
+		for (auto i : getNearPoint(mBasePosition[tF]))
 		{
-			unitSet[k].insert(i);
+			unitSet[tF].insert(i);
+		}
+		for (auto i : getNearPoint(mBasePosition[1 - tF]))
+		{
+			unitSet[1 - tF].insert(i);
+		}
+
+		for (auto mUnit : mGameState[tF].unitMap)
+		{
+			for (auto & pUnit : mGameState[1 - tF].unitMap)
+			{
+				//CCLOG("pathtree");
+				for (auto p : getPathTree(mUnit.first, sightRange, std::set<MyPointStruct>{}))
+				{
+					//CCLOG("{%d,%d}",p.point.x, p.point.y);
+					if (p.point == pUnit.first)
+					{
+						unitSet[1 - tF].insert(p.point);
+					}
+				}
+				//CCLOG("\n");
+			}
 		}
 	}
-	std::set<MyPointStruct> fixedRSet;
-	std::set<MyPointStruct> randomRSet;
-	for (const auto & i : mResourceMap)
-	{
-		if (i.second.type == fixedResource)
+		std::set<MyPointStruct> fixedRSet;
+		std::set<MyPointStruct> randomRSet;
+		for (const auto & i : mResourceMap)
 		{
-			fixedRSet.insert(i.first);
-			continue;
+			if (i.second.type == fixedResource)
+			{
+				fixedRSet.insert(i.first);
+				continue;
+			}
+			if (i.second.type == randomResource)
+			{
+				randomRSet.insert(i.first);
+				continue;
+			}
 		}
-		if (i.second.type == randomResource)
-		{
-			randomRSet.insert(i.first);
-			continue;
-		}
-	}
-	mMiniMapLayer->refresh(unitSet[0], unitSetN[0], unitSet[1], unitSetN[1], fixedRSet, randomRSet);
+		mMiniMapLayer->refresh(unitSet[0], unitSetN[0], unitSet[1], unitSetN[1], fixedRSet, randomRSet);
 }
 
 void GameScene::checkMiniMap()
@@ -2241,9 +2337,12 @@ void GameScene::checkLayersOnMouseMoved()
 						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
 						mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint
 						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
-						mDisplayInfoMap["ATK"] + std::to_string(unitInfo.property.numAttack) + "\n"
-						+ mDisplayInfoMap["DEF"] + std::to_string(unitInfo.property.numDefence) + "\n"
-						+ mDisplayInfoMap["RATK"] + std::to_string(unitInfo.property.numRangeAttack));
+						mDisplayInfoMap["ATK"] + std::to_string(unitInfo.property.numAttack 
+						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numAttack) + "\n"
+						+ mDisplayInfoMap["DEF"] + std::to_string(unitInfo.property.numDefence
+						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numDefence) + "\n"
+						+ mDisplayInfoMap["RATK"] + std::to_string(unitInfo.property.numRangeAttack
+						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numRangeAttack));
 					clearFlag = false;
 				}
 			}
@@ -2619,8 +2718,6 @@ void GameScene::initGameState()
 	//yyp
 	mUnitActionFSM[0] = 0;
 	mUnitActionFSM[1] = 0;
-
-
 
 }
 
@@ -3443,6 +3540,17 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 					showAttackRange(mOriginalPoint, tF);
 					mUnitActionFSM[tF] = 1;
 				}
+				if (i.second.state == moved)
+				{
+					mOriginalPoint = nowPoint;
+					//showMoveRange(mOriginalPoint, tF);
+					showAttackRange(mOriginalPoint, tF);
+					mUnitActionFSM[tF] = 2;
+				}
+				if (i.second.state == attacked)
+				{
+					playEffect(WARNING);
+				}
 				return;
 			}
 		}
@@ -3545,6 +3653,21 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 					mUnitActionFSM[tF] = 1;
 					return;
 				}
+				if (i.second.state == moved)
+				{
+					deleteMoveRange();
+					deleteAttackRange();
+					mOriginalPoint = nowPoint;
+					//showMoveRange(mOriginalPoint, tF);
+					showAttackRange(mOriginalPoint, tF);
+					mUnitActionFSM[tF] = 2;
+					return;
+				}
+				if (i.second.state == attacked)
+				{
+					playEffect(WARNING);
+					return;
+				}
 			}
 		}
 		//else yyp
@@ -3586,6 +3709,37 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				CCLOG("in Action: origin: %d,%d", mOriginalPoint.x, mOriginalPoint.y);
 				mUnitActionFSM[tF] = 0;
 				return;
+			}
+		}
+		for (auto i : mGameState[tF].unitMap)
+		{
+			if (i.first == nowPoint && nowPoint != mOriginalPoint)
+			{
+				if (i.second.state == fresh)
+				{
+					deleteMoveRange();
+					deleteAttackRange();
+					mOriginalPoint = nowPoint;
+					showMoveRange(mOriginalPoint, tF);
+					showAttackRange(mOriginalPoint, tF);
+					mUnitActionFSM[tF] = 1;
+					return;
+				}
+				if (i.second.state == moved)
+				{
+					deleteMoveRange();
+					deleteAttackRange();
+					mOriginalPoint = nowPoint;
+					//showMoveRange(mOriginalPoint, tF);
+					showAttackRange(mOriginalPoint, tF);
+					mUnitActionFSM[tF] = 2;
+					return;
+				}
+				if (i.second.state == attacked)
+				{
+					playEffect(WARNING);
+					return;
+				}
 			}
 		}
 		break;
@@ -3852,5 +4006,109 @@ void GameScene::playBackgroundMusic(const char * filePath)
 		{
 			SimpleAudioEngine::getInstance()->playBackgroundMusic(filePath, true);
 		}
+	}
+}
+
+void GameScene::surpriseEgg()
+{
+	if (mGameMode == vsPlayer)
+	{
+		if (mNumTurn > 500)
+		{
+			for (int tF = 0; tF < 2; ++tF)
+			{
+				for (auto i : mTechEnumList)
+				{
+					unlockTechTree(tF, i);
+				}
+			}
+		}
+	}
+}
+
+void GameScene::addMist(const int & tF, bool beginOfTurn)
+{
+	if (beginOfTurn)
+	{
+		for (auto mUnit : mGameState[1 - tF].unitMap)
+		{
+			if (!mUnit.second.sprite->isVisible())
+			{
+				mUnit.second.sprite->setVisible(true);
+			}
+		}
+		for (auto & i : mGameState[tF].unitMap)
+		{
+			if (i.second.sprite->isVisible())
+			{
+				i.second.sprite->setVisible(false);
+				CCLOG("already setinvisible");
+			}
+		}
+		CCLOG("I'm In");
+		for (auto mUnit : mGameState[1 - tF].unitMap)
+		{
+			for (auto & pUnit : mGameState[tF].unitMap)
+			{
+				//CCLOG("pathtree");
+				for (auto p : getPathTree(mUnit.first, sightRange, std::set<MyPointStruct>{}))
+				{
+					//CCLOG("{%d,%d}",p.point.x, p.point.y);
+					if (p.point == pUnit.first)
+					{
+						pUnit.second.sprite->setVisible(true);
+						CCLOG("set visible ");
+					}
+				}
+				//CCLOG("\n");
+			}
+		}
+		return;
+	}
+	/*bool foundUnit = false;
+	for (auto & pUnit : mGameState[tF].unitMap)
+	{
+		for (auto mUnit : mGameState[1 - tF].unitMap)
+		{
+			for (auto p : getPathTree(mUnit.first, sightRange, std::set<MyPointStruct>{}))
+			{
+				if (p.point == pUnit.first)
+				{
+					if (!pUnit.second.sprite->isVisible())
+					{
+						pUnit.second.sprite->setVisible(true);
+						foundUnit = true;
+					}
+				}
+			}
+		}
+		if (!foundUnit)
+		{
+			if (pUnit.second.sprite->isVisible())
+			{
+				pUnit.second.sprite->setVisible(false);
+			}
+		}
+	}*/
+}
+
+void GameScene::addMist()
+{
+	if (mist)
+	{
+		int tF = -1;
+		if (mGameMode == server)
+		{
+			tF = 0;
+		}
+		else if (mGameMode == vsPlayer)
+		{
+			tF = mBlueTurn ? 0 : 1;
+		}
+		else if (mGameMode == client)
+		{
+			tF = 1;
+		}
+		addMist(1 - tF, true);
 	}
 }

@@ -44,7 +44,7 @@
 			"X" : 1,
 			"Y" : 1 
 		},
-		"numHitPoint" : 1500
+		"numHitPoint" : 800
 	},
 	{
 		"element" : "resourceFixed",
@@ -52,6 +52,15 @@
 		{
 			"X" : 20,
 			"Y" : 20 
+		},
+		"numHitPoint" : 800
+	},
+	{
+		"element" : "resourceFixed",
+		"position" : 
+		{
+			"X" : 11,
+			"Y" : 11 
 		},
 		"numHitPoint" : 1500
 	},

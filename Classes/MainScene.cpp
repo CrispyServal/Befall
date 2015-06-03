@@ -32,6 +32,7 @@ bool MainScene::init()
 		userDefault->setBoolForKey("musicOn", true);
 		userDefault->setBoolForKey("seOn", true);
 		userDefault->setStringForKey("language", "ch");
+		userDefault->setBoolForKey("mistOn", true);
 	}
 	//dictionary = Dictionary::createWithContentsOfFile("ch.xml");
 	dictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + userDefault->getStringForKey("language") + ".xml" }.c_str());

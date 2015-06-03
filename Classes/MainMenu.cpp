@@ -110,10 +110,23 @@ bool MainMenu::init()
 	auto soundEffectLabel = createMenuLabel(str2);
 	auto soundEffect = MenuItemLabel::create(soundEffectLabel, CC_CALLBACK_1(MainMenu::settingCallback,this, "se"));
 	items["se"] = soundEffect;
+
+	char * str3;
+	if (userDefault->getBoolForKey("mistOn"))
+	{
+		str3 = "mistOn";
+	}
+	else
+	{
+		str3 = "mistOff";
+	}
+	auto MistLabel = createMenuLabel(str3);
+	auto Mist = MenuItemLabel::create(MistLabel, CC_CALLBACK_1(MainMenu::settingCallback, this, "mist"));
+	items["mist"] = Mist;
 	auto backLabelInSetting = createMenuLabel("back");
 	auto backInSetting = MenuItemLabel::create(backLabelInSetting, CC_CALLBACK_1(MainMenu::backCallback,this, "setting", "root", 1));
 	items["backInSetting"] = backInSetting;
-	settingMenu = Menu::create(music, soundEffect, backInSetting, NULL);
+	settingMenu = Menu::create(music, soundEffect, Mist, backInSetting, NULL);
 	settingMenu->alignItemsVerticallyWithPadding(10);
 	settingMenu->setVisible(false);
 	menuMap["setting"] = settingMenu;
@@ -545,6 +558,19 @@ void MainMenu::settingCallback(Ref * sender, const std::string & setting)
 			//items["soundEffect"]->setString(mTools::strUTF8("ÒôÐ§   ¹Ø"));
 			items["se"]->setString(getDicValue("seOff"));
 			userDefault->setBoolForKey("seOn", false);
+		}
+	}
+	if (setting == std::string{ "mist" })
+	{
+		if (!userDefault->getBoolForKey("mistOn"))
+		{
+			items["mist"]->setString(getDicValue("mistOn"));
+			userDefault->setBoolForKey("mistOn", true);
+		}
+		else
+		{
+			items["mist"]->setString(getDicValue("mistOff"));
+			userDefault->setBoolForKey("mistOn", false);
 		}
 	}
 	playBackgroundMusic(BG_MUSIC);

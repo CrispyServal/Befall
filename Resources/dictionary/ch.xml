@@ -26,6 +26,10 @@
 	<string>音效    开</string>
 	<key>seOff</key>
 	<string>音效    关</string>
+	<key>mistOn</key>
+	<string>迷雾    开</string>
+	<key>mistOff</key>
+	<string>迷雾    关</string>
 	<key>ensureExit</key>
 	<string>确认</string>
 	<key>server</key>
@@ -51,9 +55,9 @@
 	<key>endTurn</key>
 	<string>结束回合</string>
 	<key>GG</key>
-	<string>强退</string>
+	<string>返回菜单</string>
 	<key>youWin</key>
-	<string>投降</string>
+	<string>无奈投降</string>
 	<key>menu</key>
 	<string>菜单</string>
 

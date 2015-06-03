@@ -442,6 +442,17 @@ private:
 	void playBackgroundMusic(const char * filePath);
 	int intensive;
 	bool isPlayingIntensive;
+
+	//caidan
+	void surpriseEgg();
+
+	//mist
+	bool mist;
+	int sightRange;
+	std::vector<Unit> visibleUnit;
+	void addMist(const int & tF, bool beginOfTurn = false);
+	void addMist();
+
 };
 
 #endif // !GAMESCENE_H
