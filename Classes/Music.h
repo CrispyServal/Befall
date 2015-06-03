@@ -1,0 +1,31 @@
+#ifndef MUSIC_H
+#define MUSIC_H
+
+#define BG_MUSIC "music/PlanetfallAmbient1.mp3"
+#define BG_MUSIC2 "music/tensive.mp3"
+#define ELECTROSWITCH "music/electroswitch.mp3"
+#define BILIBILI "music/bilibili.wav"
+#define BONG "music/bong.mp3"
+#define BWUBWU "music/bwubwu.mp3"
+#define BZIIU "music/bziiu.mp3"
+#define FALLAPART "music/fallapart.mp3"
+#define PSUUU "music/psuuu.wav"
+#define VISTA "music/vista.wav"
+#define BZZZ "music/bzzz.mp3"
+#define BZANG "music/bzang.mp3"
+#define BWANG "music/bwang.wav"
+#define METALCLI "music/metalcli.mp3"
+#define BBBIOU "music/bbbiou.mp3"
+#define VICTORY "music/victory.mp3"
+#define FAIL "music/fail.wav"
+#define WEAKEXPLOSIVE "music/weakexplosive.wav"
+#define RADARBUBU "music/radarbubu.wav"
+#define WANWANG "music/wanwang.wav"
+#define DING "music/ding.mp3"
+#define WANU "music/wanu.mp3"
+#define FOLLOWME "music/followme.mp3"
+#define IMREADY "music/imready.mp3"
+#define ELECTROBZZZ "music/electrobzzz.mp3"
+#define WARNING "music/warning.wav"
+
+#endif

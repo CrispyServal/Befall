@@ -1,4 +1,8 @@
 #include "MainMenu.h"
+#include "SimpleAudioEngine.h"
+using namespace CocosDenshion;
+
+#define EFFECT_MUSIC "music/electroswitch.mp3"
 
 MainMenu::MainMenu()
 {
@@ -10,6 +14,7 @@ MainMenu::~MainMenu()
 
 bool MainMenu::init()
 {
+	SimpleAudioEngine::getInstance()->preloadEffect(EFFECT_MUSIC);
 	if (!Layer::init())
 	{
 		return false;
@@ -309,6 +314,7 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 
 void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const std::string & rightMenu, int nowDeep)
 {
+	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
 	//CCLOG("entercallback called");
 	if (menuOpen[nowDeep])
 	{
@@ -335,6 +341,7 @@ void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const s
 
 void MainMenu::backCallback(Ref * sender, const std::string & thisMenu, const std::string & leftMenu, int nowDeep)
 {
+	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
 	CCASSERT(nowDeep > 0, "nowDeep < 1");
 	if (menuOpen[nowDeep])
 	{
@@ -361,6 +368,7 @@ void MainMenu::backCallback(Ref * sender, const std::string & thisMenu, const st
 
 void MainMenu::enterGameCallback(GameModeEnum gamemode)
 {
+	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
 	if (closeModeSet.find(gamemode) != closeModeSet.end())
 	{
 	}
@@ -454,6 +462,7 @@ void MainMenu::enterGameCallback(GameModeEnum gamemode)
 
 void MainMenu::displayEditBoxCallback(Ref * sender, const std::string & mode)
 {
+	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
 	auto netMenuFadeOut = FadeOut::create(0.5);
 	netMenu->runAction(netMenuFadeOut);
 	netMenu->setVisible(false);
@@ -473,6 +482,7 @@ void MainMenu::displayEditBoxCallback(Ref * sender, const std::string & mode)
 
 void MainMenu::cancelCallback(Ref * sender, const std::string & thisMenu)
 {
+	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
 	if (thisMenu == std::string{ "server" })
 	{
 		auto serverLayerFadeOut = FadeOut::create(0.5);
@@ -496,6 +506,7 @@ void MainMenu::cancelCallback(Ref * sender, const std::string & thisMenu)
 
 void MainMenu::settingCallback(Ref * sender, const std::string & setting)
 {
+	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
 	if (setting == std::string{ "music" })
 	{
 		if (!userDefault->getBoolForKey("musicOn"))

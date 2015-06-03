@@ -1,4 +1,10 @@
 #include "MainScene.h"
+#include "SimpleAudioEngine.h"
+using namespace CocosDenshion;
+
+
+#define BG_MUSIC "music/background.mp3"
+#define EFFECT_MUSIC "music/electroswitch.mp3"
 
 MainScene::MainScene()
 {
@@ -10,6 +16,9 @@ MainScene::~MainScene()
 
 bool MainScene::init()
 {
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic(BG_MUSIC);
+	SimpleAudioEngine::getInstance()->playBackgroundMusic(BG_MUSIC);
+	SimpleAudioEngine::getInstance()->preloadEffect(EFFECT_MUSIC);
 	if (!Scene::init())
 	{
 		return false;
@@ -95,6 +104,7 @@ bool MainScene::init()
 	dispatcher->addEventListenerWithSceneGraphPriority(keyListener, this);
 	//
 	//scheduleUpdate();
+
 	return true;
 }
 
@@ -153,6 +163,7 @@ void MainScene::onTouchMoved(Touch * touch, Event * event)
 void MainScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
 	displayMainMenu();
+
 	//CCLOG("KeyCode: %d", keyCode);
 }
 
@@ -174,6 +185,7 @@ void MainScene::displayMainMenu()
 		addChild(mainMenu, 2);
 		//pressed to true
 		pressed = true;
+		SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
 	}
 }
 

@@ -1,5 +1,8 @@
 #include "GameScene.h"
+#include "SimpleAudioEngine.h"
+#include "Music.h"
 
+using namespace CocosDenshion;
 
 GameScene::GameScene()
 {
@@ -116,6 +119,7 @@ std::vector<MyPointStruct> GameScene::getPath(const std::vector<PathNodeStruct> 
 
 bool GameScene::init()
 {
+	initMusic();
 	if (!Scene::init())
 	{
 		return false;
@@ -576,6 +580,21 @@ void GameScene::update(float delta)
 		mTiledMapLayer->getPosition().y/* * starMovePerMove*/ + (mTiledMapLayer->getMapSizeF().height + mWinHeight) / 2
 	);
 	mStarMap->setPosition(p0.x * starMovePerMove, p0.y * starMovePerMove);
+	if (mPopulation[0] > 60 || mPopulation[1] > 60)
+	{
+		if (isPlayingIntensive == false)
+		{
+			SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+			SimpleAudioEngine::getInstance()->playBackgroundMusic(BG_MUSIC2);
+			isPlayingIntensive = true;
+		}
+	}
+	else if (isPlayingIntensive == true)
+	{
+		SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+		SimpleAudioEngine::getInstance()->playBackgroundMusic(BG_MUSIC);
+		isPlayingIntensive = false;
+	}
 }
 
 //--switchTurn
@@ -725,6 +744,14 @@ void GameScene::checkUnitFactory(int turnFlag)
 		auto newUnit = mUnitFactory[turnFlag].getFinishedUnit();
 		//spawn it 
 		spawnUnit(newUnit,turnFlag);
+		if (newUnit == longrangeunit3)
+		{
+			SimpleAudioEngine::getInstance()->playEffect(FOLLOWME);
+		}
+		else
+		{
+			SimpleAudioEngine::getInstance()->playEffect(IMREADY);
+		}
 		refreshMiniMap();
 		//add population
 		mPopulation[turnFlag] += (mUnitInitDataMap[newUnit].property.numPopulation 
@@ -1064,16 +1091,19 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	{
 		if (typeFrom == shortrangeunit2)
 		{
+			SimpleAudioEngine::getInstance()->playEffect(BONG);
 			ball->setTexture(mAttackTexture.SR2T);
 			explosives->setTexture(mAttackTexture.SR2E);
 		}
 		else if (typeFrom == longrangeunit1)
 		{
+			SimpleAudioEngine::getInstance()->playEffect(BZZZ);
 			ball->setTexture(mAttackTexture.LR1T);
 			explosives->setTexture(mAttackTexture.LR1E);
 		}
 		else if (typeFrom == longrangeunit2)
 		{
+			SimpleAudioEngine::getInstance()->playEffect(BWUBWU);
 			ball->setTexture(mAttackTexture.LR2T);
 			explosives->setTexture(mAttackTexture.LR2E);
 		}
@@ -1089,6 +1119,7 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	}
 	else if (typeFrom == shortrangeunit1 || typeFrom == farmer)
 	{
+		SimpleAudioEngine::getInstance()->playEffect(BWANG);
 		Vector<FiniteTimeAction*> hitAnimation;
 		//sr1, move
 		if (right && (hDis > vDis))
@@ -1113,10 +1144,12 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 		mGameState[tF].unitMap[from].sprite->runAction(
 			Sequence::create(hitAnimation)
 		);
+		
 	}
 	else if (typeFrom == longrangeunit3)
 	{
 		//whiteLine->clear();
+		SimpleAudioEngine::getInstance()->playEffect(BZIIU);
 		Vec2 fromP = Vec2(fromP0.x + 64 * (toP.x - fromP0.x) / abs(toP.x - fromP0.x + 0.1), fromP0.y + 64 * (toP.y - fromP0.y) / abs(toP.y - fromP0.y + 0.1));
 		float drawCount = 200;
 		float drawDeltaX = (toP.x - fromP.x) / drawCount;
@@ -1179,6 +1212,7 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	}
 	if (foundU)
 	{
+		SimpleAudioEngine::getInstance()->playEffect(FALLAPART);
 		mPopulation[tF] -= mGameState[tF].unitMap[point].property.numPopulation;
 		if (mGameMode == server || mGameMode == client)
 		{
@@ -1201,6 +1235,7 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	}
 	if (foundR)
 	{
+		SimpleAudioEngine::getInstance()->playEffect(WEAKEXPLOSIVE);
 		mResourceMap[point].sprite->removeFromParentAndCleanup(true);
 		mResourceMap.erase(point);
 		return;
@@ -1218,6 +1253,7 @@ void GameScene::win(const int & tF)
 	mOperateEnable = false;
 	if (mGameMode == vsPlayer)
 	{
+		SimpleAudioEngine::getInstance()->playEffect(VICTORY);
 		mWinImage[tF]->setOpacity(0);
 		mWinImage[tF]->setVisible(true);
 		mWinImage[tF]->runAction(show);
@@ -1227,12 +1263,14 @@ void GameScene::win(const int & tF)
 		int tFN = mGameMode == server ? 0 : 1;
 		if (tF == tFN)
 		{
+			SimpleAudioEngine::getInstance()->playEffect(VICTORY);
 			mWinImage[tF]->setOpacity(0);
 			mWinImage[tF]->setVisible(true);
 			mWinImage[tF]->runAction(show);
 		}
 		else
 		{
+			SimpleAudioEngine::getInstance()->playEffect(FAIL);
 			mFailImage[tF]->setOpacity(0);
 			mFailImage[tF]->setVisible(true);
 			mFailImage[tF]->runAction(show);
@@ -1437,6 +1475,7 @@ void GameScene::onTouchEnded(Touch * touch, Event * event)
 				//timer contain bug
 				if (mOperateEnable)
 				{
+					SimpleAudioEngine::getInstance()->playEffect(ELECTROSWITCH);
 					mTimer->shutDown();
 					mOperateEnable = false;
 				}
@@ -1949,6 +1988,10 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 						refreshMakingButton(tF);
 						refreshResourcesIcons(tF);
 					}
+					else
+					{
+						SimpleAudioEngine::getInstance()->playEffect(WARNING);
+					}
 				}
 			}
 		}
@@ -1970,6 +2013,10 @@ void GameScene::checkTechTreeLayerOnTouchEnded()
 					refreshMakingButton(tF);
 					CCLOG("vsPlayer; added new Tech!");
 					refreshResourcesIcons(tF);
+				}
+				else
+				{
+					SimpleAudioEngine::getInstance()->playEffect(WARNING);
 				}
 			}
 		}
@@ -1996,6 +2043,10 @@ void GameScene::checkUnitCampLayerOnTouchEnded()
 					refreshResourcesIcons(tF);
 					mUnitMakingButtonTexture = mUnitCampLayer->getUnitTexture(unit);
 				}
+				else
+				{
+					SimpleAudioEngine::getInstance()->playEffect(WARNING);
+				}
 			}
 		}
 	}
@@ -2013,6 +2064,10 @@ void GameScene::checkUnitCampLayerOnTouchEnded()
 				CCLOG("vsPlayer; added new unit!");
 				refreshResourcesIcons(tF);
 				mUnitMakingButtonTexture = mUnitCampLayer->getUnitTexture(unit);
+			}
+			else
+			{
+				SimpleAudioEngine::getInstance()->playEffect(WARNING);
 			}
 		}
 	}
@@ -2389,6 +2444,7 @@ void GameScene::checkTechAndUnitButton()
 	{
 		if (!mTechTreeLayer->isVisible())
 		{
+			SimpleAudioEngine::getInstance()->playEffect(VISTA);
 			mTechTreeLayer->setVisible(true);
 			mUnitCampLayer->setVisible(false);
 			mUnitCampLayerButton->setTexture(mUnitCampLayerButtonTexture.off);
@@ -2404,6 +2460,7 @@ void GameScene::checkTechAndUnitButton()
 	{
 		if (!mUnitCampLayer->isVisible())
 		{
+			SimpleAudioEngine::getInstance()->playEffect(BILIBILI);
 			mUnitCampLayer->setVisible(true);
 			mTechTreeLayer->setVisible(false);
 			mTechTreeLayerButton->setTexture(mTechTreeLayerButtonTexture.off);
@@ -3256,6 +3313,7 @@ void GameScene::showMoveRange(const MyPointStruct & unitPoint, const int & tF)//
 	{
 			mTiledMapLayer->setTileColor(unitPath.point, 2);
 	}
+	playUnitSound(unit.type);
 }
 
 void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
@@ -3663,4 +3721,71 @@ void GameScene::refreshResource(const int & tF)
 	{
 		mResourceCollectionMap.erase(reP);
 	}
+}
+
+void GameScene::initMusic()
+{
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic(BG_MUSIC);
+	SimpleAudioEngine::getInstance()->playBackgroundMusic(BG_MUSIC);
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic(BG_MUSIC2);
+	SimpleAudioEngine::getInstance()->preloadEffect(ELECTROSWITCH);
+	SimpleAudioEngine::getInstance()->preloadEffect(BILIBILI);
+	SimpleAudioEngine::getInstance()->preloadEffect(BONG);
+	SimpleAudioEngine::getInstance()->preloadEffect(BWUBWU);
+	SimpleAudioEngine::getInstance()->preloadEffect(BZIIU);
+	SimpleAudioEngine::getInstance()->preloadEffect(FALLAPART);
+	SimpleAudioEngine::getInstance()->preloadEffect(PSUUU);
+	SimpleAudioEngine::getInstance()->preloadEffect(VISTA);
+	SimpleAudioEngine::getInstance()->preloadEffect(BZZZ);
+	SimpleAudioEngine::getInstance()->preloadEffect(BZANG);
+	SimpleAudioEngine::getInstance()->preloadEffect(BWANG);
+	SimpleAudioEngine::getInstance()->preloadEffect(METALCLI);
+	SimpleAudioEngine::getInstance()->preloadEffect(BBBIOU);
+	SimpleAudioEngine::getInstance()->preloadEffect(VICTORY);
+	SimpleAudioEngine::getInstance()->preloadEffect(FAIL);
+	SimpleAudioEngine::getInstance()->preloadEffect(WEAKEXPLOSIVE);
+	SimpleAudioEngine::getInstance()->preloadEffect(RADARBUBU);
+	SimpleAudioEngine::getInstance()->preloadEffect(WANWANG);
+	SimpleAudioEngine::getInstance()->preloadEffect(DING);
+	SimpleAudioEngine::getInstance()->preloadEffect(WANU);
+	SimpleAudioEngine::getInstance()->preloadEffect(FOLLOWME);
+	SimpleAudioEngine::getInstance()->preloadEffect(IMREADY);
+	SimpleAudioEngine::getInstance()->preloadEffect(ELECTROBZZZ);
+	SimpleAudioEngine::getInstance()->preloadEffect(WARNING);
+
+	isPlayingIntensive = false;
+}
+
+void GameScene::playUnitSound(UnitEnum mUnit)
+{
+	switch (mUnit)
+	{
+	case base:
+		break;
+	case farmer:
+		SimpleAudioEngine::getInstance()->playEffect(BBBIOU);
+		break;
+	case shortrangeunit1:
+		SimpleAudioEngine::getInstance()->playEffect(METALCLI);
+		break;
+	case shortrangeunit2:
+		SimpleAudioEngine::getInstance()->playEffect(WANWANG);
+		break;
+	case longrangeunit1:
+		SimpleAudioEngine::getInstance()->playEffect(ELECTROBZZZ);
+		break;
+	case longrangeunit2:
+		SimpleAudioEngine::getInstance()->playEffect(WANU);
+		break;
+	case longrangeunit3:
+		SimpleAudioEngine::getInstance()->playEffect(RADARBUBU);
+		break;
+	case fixedResource:
+		break;
+	case randomResource:
+		break;
+	default:
+		break;
+	}
+
 }

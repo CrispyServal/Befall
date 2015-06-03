@@ -433,6 +433,13 @@ private:
 	bool mWinFlag;
 	void win(const int & tF);
 	void delayAndQuit(float delta);
+
+
+	//Music
+	void initMusic();
+	void playUnitSound(UnitEnum mUnit);
+	int intensive;
+	bool isPlayingIntensive;
 };
 
 #endif // !GAMESCENE_H
