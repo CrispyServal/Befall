@@ -1,7 +1,9 @@
 #include "MainMenu.h"
 #include "SimpleAudioEngine.h"
+
 using namespace CocosDenshion;
 
+#define BG_MUSIC "music/background.mp3"
 #define EFFECT_MUSIC "music/electroswitch.mp3"
 
 MainMenu::MainMenu()
@@ -14,6 +16,8 @@ MainMenu::~MainMenu()
 
 bool MainMenu::init()
 {
+	SimpleAudioEngine::getInstance()->preloadBackgroundMusic(BG_MUSIC);
+	playBackgroundMusic(BG_MUSIC);
 	SimpleAudioEngine::getInstance()->preloadEffect(EFFECT_MUSIC);
 	if (!Layer::init())
 	{
@@ -83,7 +87,7 @@ bool MainMenu::init()
 	addChild(startMenu);
 	//setting Menu
 	char * str;
-	if (userDefault->getBoolForKey("music"))
+	if (userDefault->getBoolForKey("musicOn"))
 	{
 		str = "musicOn";
 	}
@@ -149,7 +153,7 @@ bool MainMenu::init()
 		Director::getInstance()->getWinSize().height / 2 + editBoxInServer->getContentSize().height + 10
 		)
 		);
-	editBoxInServer->setColor(Color3B(200,200,200));
+	editBoxInServer->setColor(Color3B(0,0,0));
 	auto rectInServer = DrawNode::create();
 	float halfWidthRectS = 100;
 	rectInServer->drawRect(
@@ -179,7 +183,7 @@ bool MainMenu::init()
 		Director::getInstance()->getWinSize().height / 2 + editBoxInClient->getContentSize().height + 10
 		)
 		);
-	editBoxInClient->setColor(Color3B(200,200,200));
+	editBoxInClient->setColor(Color3B(0,0,0));
 	auto rectInClient= DrawNode::create();
 	float halfWidthRectC = 200;
 	rectInClient->drawRect(
@@ -314,7 +318,7 @@ void MainMenu::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 
 void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const std::string & rightMenu, int nowDeep)
 {
-	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
+	playEffect(EFFECT_MUSIC);
 	//CCLOG("entercallback called");
 	if (menuOpen[nowDeep])
 	{
@@ -341,7 +345,7 @@ void MainMenu::enterCallback(Ref * sender, const std::string & thisMenu, const s
 
 void MainMenu::backCallback(Ref * sender, const std::string & thisMenu, const std::string & leftMenu, int nowDeep)
 {
-	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
+	playEffect(EFFECT_MUSIC);
 	CCASSERT(nowDeep > 0, "nowDeep < 1");
 	if (menuOpen[nowDeep])
 	{
@@ -368,7 +372,7 @@ void MainMenu::backCallback(Ref * sender, const std::string & thisMenu, const st
 
 void MainMenu::enterGameCallback(GameModeEnum gamemode)
 {
-	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
+	playEffect(EFFECT_MUSIC);
 	if (closeModeSet.find(gamemode) != closeModeSet.end())
 	{
 	}
@@ -462,7 +466,7 @@ void MainMenu::enterGameCallback(GameModeEnum gamemode)
 
 void MainMenu::displayEditBoxCallback(Ref * sender, const std::string & mode)
 {
-	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
+	playEffect(EFFECT_MUSIC);
 	auto netMenuFadeOut = FadeOut::create(0.5);
 	netMenu->runAction(netMenuFadeOut);
 	netMenu->setVisible(false);
@@ -482,7 +486,7 @@ void MainMenu::displayEditBoxCallback(Ref * sender, const std::string & mode)
 
 void MainMenu::cancelCallback(Ref * sender, const std::string & thisMenu)
 {
-	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
+	playEffect(EFFECT_MUSIC);
 	if (thisMenu == std::string{ "server" })
 	{
 		auto serverLayerFadeOut = FadeOut::create(0.5);
@@ -506,7 +510,7 @@ void MainMenu::cancelCallback(Ref * sender, const std::string & thisMenu)
 
 void MainMenu::settingCallback(Ref * sender, const std::string & setting)
 {
-	SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
+	playEffect(EFFECT_MUSIC);
 	if (setting == std::string{ "music" })
 	{
 		if (!userDefault->getBoolForKey("musicOn"))
@@ -543,6 +547,7 @@ void MainMenu::settingCallback(Ref * sender, const std::string & setting)
 			userDefault->setBoolForKey("seOn", false);
 		}
 	}
+	playBackgroundMusic(BG_MUSIC);
 }
 
 void MainMenu::exitCallback(Ref *sender)
@@ -644,4 +649,34 @@ bool MainMenu::checkClientInput(std::string & ipAndPortStr)
 		return false;
 	}
 	return true;
+}
+
+void MainMenu::playEffect(const char * filePath)
+{
+	if (userDefault->getBoolForKey("seOn"))
+	{
+		SimpleAudioEngine::getInstance()->playEffect(filePath);
+	}
+}
+
+void MainMenu::playBackgroundMusic(const char * filePath)
+{
+	if (SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+	{
+		CCLOG("BackgroundMusic is Playing");
+		if (!userDefault->getBoolForKey("musicOn"))
+		{
+			CCLOG("BackgroundMusic shouldn't Playing");
+			SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+		}
+	}
+	else
+	{
+		CCLOG("BackgroundMusic isn't Playing");
+		if (userDefault->getBoolForKey("musicOn"))
+		{
+			CCLOG("BackgroundMusic should Playing");
+			SimpleAudioEngine::getInstance()->playBackgroundMusic(filePath, true);
+		}
+	}
 }

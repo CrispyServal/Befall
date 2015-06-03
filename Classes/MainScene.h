@@ -44,6 +44,8 @@ private:
 	void onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event);
 	void initLabelPAK();
 	void displayMainMenu();
+	void playEffect(const char * filePath);
+	void playBackgroundMusic(const char * filePath);
 };
 
 #endif

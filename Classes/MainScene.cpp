@@ -2,7 +2,6 @@
 #include "SimpleAudioEngine.h"
 using namespace CocosDenshion;
 
-
 #define BG_MUSIC "music/background.mp3"
 #define EFFECT_MUSIC "music/electroswitch.mp3"
 
@@ -105,6 +104,7 @@ bool MainScene::init()
 	//
 	//scheduleUpdate();
 
+	//mainMenu = MainMenu::create();
 	return true;
 }
 
@@ -163,7 +163,6 @@ void MainScene::onTouchMoved(Touch * touch, Event * event)
 void MainScene::onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event)
 {
 	displayMainMenu();
-
 	//CCLOG("KeyCode: %d", keyCode);
 }
 
@@ -185,7 +184,7 @@ void MainScene::displayMainMenu()
 		addChild(mainMenu, 2);
 		//pressed to true
 		pressed = true;
-		SimpleAudioEngine::getInstance()->playEffect(EFFECT_MUSIC);
+		playEffect(EFFECT_MUSIC);
 	}
 }
 
@@ -203,6 +202,36 @@ void MainScene::initLabelPAK()
 	auto pakRepeat = RepeatForever::create(pakSequence);
 	labelPAK->runAction(pakRepeat);
 	mainLayer->addChild(labelPAK,1);
+}
+
+void MainScene::playEffect(const char * filePath)
+{
+	if (userDefault->getBoolForKey("seOn"))
+	{
+		SimpleAudioEngine::getInstance()->playEffect(filePath);
+	}
+}
+
+void MainScene::playBackgroundMusic(const char * filePath)
+{
+	if (SimpleAudioEngine::getInstance()->isBackgroundMusicPlaying())
+	{
+		CCLOG("BackgroundMusic is Playing");
+		if (!userDefault->getBoolForKey("musicOn"))
+		{
+			CCLOG("BackgroundMusic shouldn't Playing");
+			SimpleAudioEngine::getInstance()->stopBackgroundMusic();
+		}
+	}
+	else
+	{
+		CCLOG("BackgroundMusic isn't Playing");
+		if (userDefault->getBoolForKey("musicOn"))
+		{
+			CCLOG("BackgroundMusic should Playing");
+			SimpleAudioEngine::getInstance()->playBackgroundMusic(filePath, true);
+		}
+	}
 }
 
 /*

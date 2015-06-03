@@ -63,6 +63,9 @@ private:
 	//useful
 	std::string getDicValue(char * str);
 	bool checkClientInput(std::string & ipAndPortStr);
+
+	void playEffect(const char * filePath);
+	void playBackgroundMusic(const char * filePath);
 };
 
 #endif

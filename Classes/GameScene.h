@@ -438,6 +438,8 @@ private:
 	//Music
 	void initMusic();
 	void playUnitSound(UnitEnum mUnit);
+	void playEffect(const char * filePath);
+	void playBackgroundMusic(const char * filePath);
 	int intensive;
 	bool isPlayingIntensive;
 };

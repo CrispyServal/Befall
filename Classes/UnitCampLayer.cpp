@@ -343,14 +343,15 @@ Texture2D * UnitCampLayer::getUnitTexture(UnitEnum unit)
 			return NULL;
 		}
 		//get
-		if (unit < mUnitTexture.size())
-		{
-			return mUnitTexture[unit];
-		}
-		else
-		{
-			CCLOG("error: invalid unit");
-		}
+		//if (unit < mUnitTexture.size())
+		//{
+		//	return mUnitTexture[unit];
+		//}
+		//else
+		//{
+		//	CCLOG("error: invalid unit");
+		//}
+		return mUnitTexture[unit];
 	}
 int UnitCampLayer::getUnitProductivity(UnitEnum mUnitEnum)
 {
