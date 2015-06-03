@@ -116,8 +116,8 @@
 	<string>用于新单位建造</string>
 
 	<key>Version</key>
-	<string>版本： </string>
+	<string>次世代：   </string>
 	<key>VersionNumber</key>
-	<string>0.9.4</string>
+	<string>1.0</string>
 
 </dict>

@@ -2755,13 +2755,13 @@ void GameScene::initResourceMap()
 						break;
 					}
 				}
-				for (auto pp : spawnPoint)
+			}
+			for (auto pp : spawnPoint)
+			{
+				if ((pp.x == ranP.x) && (pp.y == ranP.y))
 				{
-					if ((pp.x == ranP.x) && (pp.y == ranP.y))
-					{
-						occupied = true;
-						break;
-					}
+					occupied = true;
+					break;
 				}
 			}
 			for (const auto & i : mResourceMap)
