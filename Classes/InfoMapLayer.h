@@ -10,6 +10,9 @@ class InfoMapLayer : public cocos2d::Layer
 {
 	float width;
 	float height;
+	int mSizeX;
+	int mSizeY;
+	float pointSize;
 	DrawNode * mBackground;
 	Label * mUnitNameLabel;
 	Label * mUnitInfoLabel;
@@ -27,7 +30,9 @@ public:
 
 	CREATE_FUNC(InfoMapLayer);
 	virtual bool init();
-	
+
+	void setPointSize(float size);
+	void setMapSize(int width, int height);
 	//DisplayUnitInfo in narrative format and HP info
 	void displayUnitInfo(string unitName, int hpNow, int hpAll);
 	//DisplayText in narrative format

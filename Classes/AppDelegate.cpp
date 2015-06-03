@@ -35,7 +35,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
     if(!glview) {
-        glview = GLViewImpl::create("Befall");
+        glview = GLViewImpl::create("Our Final Project Game BEFALL, Enjoy It~");
 		glview->setFrameSize(1280, 720);
         director->setOpenGLView(glview);
     }

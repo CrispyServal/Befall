@@ -201,11 +201,18 @@ bool GameScene::init()
 	addChild(mTechTreeLayer, 2);
 	//InfoMapLayer
 	mInfoMapLayer = InfoMapLayer::create();
-	mInfoMapLayer->setPosition(-mWinWidth / 2 + 100, -mWinHeight / 2 + 120);
+	float miniPS = 8;
+	mInfoMapLayer->setPointSize(miniPS);
+	mInfoMapLayer->setMapSize(mTiledMapLayer->getMapSize().width, mTiledMapLayer->getMapSize().height);
+	mInfoMapLayer->setPosition(Vec2((-mWinWidth
+		+ mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS) / 2,
+		(-mWinHeight + mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS) / 2));
 	addChild(mInfoMapLayer, 5);
 	//miniMapLayer
 	mMiniMapLayer = MiniMapLayer::create();
-	float miniPS = 8;
+
 	mMiniMapLayer->setPointSize(miniPS);
 	mMiniMapLayer->setMapSize(mTiledMapLayer->getMapSize().width, mTiledMapLayer->getMapSize().height);
 	mMiniMapLayer->setPosition(Vec2((mWinWidth 
@@ -219,18 +226,26 @@ bool GameScene::init()
 	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBarRect.push_back(Rect(0, 0, mWinWidth, 50));
 
+	//TopBar
 	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
 	mGrayBarRect.push_back(Rect(0, mWinHeight - 45, mWinWidth, 45));
 
-	mGrayBar->drawSolidRect(Vec2(0, 50), 
-		Vec2(mTiledMapLayer->getMapSize().width * miniPS + 30,
+	//InfoMap
+	mGrayBar->drawSolidRect(Vec2(- mWinWidth
+		+ mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50),
+		Vec2(mTiledMapLayer->getMapSize().width * miniPS + 45,
 		50 +mTiledMapLayer->getMapSize().width * miniPS 
 		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ), 
 		Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBarRect.push_back(Rect(0, 50, mTiledMapLayer->getMapSize().width * miniPS + 30,
+	mGrayBarRect.push_back(Rect(-mWinWidth
+		+ mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS
+		, 50, mTiledMapLayer->getMapSize().width * miniPS + 50,
 		mTiledMapLayer->getMapSize().width * miniPS
 		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS - 50));
 
+	//MiniMap
 	mGrayBar->drawSolidRect(Vec2(mWinWidth 
 		- mTiledMapLayer->getMapSize().width * miniPS 
 		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), 

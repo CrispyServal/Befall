@@ -12,6 +12,10 @@ InfoMapLayer::~InfoMapLayer()
 
 bool InfoMapLayer::init()
 {
+	pointSize = 10;
+	mSizeX = 22;
+	mSizeY = 22;
+
 	if (!Layer::init())
 	{
 		return false;
@@ -146,4 +150,22 @@ void InfoMapLayer::clearAllInfo()
 	mHPBar->setVisible(false);
 	mNowHpBar->setVisible(false);
 	mUnitInfoLabel->setVisible(false);
+}
+
+void InfoMapLayer::setMapSize(int width, int height)
+{
+	mBackground->clear();
+	mSizeX = width;
+	mSizeY = height;
+	mBackground->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), Color4F(0, 0, 0, 0.4));
+}
+
+void InfoMapLayer::setPointSize(float size)
+{
+	pointSize = size;
+	//mBg
+	mBackground->clear();
+	mBackground->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), Color4F(0, 0, 0, 0.4));
+
+	
 }
