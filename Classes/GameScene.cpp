@@ -477,12 +477,7 @@ void GameScene::netUpdate(float delta)
 			CCLOG("i win");
 			win(tF);
 		}
-		else if (which == mistnet)
-		{
-			bool tempMist = mNet.getMist() ? true : false;
-			while (!mNet.sendMist(mNet.getMist()));
-			mist = tempMist;
-		}
+
 	}
 	else
 	{
@@ -1873,21 +1868,6 @@ void GameScene::startGame()
 		//mWelcomeLayer->setVisible(false);
 		mWelcomeLayerDisplay = false;
 		mWelcomeLayer->removeFromParentAndCleanup(true);
-		//send Mist
-		if (mGameMode == server)
-		{
-			int tempMist = mist ? 1 : 0;
-			while (!mNet.sendMist(tempMist))
-			{
-				auto err = WSAGetLastError();
-				if (err != WSAEWOULDBLOCK)
-				{
-					//mDirector->popScene();
-				}
-			}
-			while (!mNet.read()){}
-			CCLOG("mist sended!");
-		}
 	}
 	initGameState();
 	//turn
@@ -2655,6 +2635,45 @@ void GameScene::initGameState()
 	spawnPoint.push_back(MyPointStruct{ 4, 19 });
 
 	initResourceMap();
+	//syncronize mist
+	//send Mist
+	if (mGameMode == server)
+	{
+		int tempMist = mist ? 1 : 0;
+		while (!mNet.sendMist(tempMist))
+		{
+			auto err = WSAGetLastError();
+			if (err != WSAEWOULDBLOCK)
+			{
+				//mDirector->popScene();
+			}
+		}
+		while (!mNet.read()){}
+		CCLOG("mist sended!");
+	}
+	if (mGameMode == client)
+	{
+		while (true)
+		{
+			while (!mNet.read())
+			{}
+			if (mNet.getWhich() == end)
+			{
+				CCLOG("read end");
+				mNet.lockOn();
+				break;
+			}
+			//send back
+			while (!mNet.sendMist(mNet.getMist()))
+			{}
+			if (mNet.getWhich() == mistnet)
+			{
+				bool tempMist = mNet.getMist() ? true : false;
+				mist = tempMist;
+			}
+		}
+	}
+
 	//set unit resources and property in campLayer
 	for (const auto & i : mUnitInitDataMap)
 	{
