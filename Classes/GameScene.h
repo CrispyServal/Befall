@@ -449,7 +449,7 @@ private:
 	//mist
 	bool mist;
 	int sightRange;
-	std::vector<Unit> visibleUnit;
+	std::vector<MyPointStruct> visibleUnit;
 	void addMist(const int & tF, bool beginOfTurn = false);
 	void addMist();
 

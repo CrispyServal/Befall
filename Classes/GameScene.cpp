@@ -119,7 +119,7 @@ std::vector<MyPointStruct> GameScene::getPath(const std::vector<PathNodeStruct> 
 
 bool GameScene::init()
 {
-	initMusic();
+	
 	if (!Scene::init())
 	{
 		return false;
@@ -137,6 +137,18 @@ bool GameScene::init()
 		false
 	};
 	initAttackTexture();
+	initMusic();
+	//test mist
+	if (mUserDefault->getBoolForKey("mistOn"))
+	{
+		mist = true;
+	}
+	else
+	{
+		mist = false;
+	}
+	sightRange = 7;
+
 	ball = Sprite::createWithTexture(mAttackTexture.LR2T);
 	ball->setOpacity(0);
 	explosives = Sprite::createWithTexture(mAttackTexture.LR2E);
@@ -366,17 +378,6 @@ bool GameScene::init()
 	mKeyboardListener->onKeyPressed = CC_CALLBACK_2(GameScene::onKeyPressed, this);
 	mKeyboardListener->onKeyReleased= CC_CALLBACK_2(GameScene::onKeyReleased, this);
 	mDispatcher->addEventListenerWithSceneGraphPriority(mKeyboardListener,this);
-
-	//test mist
-	if (mUserDefault->getBoolForKey("mistOn"))
-	{
-		mist = true;
-	}
-	else
-	{
-		mist = false;
-	}
-	sightRange = 7;
 
 	return true;
 }
@@ -631,6 +632,7 @@ void GameScene::switchTurn()
 	surpriseEgg();
 	//end turn
 	mBlueTurn = !mBlueTurn;
+	addMist();
 	CCLOG("now turn: %d", mBlueTurn);
 	mUnitCampLayer->setVisible(false);
 	mTechTreeLayer->setVisible(false);
@@ -730,7 +732,7 @@ void GameScene::switchTurn()
 	deleteMoveRange();
 	mUnitActionFSM[0] = mUnitActionFSM[1] = 0;
 
-	addMist();
+
 }
 
 void GameScene::refreshUnitState(const int & turnFlag)
@@ -1894,6 +1896,8 @@ void GameScene::startGame()
 	spawnUnit(farmer, 0, MyPointStruct{ 2, 19 });
 	spawnUnit(farmer, 0, MyPointStruct{ 4, 19 });
 	spawnUnit(farmer, 0, MyPointStruct{ 2, 17 });
+	//
+	addMist();
 	//change Population
 	mPopulation[0] += 4 * (mUnitInitDataMap[farmer].property.numPopulation 
 		+ mGameState[0].extraProperty[farmer].numPopulation);
@@ -1905,23 +1909,7 @@ void GameScene::startGame()
 	refreshResourcesTexture();
 	refreshPopulationIcons(0);
 
-	//if (mist)
-	//{
-	//	int tF = -1;
-	//	if (mGameMode == server)
-	//	{
-	//		tF = 0;
-	//	}
-	//	else if (mGameMode == vsPlayer)
-	//	{
-	//		tF = mBlueTurn ? 0 : 1;
-	//	}
-	//	else if (mGameMode == client)
-	//	{
-	//		tF = 1;
-	//	}
-	//	addMist(1 - tF);
-	//}
+	
 
 	//Test for info map
 	//mInfoMapLayer->displayText("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
@@ -2013,22 +2001,20 @@ void GameScene::refreshMiniMap()
 			unitSet[1 - tF].insert(i);
 		}
 
-		for (auto mUnit : mGameState[tF].unitMap)
+		for (auto & pUnit : mGameState[1 - tF].unitMap)
 		{
-			for (auto & pUnit : mGameState[1 - tF].unitMap)
+			//CCLOG("pathtree");
+			for (auto p : visibleUnit)
 			{
-				//CCLOG("pathtree");
-				for (auto p : getPathTree(mUnit.first, sightRange, std::set<MyPointStruct>{}))
+				//CCLOG("{%d,%d}",p.point.x, p.point.y);
+				if (p == pUnit.first)
 				{
-					//CCLOG("{%d,%d}",p.point.x, p.point.y);
-					if (p.point == pUnit.first)
-					{
-						unitSet[1 - tF].insert(p.point);
-					}
+					unitSet[1 - tF].insert(p);
 				}
-				//CCLOG("\n");
 			}
+			//CCLOG("\n");
 		}
+
 	}
 		std::set<MyPointStruct> fixedRSet;
 		std::set<MyPointStruct> randomRSet;
@@ -2331,19 +2317,36 @@ void GameScene::checkLayersOnMouseMoved()
 				}
 				else
 				{
-					mInfoMapLayer->displayUnitProperty(
+					bool visibleFlag = false;
+					if (mist)
+					{
+						for (auto i : visibleUnit)
+						{
+							if (i == mPos)
+							{
+								visibleFlag = true;
+							}
+						}
+					}
+					else
+					{
+						visibleFlag = true;
+					}
+					if(visibleFlag){
+						mInfoMapLayer->displayUnitProperty(
 						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
-						unitInfo.property.numHitPoint 
+						unitInfo.property.numHitPoint
 						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
 						mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint
 						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
-						mDisplayInfoMap["ATK"] + std::to_string(unitInfo.property.numAttack 
+						mDisplayInfoMap["ATK"] + std::to_string(unitInfo.property.numAttack
 						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numAttack) + "\n"
 						+ mDisplayInfoMap["DEF"] + std::to_string(unitInfo.property.numDefence
 						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numDefence) + "\n"
 						+ mDisplayInfoMap["RATK"] + std::to_string(unitInfo.property.numRangeAttack
 						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numRangeAttack));
-					clearFlag = false;
+						clearFlag = false;
+					}
 				}
 			}
 		}
@@ -4028,6 +4031,7 @@ void GameScene::surpriseEgg()
 
 void GameScene::addMist(const int & tF, bool beginOfTurn)
 {
+	visibleUnit.clear();
 	if (beginOfTurn)
 	{
 		for (auto mUnit : mGameState[1 - tF].unitMap)
@@ -4036,6 +4040,7 @@ void GameScene::addMist(const int & tF, bool beginOfTurn)
 			{
 				mUnit.second.sprite->setVisible(true);
 			}
+			visibleUnit.push_back(mUnit.first);
 		}
 		for (auto & i : mGameState[tF].unitMap)
 		{
@@ -4056,6 +4061,7 @@ void GameScene::addMist(const int & tF, bool beginOfTurn)
 					//CCLOG("{%d,%d}",p.point.x, p.point.y);
 					if (p.point == pUnit.first)
 					{
+						visibleUnit.push_back(p.point);
 						pUnit.second.sprite->setVisible(true);
 						CCLOG("set visible ");
 					}
