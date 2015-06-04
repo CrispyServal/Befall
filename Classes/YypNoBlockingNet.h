@@ -30,7 +30,8 @@ enum whichEnum
 	twoPoints,
 	onePoint,
 	end,
-	youwin
+	youwin,
+	mistnet
 };
 
 class YypNoBlockingNet
@@ -47,12 +48,14 @@ private:
 	twoPointStruct mPoints;
 	MyPointStruct mOnePoint;
 	whichEnum which;
+	int mistOn;
 public:
 	TechEnum getTech();
 	newSoldierStruct getNewSoldier();
 	twoPointStruct getPoints();
 	MyPointStruct getOnePoint();
 	whichEnum getWhich();
+	int getMist();
 	void lockOn()
 	{
 		lock = true;
@@ -64,6 +67,7 @@ public:
 	bool sendOnePoint(MyPointStruct onePoint);
 	bool sendEnd();
 	bool sendYouWin();
+	bool sendMist(int mistOn);
 	bool read();
 	bool startServer(int pot);
 	bool acceptConnect();

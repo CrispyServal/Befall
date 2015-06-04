@@ -477,6 +477,11 @@ void GameScene::netUpdate(float delta)
 			CCLOG("i win");
 			win(tF);
 		}
+		else if (which == mistnet)
+		{
+			bool tempMist = mNet.getMist() ? true : false;
+			mist = tempMist;
+		}
 	}
 	else
 	{
@@ -1867,6 +1872,21 @@ void GameScene::startGame()
 		//mWelcomeLayer->setVisible(false);
 		mWelcomeLayerDisplay = false;
 		mWelcomeLayer->removeFromParentAndCleanup(true);
+		//send Mist
+		if (mGameMode == server)
+		{
+			int tempMist = mist ? 1 : 0;
+			while (!mNet.sendMist(tempMist))
+			{
+				auto err = WSAGetLastError();
+				if (err != WSAEWOULDBLOCK)
+				{
+					//mDirector->popScene();
+				}
+			}
+			while (!mNet.read()){}
+			CCLOG("read send back!");
+		}
 	}
 	initGameState();
 	//turn
