@@ -2653,17 +2653,8 @@ void GameScene::initGameState()
 	}
 	if (mGameMode == client)
 	{
-		while (true)
-		{
 			while (!mNet.read())
 			{}
-			if (mNet.getWhich() == end)
-			{
-				CCLOG("read end");
-				mNet.lockOn();
-				break;
-			}
-			//send back
 			while (!mNet.sendMist(mNet.getMist()))
 			{}
 			if (mNet.getWhich() == mistnet)
@@ -2671,7 +2662,6 @@ void GameScene::initGameState()
 				bool tempMist = mNet.getMist() ? true : false;
 				mist = tempMist;
 			}
-		}
 	}
 
 	//set unit resources and property in campLayer
