@@ -480,6 +480,7 @@ void GameScene::netUpdate(float delta)
 		else if (which == mistnet)
 		{
 			bool tempMist = mNet.getMist() ? true : false;
+			while (!mNet.sendMist(mNet.getMist()));
 			mist = tempMist;
 		}
 	}
@@ -1885,7 +1886,7 @@ void GameScene::startGame()
 				}
 			}
 			while (!mNet.read()){}
-			CCLOG("read send back!");
+			CCLOG("mist sended!");
 		}
 	}
 	initGameState();
