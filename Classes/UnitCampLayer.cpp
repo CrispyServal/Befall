@@ -118,7 +118,8 @@ bool UnitCampLayer::init()
 		);
 	addChild(unitsNode, 0);
 	//words
-	mUnitName = Label::createWithTTF("no name", "fonts/STXIHEI.TTF", 40);
+	mFonts = "fonts/STXIHEI.TTF";
+	mUnitName = Label::createWithTTF("no name", mFonts, 40);
 	mUnitName->setColor(Color3B( 255, 255, 255 ));
 	mUnitName->setPosition
 	(
@@ -131,7 +132,7 @@ bool UnitCampLayer::init()
 	mUnitName->setOpacity(0);
 	addChild(mUnitName, 0);
 
-	mUnitIntroduction = Label::createWithTTF("no name", "fonts/STXIHEI.TTF", 20);
+	mUnitIntroduction = Label::createWithTTF("no name", mFonts, 20);
 	mUnitIntroduction->setColor(Color3B( 255, 255, 255 ));
 	mUnitIntroduction->setMaxLineWidth(Director::getInstance()->getWinSize().width / 2 - 100);
 	mUnitIntroduction->setPosition
@@ -145,7 +146,7 @@ bool UnitCampLayer::init()
 	mUnitIntroduction->setOpacity(0);
 	addChild(mUnitIntroduction, 0);
 	//re and pro
-	mUnitResourcesAndProperty = Label::createWithTTF("no name", "fonts/STXIHEI.TTF", 20);
+	mUnitResourcesAndProperty = Label::createWithTTF("no name", mFonts, 20);
 	mUnitResourcesAndProperty->setColor(Color3B( 255, 255, 255 ));
 	mUnitResourcesAndProperty->setMaxLineWidth(Director::getInstance()->getWinSize().width / 2 - 100);
 	mUnitResourcesAndProperty->setPosition
@@ -373,4 +374,50 @@ UnitPropertyStruct UnitCampLayer::getUnitProperty(UnitEnum mUnitEnum)
 			return i.property;
 		}
 	}
+}
+
+void UnitCampLayer::setFonts(const std::string & fontsFilePath)
+{
+	mFonts = fontsFilePath;
+	mUnitName = Label::createWithTTF("no name", mFonts, 40);
+	mUnitName->setColor(Color3B(255, 255, 255));
+	mUnitName->setPosition
+		(
+		Vec2
+		(
+		Director::getInstance()->getWinSize().width * 3 / 4,
+		mUnitImage->getBoundingBox().getMaxY() - mUnitName->getContentSize().height / 2
+		)
+		);
+	mUnitName->setOpacity(0);
+	addChild(mUnitName, 0);
+
+	mUnitIntroduction = Label::createWithTTF("no name", mFonts, 20);
+	mUnitIntroduction->setColor(Color3B(255, 255, 255));
+	mUnitIntroduction->setMaxLineWidth(Director::getInstance()->getWinSize().width / 2 - 100);
+	mUnitIntroduction->setPosition
+		(
+		Vec2
+		(
+		Director::getInstance()->getWinSize().width * 3 / 4,
+		mUnitName->getBoundingBox().getMinY() - 3 * mUnitIntroduction->getContentSize().height
+		)
+		);
+	mUnitIntroduction->setOpacity(0);
+	addChild(mUnitIntroduction, 0);
+	mUnitResourcesAndProperty = Label::createWithTTF("no name", mFonts, 20);
+	mUnitResourcesAndProperty->setColor(Color3B(255, 255, 255));
+	mUnitResourcesAndProperty->setMaxLineWidth(Director::getInstance()->getWinSize().width / 2 - 100);
+	mUnitResourcesAndProperty->setPosition
+		(
+		Vec2
+		(
+		Director::getInstance()->getWinSize().width * 3 / 4,
+		240
+		//mUnitIntroduction->getBoundingBox().getMinY() - 3 * mUnitResourcesAndProperty->getContentSize().height
+		)
+		);
+	mUnitResourcesAndProperty->setOpacity(0);
+	addChild(mUnitResourcesAndProperty, 0);
+
 }

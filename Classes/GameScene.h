@@ -20,6 +20,11 @@
 #include "TechTreeLayer.h"
 #include "GameTimer.h"
 #include "MiniMapLayer.h"
+#include "Color.h"
+#include "SimpleAudioEngine.h"
+#include "Music.h"
+
+using namespace CocosDenshion;
 //using namespace cocos2d;
 USING_NS_CC;
 
@@ -452,7 +457,17 @@ private:
 	std::vector<MyPointStruct> visibleUnit;
 	void addMist(const int & tF, bool beginOfTurn = false);
 	void addMist();
+	void initMist();
 
+	//theme
+	Color4F mBarColor;
+	Color4F mBgColor;
+	std::string mFonts;
+	std::string mIconFile;
+	int mShape;
+	std::string mCh;
+	void initGreyBar(float miniPS, Color4F color);
+	void initTheme();
 };
 
 #endif // !GAMESCENE_H

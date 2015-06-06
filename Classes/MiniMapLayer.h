@@ -20,6 +20,7 @@ public:
 	void setPointSize(float size);
 	void setMapSize(int width, int height);
 	void setViewBoxSize(float ViewBoxScalarX, float ViewBoxScalarY);
+	void setBgColor(Color4F bgColor);
 	bool containPoint(Vec2 mousePoint);
 	//这个不用动
 	bool blockClick()
@@ -42,6 +43,10 @@ public:
 		std::set<MyPointStruct> fixedResourceSet,
 		std::set<MyPointStruct> randomResourceSet
 		);
+	//0 for rect
+	//1 for circle
+	void setShape(int shape);
+	void drawShape(DrawNode* & who, Vec2 v1, Vec2 v2, Color4F color);
 private:
 	//内部实现推荐使用drawNode
 	float mWidth;
@@ -51,6 +56,8 @@ private:
 	float mViewBoxSizeX;
 	float mViewBoxSizeY;
 	float pointSize;
+	int mShape;
+	Color4F mBgColor;
 	DrawNode * mBg;
 	DrawNode * mMiniMap;
 	DrawNode * mViewBox;

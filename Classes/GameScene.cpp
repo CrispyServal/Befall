@@ -1,8 +1,4 @@
 #include "GameScene.h"
-#include "SimpleAudioEngine.h"
-#include "Music.h"
-
-using namespace CocosDenshion;
 
 GameScene::GameScene()
 {
@@ -125,10 +121,11 @@ bool GameScene::init()
 		return false;
 	}
 	//global
+	initTheme();
 	mDirector = Director::getInstance();
 	mUserDefault = UserDefault::getInstance();
     mDictionary = Dictionary::createWithContentsOfFile(
-		std::string{ "dictionary/" + mUserDefault->getStringForKey("language") + ".xml" }.c_str());
+		std::string{ "dictionary/" + mCh + ".xml" }.c_str());
 	mDictionary->retain();
 	mKeyStruct = {
 		false,
@@ -138,16 +135,8 @@ bool GameScene::init()
 	};
 	initAttackTexture();
 	initMusic();
-	//test mist
-	if (mUserDefault->getBoolForKey("mistOn"))
-	{
-		mist = true;
-	}
-	else
-	{
-		mist = false;
-	}
-	sightRange = 7;
+	initMist();
+
 
 	ball = Sprite::createWithTexture(mAttackTexture.LR2T);
 	ball->setOpacity(0);
@@ -185,7 +174,7 @@ bool GameScene::init()
 	initGameMenu();
 	auto startMenu = Menu::create(MenuItemLabel::create( 
 	[&]()->Label*{
-		auto label = Label::create(getDicValue("menu"), "fonts/STXIHEI.TTF", 24);
+		auto label = Label::create(getDicValue("menu"), mFonts, 24);
 		label->setColor(Color3B(0, 0, 0));
 		return label;
 	}(),
@@ -206,6 +195,7 @@ bool GameScene::init()
 	mTimer->setPosition(0, - mWinHeight / 2);
 	mTimer->setMaxTime(60);
 	mTimer->setEndName(getDicValue("endTurn"));
+	mTimer->setFonts(mFonts);
 	addChild(mTimer, 5);
 	//techtreelayer
 	mTechTreeLayer = TechTreeLayer::create();
@@ -213,6 +203,8 @@ bool GameScene::init()
 	addChild(mTechTreeLayer, 2);
 	//InfoMapLayer
 	mInfoMapLayer = InfoMapLayer::create();
+	mInfoMapLayer->setFonts(mFonts);
+	mInfoMapLayer->setBgColor(mBgColor);
 	float miniPS = 8;
 	mInfoMapLayer->setPointSize(miniPS);
 	mInfoMapLayer->setMapSize(mTiledMapLayer->getMapSize().width, mTiledMapLayer->getMapSize().height);
@@ -224,7 +216,8 @@ bool GameScene::init()
 	addChild(mInfoMapLayer, 5);
 	//miniMapLayer
 	mMiniMapLayer = MiniMapLayer::create();
-
+	mMiniMapLayer->setShape(mShape);
+	mMiniMapLayer->setBgColor(mBgColor);
 	mMiniMapLayer->setPointSize(miniPS);
 	mMiniMapLayer->setMapSize(mTiledMapLayer->getMapSize().width, mTiledMapLayer->getMapSize().height);
 	mMiniMapLayer->setPosition(Vec2((mWinWidth 
@@ -233,48 +226,11 @@ bool GameScene::init()
 		(- mWinHeight +mTiledMapLayer->getMapSize().width * miniPS 
 		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS ) / 2));
 	addChild(mMiniMapLayer, 5);
-	//gray bar
-	mGrayBar = DrawNode::create();
-	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBarRect.push_back(Rect(0, 0, mWinWidth, 50));
 
-	//TopBar
-	mGrayBar->drawSolidRect(Vec2(0, mWinHeight-45), Vec2(mWinWidth, mWinHeight), Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBarRect.push_back(Rect(0, mWinHeight - 45, mWinWidth, 45));
+	initGreyBar(miniPS, mBarColor);
 
-	//InfoMap
-	mGrayBar->drawSolidRect(Vec2(- mWinWidth
-		+ mTiledMapLayer->getMapSize().width * miniPS
-		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50),
-		Vec2(mTiledMapLayer->getMapSize().width * miniPS + 45,
-		50 +mTiledMapLayer->getMapSize().width * miniPS 
-		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ), 
-		Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBarRect.push_back(Rect(-mWinWidth
-		+ mTiledMapLayer->getMapSize().width * miniPS
-		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS
-		, 50, mTiledMapLayer->getMapSize().width * miniPS + 50,
-		mTiledMapLayer->getMapSize().width * miniPS
-		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS - 50));
-
-	//MiniMap
-	mGrayBar->drawSolidRect(Vec2(mWinWidth 
-		- mTiledMapLayer->getMapSize().width * miniPS 
-		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50), 
-		Vec2(mWinWidth,
-		50 + mTiledMapLayer->getMapSize().width * miniPS 
-		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS -50 ),
-		Color4F(0.607, 0.607, 0.607, 0.75));
-	mGrayBarRect.push_back(Rect(mWinWidth
-		- mTiledMapLayer->getMapSize().width * miniPS
-		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50, 
-		mTiledMapLayer->getMapSize().width * miniPS
-		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, mTiledMapLayer->getMapSize().width * miniPS
-		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS - 50));
-
-	addChild(mGrayBar, 3);
 	//turn label
-	mTurnLabel = Label::createWithTTF(getDicValue("Going")+" 0 "+getDicValue("Turn"), "fonts/STXIHEI.TTF", 24);
+	mTurnLabel = Label::createWithTTF(getDicValue("Going")+" 0 "+getDicValue("Turn"), mFonts, 24);
 	mTurnLabel->setColor(Color3B(0, 0, 0));
 	mTurnLabel->setPosition(mWinWidth - 120, mWinHeight - mTurnLabel->getContentSize().height / 2 - 5);
 	addChild(mTurnLabel, 8);
@@ -283,6 +239,7 @@ bool GameScene::init()
 	//unitcamplayer
 	mUnitCampLayer = UnitCampLayer::create();
 	//mUnitCampLayer->setPosition(0, 50);
+	mUnitCampLayer->setFonts(mFonts);
 	mUnitCampLayer->setUnlocked(farmer,true);
 	/*
 	mUnitCampLayer->setUnlocked(shortrangeunit1,true);
@@ -380,6 +337,51 @@ bool GameScene::init()
 	mDispatcher->addEventListenerWithSceneGraphPriority(mKeyboardListener,this);
 
 	return true;
+}
+
+void GameScene::initGreyBar(float miniPS, Color4F color)
+{
+	//gray bar
+	//Bottom bar
+	mGrayBar = DrawNode::create();
+	mGrayBar->drawSolidRect(Vec2(0, 0), Vec2(mWinWidth, 50), color);
+	mGrayBarRect.push_back(Rect(0, 0, mWinWidth, 50));
+
+	//TopBar
+	mGrayBar->drawSolidRect(Vec2(0, mWinHeight - 45), Vec2(mWinWidth, mWinHeight), color);
+	mGrayBarRect.push_back(Rect(0, mWinHeight - 45, mWinWidth, 45));
+
+	//InfoMap
+	mGrayBar->drawSolidRect(Vec2(-mWinWidth
+		+ mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50),
+		Vec2(mTiledMapLayer->getMapSize().width * miniPS + 45,
+		50 + mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS - 50),
+		color);
+	mGrayBarRect.push_back(Rect(-mWinWidth
+		+ mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS
+		, 50, mTiledMapLayer->getMapSize().width * miniPS + 50,
+		mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS - 50));
+
+	//MiniMap
+	mGrayBar->drawSolidRect(Vec2(mWinWidth
+		- mTiledMapLayer->getMapSize().width * miniPS
+		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50),
+		Vec2(mWinWidth,
+		50 + mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS - 50),
+		color);
+	mGrayBarRect.push_back(Rect(mWinWidth
+		- mTiledMapLayer->getMapSize().width * miniPS
+		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, 50,
+		mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS, mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS - 50));
+
+	addChild(mGrayBar, 3);
 }
 
 //for server, waiting client
@@ -2653,15 +2655,17 @@ void GameScene::initGameState()
 	}
 	if (mGameMode == client)
 	{
-			while (!mNet.read())
-			{}
-			while (!mNet.sendMist(mNet.getMist()))
-			{}
-			if (mNet.getWhich() == mistnet)
-			{
-				bool tempMist = mNet.getMist() ? true : false;
-				mist = tempMist;
-			}
+		while (!mNet.read())
+		{
+		}
+		while (!mNet.sendMist(mNet.getMist()))
+		{
+		}
+		if (mNet.getWhich() == mistnet)
+		{
+			bool tempMist = mNet.getMist() ? true : false;
+			mist = tempMist;
+		}
 	}
 
 	//set unit resources and property in campLayer
@@ -3214,7 +3218,7 @@ void GameScene::initResourcesIcons()
 	fixedResourceIcon = Sprite::create("uiComponent/icon_hydrogen.png");
 	fixedResourceIcon->setPosition(offset, 0);
 	resourcesIcons->addChild(fixedResourceIcon, 1, fixedResourceI);
-	mFixedResourceLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
+	mFixedResourceLabel = Label::createWithTTF("", mFonts, iconsFontSize);
 	mFixedResourceLabel->setColor(Color3B(0, 0, 0));
 	mFixedResourceLabel->setPosition(fixedResourceIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mFixedResourceLabel, 1, fixedResourceL);
@@ -3222,7 +3226,7 @@ void GameScene::initResourcesIcons()
 	randomResourceIcon = Sprite::create("uiComponent/icon_gravity.png");
 	randomResourceIcon->setPosition(0, 0);
 	resourcesIcons->addChild(randomResourceIcon, 1, randomResourceI);
-	mRandomResourceLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
+	mRandomResourceLabel = Label::createWithTTF("", mFonts, iconsFontSize);
 	mRandomResourceLabel->setColor(Color3B(0, 0, 0));
 	mRandomResourceLabel->setPosition(randomResourceIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mRandomResourceLabel, 1, randomResourceL);
@@ -3230,7 +3234,7 @@ void GameScene::initResourcesIcons()
 	productivityIcon = Sprite::create("uiComponent/icon_productivity.png");
 	productivityIcon->setPosition(offset * 2, 0);
 	resourcesIcons->addChild(productivityIcon, 1, productivityI);
-	mProductivityLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
+	mProductivityLabel = Label::createWithTTF("", mFonts, iconsFontSize);
 	mProductivityLabel->setColor(Color3B(0, 0, 0));
 	mProductivityLabel->setPosition(productivityIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mProductivityLabel, 1, productivityL);
@@ -3238,7 +3242,7 @@ void GameScene::initResourcesIcons()
 	researchIcon = Sprite::create("uiComponent/icon_researchlevel.png");
 	researchIcon->setPosition(offset * 3, 0);
 	resourcesIcons->addChild(researchIcon, 1, researchI);
-	mResearchLabel = Label::createWithTTF("", "fonts/STXIHEI.TTF", iconsFontSize);
+	mResearchLabel = Label::createWithTTF("", mFonts, iconsFontSize);
 	mResearchLabel->setColor(Color3B(0, 0, 0));
 	mResearchLabel->setPosition(researchIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mResearchLabel, 1, researchL);
@@ -3248,7 +3252,7 @@ void GameScene::initResourcesIcons()
 	resourcesIcons->addChild(populationIcon, 1, populationI);
 	std::stringstream ssP;
 	ssP << "0/" << mPopulationLimit;
-	mPopulationLabel = Label::createWithTTF(ssP.str(), "fonts/STXIHEI.TTF", iconsFontSize);
+	mPopulationLabel = Label::createWithTTF(ssP.str(), mFonts, iconsFontSize);
 	mPopulationLabel->setColor(Color3B(0, 0, 0));
 	mPopulationLabel->setPosition(populationIcon->boundingBox().getMaxX() + offset / 2 - offset2, 0);
 	resourcesIcons->addChild(mPopulationLabel, 1, populationL);
@@ -3271,8 +3275,8 @@ void GameScene::initResourcesIcons()
 
 void GameScene::initGameMenu()
 {
-	auto youWinLabel = Label::createWithTTF(getDicValue("youWin"), "fonts/STXIHEI.TTF", 30);
-	auto GGLabel = Label::createWithTTF(getDicValue("GG"), "fonts/STXIHEI.TTF", 30);
+	auto youWinLabel = Label::createWithTTF(getDicValue("youWin"), mFonts, 30);
+	auto GGLabel = Label::createWithTTF(getDicValue("GG"), mFonts, 30);
 	auto youWinItem = MenuItemLabel::create(youWinLabel, [&](Ref * sender)->void{
 		if (mOperateEnable)
 		{
@@ -3308,7 +3312,7 @@ void GameScene::initGameMenu()
 	auto menuBg = DrawNode::create();
 	menuBg->drawSolidRect(Vec2(mWinWidth / 2 - 100, mWinHeight / 2 - 150), 
 		Vec2(mWinWidth / 2 + 100, mWinHeight / 2 + 150), 
-		Color4F(0.607, 0.607, 0.607, 0.75));
+		mBarColor);
 	auto menu = Menu::create(/*bgItem,*/ youWinItem, GGItem, NULL);
 	menu->alignItemsVerticallyWithPadding(20);
 	mGameMenu = Node::create();
@@ -3335,7 +3339,7 @@ void GameScene::initWelcomeLayer()
 	juFlower[0]->runAction(RepeatForever::create(RotateBy::create(1, -30)));
 	juFlower[1]->runAction(RepeatForever::create(RotateBy::create(1, 30)));
 	//wating label
-	auto watingLabel = Label::createWithTTF("no word", "/fonts/STXIHEI.TTF", 30);
+	auto watingLabel = Label::createWithTTF("no word", mFonts, 30);
 	//CCLOG("%s",watingLabel->getString().c_str());
 	if (mGameMode == GameModeEnum::server)
 	{
@@ -3420,34 +3424,34 @@ void GameScene::initUnitTexture()
 	for (int i = 0; i < 2; ++i)
 	{
 		mUnitTextureMap[i][farmer] = {
-			mDirector->getTextureCache()->addImage("unitIcon/farmer_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/farmer_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/farmer_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/farmer_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/farmer_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/farmer_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][longrangeunit1] = {
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit1_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit1_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit1_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit1_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][longrangeunit2] = {
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit2_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit2_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit2_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit2_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][longrangeunit3] = {
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/longrangeunit3_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit3_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit3_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit3_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][shortrangeunit1] = {
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit1_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit1_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit1_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit1_side_" + std::to_string(i)+".png")
 		};
 		mUnitTextureMap[i][shortrangeunit2] = {
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage("unitIcon/shortrangeunit2_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit2_front_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit2_back_" + std::to_string(i)+".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit2_side_" + std::to_string(i)+".png")
 		};
 	}
 	CCLOG("munittexturemap size: %d", mUnitTextureMap[0].size());
@@ -4146,5 +4150,40 @@ void GameScene::addMist()
 			tF = 1;
 		}
 		addMist(1 - tF, true);
+	}
+}
+
+void GameScene::initMist()
+{
+	if (mUserDefault->getBoolForKey("mistOn"))
+	{
+		mist = true;
+	}
+	else
+	{
+		mist = false;
+	}
+	sightRange = 7;
+}
+
+void GameScene::initTheme()
+{
+	if (mUserDefault->getStringForKey("theme") == "grey")
+	{
+		mBarColor = COLOR4F_GREY_T;
+		mBgColor = COLOR4F_BLACK_T;
+		mFonts = "fonts/STXIHEI.TTF";
+		mIconFile = "unitIcon";
+		mShape = 0;
+		mCh = mUserDefault->getStringForKey("language");
+	}
+	else if (mUserDefault->getStringForKey("theme") == "pink")
+	{
+		mBarColor = COLOR4F_PINK;
+		mBgColor = COLOR4F_DARKGREY;
+		mFonts = "fonts/TGX.ttf";
+		mIconFile = "unitIconPink";
+		mShape = 1;
+		mCh = mUserDefault->getStringForKey("language") + "Pink";
 	}
 }

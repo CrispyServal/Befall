@@ -24,9 +24,11 @@ bool MiniMapLayer::init()
 	mSizeY = 22;
 	mViewBoxSizeX = 10 * pointSize;
 	mViewBoxSizeY = 5.625 * pointSize;
+	mBgColor = Color4F(0, 0, 0, 0.4);
+	mShape = 0;
 	//mBg
 	mBg = DrawNode::create();
-	mBg->drawSolidRect(Vec2( - mSizeX * pointSize / 2.0,  - mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), Color4F(0, 0, 0, 0.4));
+	mBg->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), mBgColor);
 	mBg->setPosition(mWidth / 2, mHeight / 2);
 	addChild(mBg);
 	//minmap
@@ -48,7 +50,7 @@ void MiniMapLayer::setPointSize(float size)
 	mViewBoxSizeY = 5.625 * pointSize;
 	//mBg
 	mBg->clear();
-	mBg->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), Color4F(0, 0, 0, 0.4));
+	mBg->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), mBgColor);
 	//
 	//viewbox
 	mViewBox->clear();
@@ -59,7 +61,7 @@ void MiniMapLayer::setMapSize(int width, int height)
 	mMiniMap->clear();
 	mSizeX = width;
 	mSizeY = height;
-	mMiniMap->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), Color4F(0, 0, 0, 0.4));
+	mMiniMap->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), mBgColor);
 }
 void MiniMapLayer::setViewBoxSize(float ViewBoxScalarX, float ViewBoxScalarY)
 {
@@ -173,7 +175,8 @@ void MiniMapLayer::refresh(
 		blue = 0;
 		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
 		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
-		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+		drawShape(mMiniMap, Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+
 	}
 	for (auto point : randomResourceSet)
 	{
@@ -182,7 +185,8 @@ void MiniMapLayer::refresh(
 		blue = 0;
 		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
 		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
-		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+		drawShape(mMiniMap, Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+
 	}
 	for (auto point : unitSet0)
 	{
@@ -191,7 +195,8 @@ void MiniMapLayer::refresh(
 		blue = 1;
 		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
 		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
-		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+		drawShape(mMiniMap, Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+
 	}
 	for (auto point : unitSet1)
 	{
@@ -200,7 +205,8 @@ void MiniMapLayer::refresh(
 		blue = 0;
 		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
 		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
-		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+		drawShape(mMiniMap, Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+
 	}
 	for (auto point : unitSet0N)
 	{
@@ -209,7 +215,8 @@ void MiniMapLayer::refresh(
 		blue = 0.78;
 		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
 		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
-		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+		drawShape(mMiniMap, Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+
 	}
 	for (auto point : unitSet1N)
 	{
@@ -218,6 +225,31 @@ void MiniMapLayer::refresh(
 		blue = 0.39;
 		x = (point.x - mSizeX / 2.0 + 0.5) * pointSize;
 		y = (mSizeY / 2.0 - point.y - 0.5) * pointSize;
-		mMiniMap->drawSolidRect(Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+		drawShape(mMiniMap, Vec2(x - pointSize / 2, y - pointSize / 2), Vec2(x + pointSize / 2, y + pointSize / 2), Color4F(red, green, blue, 1));
+
+	}
+}
+
+void MiniMapLayer::setBgColor(Color4F bgColor)
+{
+	mBgColor = bgColor;
+	mBg->clear();
+	mBg->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), mBgColor);
+}
+
+void MiniMapLayer::setShape(int shape)
+{
+	mShape = shape;
+}
+
+void MiniMapLayer::drawShape(DrawNode* & who, Vec2 v1, Vec2 v2, Color4F color)
+{
+	if (mShape == 0)
+	{
+		who->drawSolidRect(v1, v2, color);
+	}
+	if (mShape == 1)
+	{
+		who->drawSolidCircle(Vec2((v1.x + v2.x) / 2, (v1.y + v2.y) / 2), abs(v2.x - v1.x)/2, 0, 10, color);
 	}
 }

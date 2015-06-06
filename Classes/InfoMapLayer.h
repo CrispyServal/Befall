@@ -13,6 +13,8 @@ class InfoMapLayer : public cocos2d::Layer
 	int mSizeX;
 	int mSizeY;
 	float pointSize;
+	Color4F mBgColor;
+	std::string mFonts;
 	DrawNode * mBackground;
 	Label * mUnitNameLabel;
 	Label * mUnitInfoLabel;
@@ -31,6 +33,7 @@ public:
 	CREATE_FUNC(InfoMapLayer);
 	virtual bool init();
 
+	void setFonts(const std::string & fontsFilePath);
 	void setPointSize(float size);
 	void setMapSize(int width, int height);
 	//DisplayUnitInfo in narrative format and HP info
@@ -41,6 +44,7 @@ public:
 	void displayUnitProperty(string unitName, int hpNow, int hpAll, string mUnitProperty);
 	//Clear Info Display
 	void clearAllInfo();
+	void setBgColor(Color4F bgColor);
 };
 
 #endif

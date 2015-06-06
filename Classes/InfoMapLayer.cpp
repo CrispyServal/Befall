@@ -24,9 +24,10 @@ bool InfoMapLayer::init()
 	auto director = Director::getInstance();
 	width = director->getWinSize().width;
 	height = director->getWinSize().height;
+	mBgColor = Color4F(0, 0, 0, 0.4);
 	//background sprite
 	mBackground = DrawNode::create();
-	mBackground->drawSolidRect(Vec2(-88, -88), Vec2(88, 88), Color4F(0, 0, 0, 0.4));
+	mBackground->drawSolidRect(Vec2(-88, -88), Vec2(88, 88), mBgColor);
 	mBackground->setPosition(width / 2, height / 2);
 	addChild(mBackground, 1);
 	//sprite intialize
@@ -37,14 +38,15 @@ bool InfoMapLayer::init()
 	//addChild(mUnitSprite, 2);
 
 	//Unit Info Display
-	mUnitInfoLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 16);
+	mFonts = "fonts/STXIHEI.TTF";
+	mUnitInfoLabel = Label::createWithTTF("", mFonts, 16);
 	mUnitInfoLabel->setPosition(width / 2, height / 2);
 	mUnitInfoLabel->setDimensions(134, 108);//
 	mUnitInfoLabel->setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
 	addChild(mUnitInfoLabel, 2);
 
 	//unitname
-	mUnitNameLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
+	mUnitNameLabel = Label::createWithTTF("", mFonts, 20);
 	mUnitNameLabel->setPosition(width / 2, height / 2 + 70);
 	addChild(mUnitNameLabel, 3);
 
@@ -64,17 +66,17 @@ bool InfoMapLayer::init()
 	mNowHpBar->setPosition(mHpBarBg->getPosition());
 	addChild(mNowHpBar, 6);
 	//
-	mTechNameLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
+	mTechNameLabel = Label::createWithTTF("", mFonts, 20);
 	mTechNameLabel->setPosition(width / 2, height / 2 + 70);
 	addChild(mTechNameLabel, 7);
 	//
-	mTechIntroLabel = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 16);
+	mTechIntroLabel = Label::createWithTTF("", mFonts, 16);
 	mTechIntroLabel->setPosition(width / 2, height / 2 );	
 	mTechIntroLabel->setDimensions(134, 108);//
 	mTechIntroLabel->setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
 	addChild(mTechIntroLabel, 8);
 	//
-	mTechTurnLeft = Label::createWithSystemFont("", "fonts/STXIHEI.TTF", 20);
+	mTechTurnLeft = Label::createWithTTF("", mFonts, 20);
 	mTechTurnLeft->setPosition(width / 2, height / 2 - 70);
 	addChild(mTechTurnLeft, 9);
 	//
@@ -157,7 +159,7 @@ void InfoMapLayer::setMapSize(int width, int height)
 	mBackground->clear();
 	mSizeX = width;
 	mSizeY = height;
-	mBackground->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), Color4F(0, 0, 0, 0.4));
+	mBackground->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), mBgColor);
 }
 
 void InfoMapLayer::setPointSize(float size)
@@ -165,7 +167,58 @@ void InfoMapLayer::setPointSize(float size)
 	pointSize = size;
 	//mBg
 	mBackground->clear();
-	mBackground->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), Color4F(0, 0, 0, 0.4));
+	mBackground->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), mBgColor);
+}
 
-	
+void InfoMapLayer::setBgColor(Color4F bgColor)
+{
+	mBgColor = bgColor;
+	mBackground->clear();
+	mBackground->drawSolidRect(Vec2(-mSizeX * pointSize / 2.0, -mSizeY * pointSize / 2.0), Vec2(mSizeX * pointSize / 2.0, mSizeY * pointSize / 2.0), mBgColor);
+}
+
+void InfoMapLayer::setFonts(const std::string & fontsFilePath)
+{
+	mFonts = fontsFilePath;
+	auto director = Director::getInstance();
+	width = director->getWinSize().width;
+	height = director->getWinSize().height;
+
+	mUnitInfoLabel->setString("");
+	mUnitInfoLabel = Label::createWithTTF("", mFonts, 16);
+	mUnitInfoLabel->setPosition(width / 2, height / 2);
+	mUnitInfoLabel->setDimensions(134, 108);//
+	mUnitInfoLabel->setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
+	addChild(mUnitInfoLabel, 2);
+
+	//unitname
+	mUnitNameLabel->setString("");
+	mUnitNameLabel = Label::createWithTTF("", mFonts, 20);
+	mUnitNameLabel->setPosition(width / 2, height / 2 + 70);
+	addChild(mUnitNameLabel, 3);
+
+	//
+	mTechNameLabel->setString("");
+	mTechNameLabel = Label::createWithTTF("", mFonts, 20);
+	mTechNameLabel->setPosition(width / 2, height / 2 + 70);
+	addChild(mTechNameLabel, 7);
+	//
+	mTechIntroLabel->setString("");
+	mTechIntroLabel = Label::createWithTTF("", mFonts, 16);
+	mTechIntroLabel->setPosition(width / 2, height / 2);
+	mTechIntroLabel->setDimensions(134, 108);//
+	mTechIntroLabel->setAlignment(TextHAlignment::CENTER, TextVAlignment::CENTER);
+	addChild(mTechIntroLabel, 8);
+	//
+	mTechTurnLeft->setString("");
+	mTechTurnLeft = Label::createWithTTF("", mFonts, 20);
+	mTechTurnLeft->setPosition(width / 2, height / 2 - 70);
+	addChild(mTechTurnLeft, 9);
+	//
+	mTechNameLabel->setVisible(false);
+	mTechIntroLabel->setVisible(false);
+	mTechTurnLeft->setVisible(false);
+	mUnitNameLabel->setVisible(false);
+	mUnitInfoLabel->setVisible(false);
+
 }

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dict>
+	<key>Befall</key>
+	<string>降临</string>
+	<key>start</key>
+	<string>开始</string>
+	<key>setting</key>
+	<string>设置</string>
+	<key>exit</key>
+	<string>退出</string>
+	<key>story</key>
+	<string>战役</string>
+	<key>vsAi</key>
+	<string>人机</string>
+	<key>vsPlayer</key>
+	<string>双人</string>
+	<key>vsNet</key>
+	<string>网络</string>
+	<key>back</key>
+	<string>返回</string>
+	<key>musicOn</key>
+	<string>音乐    开</string>
+	<key>musicOff</key>
+	<string>音乐    关</string>
+	<key>seOn</key>
+	<string>音效    开</string>
+	<key>seOff</key>
+	<string>音效    关</string>
+	<key>mistOn</key>
+	<string>迷雾    开</string>
+	<key>mistOff</key>
+	<string>迷雾    关</string>
+	<key>themeGrey</key>
+	<string>主题    灰</string>
+	<key>themePink</key>
+	<string>主题    粉</string>
+
+	<key>ensureExit</key>
+	<string>确认</string>
+	<key>server</key>
+	<string>作为主机</string>
+	<key>client</key>
+	<string>连接他人</string>
+	<key>pak</key>
+	<string>按任意键继续。。。</string>
+	<key>cancel</key>
+	<string>取消</string>
+	<key>host</key>
+	<string>建立服务器</string>
+	<key>connect</key>
+	<string>连接</string>
+	<key>inputPort</key>
+	<string>输入端口</string>
+	<key>inputIp</key>
+	<string>输入IP和端口</string>
+	<key>waiting</key>
+	<string>怎么这么慢。。。</string>
+	<key>connecting</key>
+	<string>根本么有人。。。</string>
+	<key>endTurn</key>
+	<string>我好啦</string>
+	<key>GG</key>
+	<string>不玩了</string>
+	<key>youWin</key>
+	<string>打不过</string>
+	<key>menu</key>
+	<string>奇の钮</string>
+
+	<key>HP</key>
+	<string>红血条:    </string>
+	<key>DEF</key>
+	<string>抵抗力:    </string>
+	<key>ATK</key>
+	<string>击打力:    </string>
+	<key>RATK</key>
+	<string>胳膊长:    </string>
+	<key>RMOV</key>
+	<string>小腿长:    </string>
+	<key>CPU</key>
+	<string>主控数:    </string>
+	<key>FIXR</key>
+	<string>红果果:    </string>
+	<key>RANR</key>
+	<string>绿泡泡:    </string>
+	<key>PROD</key>
+	<string>制造力:    </string>
+	<key>TECH</key>
+	<string>科研值:    </string>
+
+	<key>Predict</key>
+	<string>还要</string>
+	<key>Turn</key>
+	<string>回合</string>
+	<key>Going</key>
+	<string>已经过了</string>
+	<key>Left</key>
+	<string>剩下</string>
+	<key>Second</key>
+	<string>秒</string>
+	<key>Timer</key>
+	<string>奇怪の光环</string>
+	<key>TimerIntro</key>
+	<string>一共60秒哦，动作快点</string>
+
+	<key>productivity</key>
+	<string>生产力</string>
+	<key>productivityIntro</key>
+	<string>就是组装机器有多快啦~</string>
+	<key>research</key>
+	<string>科技值</string>
+	<key>researchIntro</key>
+	<string>喝药水变身咯~</string>
+	<key>population</key>
+	<string>主控数</string>
+	<key>populationIntro</key>
+	<string>计划生育总之是没什么问题啦</string>
+
+	<key>TechTree</key>
+	<string>聚能研究所</string>
+	<key>TechTreeIntro</key>
+	<string>开挂</string>
+	<key>UnitCamp</key>
+	<string>械能工厂</string>
+	<key>UnitCampIntro</key>
+	<string>作死</string>
+
+	<key>Version</key>
+	<string>3A大作：   </string>
+	<key>VersionNumber</key>
+	<string>1.1.0</string>
+
+</dict>

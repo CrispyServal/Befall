@@ -28,7 +28,9 @@ bool GameTimer::init()
 	mBgCircle->setPosition(width / 2, height / 2);
 	addChild(mBgCircle, 1);
 	//EndLabel
-	mEndLabel = Label::createWithTTF("END", "fonts/STXIHEI.TTF", 30);
+	mFonts = "fonts/STXIHEI.TTF";
+	mEndName = "END";
+	mEndLabel = Label::createWithTTF(mEndName, mFonts, 30);
 	mEndLabel->setPosition(mBgCircle->getPositionX(), mBgCircle->getPositionY()+30);
 	mEndLabel->enableGlow(Color4B(255,255,255,155));
 	addChild(mEndLabel, 2);
@@ -55,8 +57,20 @@ void GameTimer::setMaxTime(float maxTime)// f
 }
 void GameTimer::setEndName(std::string endName)
 {
-	mEndLabel->setString(endName);
+	mEndName = endName;
+	mEndLabel->setString(mEndName);
 }
+
+void GameTimer::setFonts(const std::string & fontsFilePath)
+{
+	mFonts = fontsFilePath;
+	mEndLabel->setString("");
+	mEndLabel = Label::createWithTTF(mEndName, mFonts, 30);
+	mEndLabel->setPosition(mBgCircle->getPositionX(), mBgCircle->getPositionY() + 30);
+	mEndLabel->enableGlow(Color4B(255, 255, 255, 155));
+	addChild(mEndLabel, 2);
+}
+
 //只需判断结束回合有没有包含
 bool GameTimer::containPoint(Vec2 mousePoint)
 {

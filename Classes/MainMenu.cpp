@@ -123,14 +123,31 @@ bool MainMenu::init()
 	auto MistLabel = createMenuLabel(str3);
 	auto Mist = MenuItemLabel::create(MistLabel, CC_CALLBACK_1(MainMenu::settingCallback, this, "mist"));
 	items["mist"] = Mist;
+
+	char * str4;
+	std::string themeStr = userDefault->getStringForKey("theme");
+	if (themeStr == "grey")
+	{
+		str4 = "themeGrey";
+	}
+	else if (themeStr == "pink")
+	{
+		str4 = "themePink";
+	}
+	auto ThemeLabel = createMenuLabel(str4);
+	auto Theme = MenuItemLabel::create(ThemeLabel, CC_CALLBACK_1(MainMenu::settingCallback, this, "theme"));
+	items["theme"] = Theme;
+
 	auto backLabelInSetting = createMenuLabel("back");
 	auto backInSetting = MenuItemLabel::create(backLabelInSetting, CC_CALLBACK_1(MainMenu::backCallback,this, "setting", "root", 1));
 	items["backInSetting"] = backInSetting;
-	settingMenu = Menu::create(music, soundEffect, Mist, backInSetting, NULL);
+
+	settingMenu = Menu::create(music, soundEffect, Mist, Theme ,backInSetting, NULL);
 	settingMenu->alignItemsVerticallyWithPadding(10);
 	settingMenu->setVisible(false);
 	menuMap["setting"] = settingMenu;
 	addChild(settingMenu);
+
 	//exit Menu
 	auto ensureLabel = createMenuLabel("ensureExit");
 	auto ensure = MenuItemLabel::create(ensureLabel, CC_CALLBACK_1(MainMenu::exitCallback,this));
@@ -545,6 +562,7 @@ void MainMenu::settingCallback(Ref * sender, const std::string & setting)
 			userDefault->setBoolForKey("musicOn", false);
 		}
 	}
+	playBackgroundMusic(BG_MUSIC);
 	if (setting == std::string{ "se" })
 	{
 		if (!userDefault->getBoolForKey("seOn"))
@@ -573,7 +591,19 @@ void MainMenu::settingCallback(Ref * sender, const std::string & setting)
 			userDefault->setBoolForKey("mistOn", false);
 		}
 	}
-	playBackgroundMusic(BG_MUSIC);
+	if (setting == std::string{ "theme" })
+	{
+		if (userDefault->getStringForKey("theme") == "grey")
+		{
+			items["theme"]->setString(getDicValue("themePink"));
+			userDefault->setStringForKey("theme", "pink");
+		}
+		else if (userDefault->getStringForKey("theme") == "pink")
+		{
+			items["theme"]->setString(getDicValue("themeGrey"));
+			userDefault->setStringForKey("theme", "grey");
+		}
+	}
 }
 
 void MainMenu::exitCallback(Ref *sender)

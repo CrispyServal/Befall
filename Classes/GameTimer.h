@@ -36,6 +36,7 @@ public:
 	float getNowTime(){
 		return mNowTime;
 	}
+	void setFonts(const std::string & fontsFilePath);
 private:
 	float width;
 	float  height;
@@ -51,6 +52,8 @@ private:
 	DrawNode * mVitualCircle;
 	bool mTimerState;
 	float radius;
+	std::string mEndName;
+	std::string mFonts;
 };
 
 #endif // !GAMETIMER_H

@@ -56,6 +56,7 @@ public:
 	Texture2D * getUnitTexture(UnitEnum unit);
 	
 	const ResourcesStruct getUnitResources(UnitEnum unit) const;
+	void setFonts(const std::string & fontsFilePath);
 private:
 	//每个单位的数据存储
 	std::vector<UnitCamp::ItemInCampStruct> mItemsList;
@@ -78,6 +79,7 @@ private:
 	//Texture2D * mCloseTexture;
 	//textures
 	std::map<UnitEnum,Texture2D *> mUnitTexture;
+	std::string mFonts;
 };
 
 

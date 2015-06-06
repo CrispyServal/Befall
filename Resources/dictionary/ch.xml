@@ -30,6 +30,11 @@
 	<string>迷雾    开</string>
 	<key>mistOff</key>
 	<string>迷雾    关</string>
+	<key>themeGrey</key>
+	<string>主题    灰</string>
+	<key>themePink</key>
+	<string>主题    粉</string>
+
 	<key>ensureExit</key>
 	<string>确认</string>
 	<key>server</key>
@@ -120,8 +125,7 @@
 	<string>用于新单位建造</string>
 
 	<key>Version</key>
-	<string>次世代：   </string>
+	<string>3A大作：   </string>
 	<key>VersionNumber</key>
-	<string>1.0</string>
-
+	<string>1.1.0</string>
 </dict>
