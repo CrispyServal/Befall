@@ -2866,8 +2866,8 @@ void GameScene::initResourceMap()
 		}
 	}
 
-	mSpawn[0] = MyPointStruct{ mBasePosition[0].x, mBasePosition[0].y };
-	mSpawn[1] = MyPointStruct{ mBasePosition[1].x, mBasePosition[1].y };
+	mSpawn[0] = MyPointStruct{ mBasePosition[0].x+1, mBasePosition[0].y+1 };
+	mSpawn[1] = MyPointStruct{ mBasePosition[1].x-1, mBasePosition[1].y-1 };
 
 	for (int i = 0; i < mBasePosition.size(); i++)
 	{
