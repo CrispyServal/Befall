@@ -2620,24 +2620,27 @@ void GameScene::initGameState()
 	//num turn
 	mNumTurn = 0;
 	//spawn
-	mSpawn[0] = MyPointStruct{ 4, 17 };
-	mSpawn[1] = MyPointStruct{ 17, 4 };
+
 	//population
 	mPopulation[0] = mPopulation[1] = 0;
 	//¹²Í¨
 	initUnitData();
 	initTechData();
 
-	spawnPoint.push_back(MyPointStruct{ 17, 2 });
-	spawnPoint.push_back(MyPointStruct{ 19, 2 });
-	spawnPoint.push_back(MyPointStruct{ 17, 4 });
-	spawnPoint.push_back(MyPointStruct{ 19, 4 });
-	spawnPoint.push_back(MyPointStruct{ 2, 17 });
-	spawnPoint.push_back(MyPointStruct{ 4, 17 });
-	spawnPoint.push_back(MyPointStruct{ 2, 19 });
-	spawnPoint.push_back(MyPointStruct{ 4, 19 });
+
 
 	initResourceMap();
+
+	mSpawn[0] = MyPointStruct{ mBasePosition[0].x, mBasePosition[0].y };
+	mSpawn[1] = MyPointStruct{ mBasePosition[1].x, mBasePosition[1].y };
+
+	for (int i = 0; i < mBasePosition.size(); i++)
+	{
+		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x + 1, mBasePosition[i].y + 1 });
+		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x + 1, mBasePosition[i].y - 1 });
+		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x - 1, mBasePosition[i].y + 1 });
+		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x - 1, mBasePosition[i].y - 1 });
+	}
 	//syncronize mist
 	//send Mist
 	if (mGameMode == server)
