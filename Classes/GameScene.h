@@ -423,7 +423,7 @@ private:
 	//只需起点
 	void collectionFarmerMove(const MyPointStruct & farmerFrom, const int & tF);
 	//农民攻击时，调用此函数。自动处理统计状态
-	void collectionFamerAttack(const MyPointStruct & farmerFrom, const MyPointStruct & farmerTo, const int & tF);
+	void collectionFarmerAttack(const MyPointStruct & farmerFrom, const MyPointStruct & farmerTo, const int & tF);
 	//
 	void refreshResource(const int & tF);
 

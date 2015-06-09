@@ -485,7 +485,7 @@ void GameScene::netUpdate(float delta)
 	else
 	{
 		auto err = WSAGetLastError();
-		//CCLOG("net err: %d", err);
+		CCLOG("net err: %d", err);
 		if (err != WSAEWOULDBLOCK)
 		{
 			CCLOG("he GGed!!!");
@@ -945,6 +945,11 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	}
 	auto sequence = Sequence::create(actionVector);
 	//sequence->retain();
+	//farmer
+	if (mGameState[turnFlag].unitMap[path[0]].type == farmer)
+	{
+		collectionFarmerMove(path[0], turnFlag);
+	}
 	unit.sprite->runAction(sequence);
 }
 
@@ -987,7 +992,7 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 		if ((reP.first == attackedUnitPosition) && (reP.second.type != base))
 		{
 			//attack resource
-			collectionFamerAttack(from, attackedUnitPosition, tF);
+			collectionFarmerAttack(from, attackedUnitPosition, tF);
 			return;
 		}
 	}
@@ -3661,11 +3666,6 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				}
 				//move
 				moveUnit(movePath, tF, true);
-				//farmer
-				if (mGameState[tF].unitMap[mOriginalPoint].type == farmer)
-				{
-					collectionFarmerMove(mOriginalPoint, tF);
-				}
 				mOriginalPoint = nowPoint;
 				/*
 				showAttackRange(nowPoint, tF);
@@ -3862,7 +3862,7 @@ void GameScene::collectionFarmerMove(const MyPointStruct & farmerFrom, const int
 }
 
 //need test
-void GameScene::collectionFamerAttack(const MyPointStruct & farmerFrom, const MyPointStruct & farmerTo, const int & tF)
+void GameScene::collectionFarmerAttack(const MyPointStruct & farmerFrom, const MyPointStruct & farmerTo, const int & tF)
 {
 	//check collecable
 	if (!collecable(farmerTo, tF))
@@ -4084,6 +4084,7 @@ void GameScene::addMist(const int & tF, bool beginOfTurn)
 		}
 		for (auto & i : mGameState[tF].unitMap)
 		{
+			CCLOG("in add mist: tF:%d, pos: %d,%d",tF,i.first.x,i.first.y);
 			if (i.second.sprite->isVisible())
 			{
 				i.second.sprite->setVisible(false);
