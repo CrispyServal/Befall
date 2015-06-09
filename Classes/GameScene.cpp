@@ -2631,16 +2631,7 @@ void GameScene::initGameState()
 
 	initResourceMap();
 
-	mSpawn[0] = MyPointStruct{ mBasePosition[0].x, mBasePosition[0].y };
-	mSpawn[1] = MyPointStruct{ mBasePosition[1].x, mBasePosition[1].y };
 
-	for (int i = 0; i < mBasePosition.size(); i++)
-	{
-		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x + 1, mBasePosition[i].y + 1 });
-		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x + 1, mBasePosition[i].y - 1 });
-		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x - 1, mBasePosition[i].y + 1 });
-		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x - 1, mBasePosition[i].y - 1 });
-	}
 	//syncronize mist
 	//send Mist
 	if (mGameMode == server)
@@ -2873,6 +2864,17 @@ void GameScene::initResourceMap()
 				continue;
 			}
 		}
+	}
+
+	mSpawn[0] = MyPointStruct{ mBasePosition[0].x, mBasePosition[0].y };
+	mSpawn[1] = MyPointStruct{ mBasePosition[1].x, mBasePosition[1].y };
+
+	for (int i = 0; i < mBasePosition.size(); i++)
+	{
+		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x + 1, mBasePosition[i].y + 1 });
+		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x + 1, mBasePosition[i].y - 1 });
+		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x - 1, mBasePosition[i].y + 1 });
+		spawnPoint.push_back(MyPointStruct{ mBasePosition[i].x - 1, mBasePosition[i].y - 1 });
 	}
 	//random: random
 	if (mGameMode != client)
