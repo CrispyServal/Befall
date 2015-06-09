@@ -147,11 +147,11 @@ bool YypNoBlockingNet::sendMist(int mistOn)
 {
 	int sendData[6];
 	sendData[0] = 6;
-	sendData[1] = mistOn;
+	sendData[1] = 0;
 	sendData[2] = 0;
 	sendData[3] = 0;
 	sendData[4] = 0;
-	sendData[5] = 0;
+	sendData[5] = mistOn;
 	int ret = send(sclient, (char *)&sendData, sizeof(sendData), 0);//??
 	if (ret == SOCKET_ERROR)
 		return false;
@@ -185,7 +185,7 @@ bool YypNoBlockingNet::read()
 			case 1:mNewSoldier.unit = (UnitEnum)enu; mNewSoldier.loc.x = x1; mNewSoldier.loc.y = y1; break;
 			case 2:mPoints.first.x = x1; mPoints.first.y = y1; mPoints.second.x = x2; mPoints.second.y = y2; break;
 			case 3:mOnePoint.x = x1; mOnePoint.y = y1; break;
-			case 6:mistOn = x1;
+			case 6:mistOn = enu;
 			}
 			lock = false;
 		}
