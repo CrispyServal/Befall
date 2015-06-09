@@ -118,7 +118,7 @@
 			{
 				"numFixedResource" : 40,
 				"numRandomResource" : 20,
-				"absProductivity" : 10
+				"absProductivity" : 100
 			}
 		},
 		{
