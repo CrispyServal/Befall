@@ -34,6 +34,10 @@
 	<string>主题    灰</string>
 	<key>themePink</key>
 	<string>主题    粉</string>
+	<key>mapedit</key>
+	<string>地图编辑器</string>
+	<key>save</key>
+	<string>保存</string>
 
 	<key>ensureExit</key>
 	<string>确认</string>

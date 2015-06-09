@@ -7,12 +7,14 @@
 #include "MyEnums.h"
 #include <map>
 #include <set>
+#include "json/document.h"
 
 //using namespace cocos2d;
 //USING_NS_CC_EXT;
 USING_NS_CC;
 
 #include "GameScene.h"
+#include "MiniMapLayer.h"
 
 class MainMenu : public Layer
 {
@@ -31,10 +33,12 @@ private:
 	Menu * settingMenu;
 	Menu * exitMenu;
 	Menu * netMenu;
+	Menu * mapMenu;
 	Layer * serverLayer;
 	Layer * clientLayer;
 	Label * editBoxInServer;
 	Label * editBoxInClient;
+	MenuItemLabel * confirm;
 	std::map<std::string, MenuItemLabel *> items;
 	std::map<std::string, Menu *> menuMap;
 	std::set<GameModeEnum> closeModeSet;
@@ -42,6 +46,10 @@ private:
 	Label * mVersionLabel;
 	//creates
 	Label * createMenuLabel(char * str);
+
+	std::vector<string> mapNameArray;
+	//MiniMap
+	MiniMapLayer * mMiniMapLayer;
 	//listener
 	EventListenerMouse * mouseListener;
 	EventListenerKeyboard * keyboardListener;
@@ -53,6 +61,7 @@ private:
 	void settingCallback(Ref * sender, const std::string & setting);
 	void exitCallback(Ref * sender);
 	void displayEditBoxCallback(Ref * sender, const std::string & mode);
+	void displayMapCallBack(Ref * sender, const std::string & mapName);
 	void cancelCallback(Ref * sender, const std::string & thisMenu);
 	void onMouseMove(Event * evnet);
 	void onKeyReleased(EventKeyboard::KeyCode keyCode, Event * event);
@@ -66,6 +75,12 @@ private:
 
 	void playEffect(const char * filePath);
 	void playBackgroundMusic(const char * filePath);
+
+	//map preview
+	std::vector<MyPointStruct> mBasePosition;
+	void refreshMiniMap(std::string mapName);
+	std::map<MyPointStruct, Unit> mResourceMap;
+	void refreshMiniMap();
 };
 
 #endif

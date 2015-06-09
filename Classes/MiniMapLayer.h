@@ -47,6 +47,7 @@ public:
 	//1 for circle
 	void setShape(int shape);
 	void drawShape(DrawNode* & who, Vec2 v1, Vec2 v2, Color4F color);
+	void setDragFrameInvisible(bool isVisible);
 private:
 	//内部实现推荐使用drawNode
 	float mWidth;

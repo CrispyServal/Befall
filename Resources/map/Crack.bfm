@@ -1,0 +1,764 @@
+{
+    "mapelement": [
+        {
+            "element": "base0",
+            "position": {
+                "X": 11,
+                "Y": 3
+            },
+            "numHitPoint": 400
+        },
+        {
+            "element": "base1",
+            "position": {
+                "X": 11,
+                "Y": 17
+            },
+            "numHitPoint": 400
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 8,
+                "Y": 3
+            },
+            "numHitPoint": 300
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 14,
+                "Y": 17
+            },
+            "numHitPoint": 300
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 8,
+                "Y": 11
+            },
+            "numHitPoint": 800
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 14,
+                "Y": 11
+            },
+            "numHitPoint": 800
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 11,
+                "Y": 11
+            },
+            "numHitPoint": 1500
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 0
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 1
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 2
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 3
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 4
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 5
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 6
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 7
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 8
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 9
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 10
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 11
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 12
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 13
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 14
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 15
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 16
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 17
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 18
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 19
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 20
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 2,
+                "Y": 21
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 0
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 1
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 2
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 3
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 4
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 5
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 6
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 7
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 8
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 9
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 10
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 11
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 12
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 13
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 14
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 15
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 16
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 17
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 18
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 19
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 20
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 3,
+                "Y": 21
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 0
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 1
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 2
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 3
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 4
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 5
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 6
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 7
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 8
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 9
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 10
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 11
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 12
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 13
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 14
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 15
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 16
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 17
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 18
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 19
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 20
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 17,
+                "Y": 21
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 0
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 1
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 2
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 3
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 4
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 5
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 6
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 7
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 8
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 9
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 10
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 11
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 12
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 13
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 14
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 15
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 16
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 17
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 18
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 19
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 20
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 18,
+                "Y": 21
+            },
+            "numHitPoint": 60
+        }
+    ]
+}

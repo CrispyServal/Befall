@@ -1,5 +1,7 @@
 #include "MainMenu.h"
 #include "SimpleAudioEngine.h"
+#include "io.h"
+#include <string>
 
 using namespace CocosDenshion;
 
@@ -27,6 +29,20 @@ bool MainMenu::init()
 	{
 		i = false;
 	}
+	auto mDirector = Director::getInstance();
+	auto mWinHeight = mDirector->getWinSize().height;
+	auto mWinWidth = mDirector->getWinSize().width;
+
+	//
+	mMiniMapLayer = MiniMapLayer::create();
+	mMiniMapLayer->setPointSize(8);
+	mMiniMapLayer->setMapSize(22, 22);
+	mMiniMapLayer->setShape(1);
+	mMiniMapLayer->setDragFrameInvisible(false);
+	mMiniMapLayer->setPosition(Vec2(250,0));
+	mMiniMapLayer->setVisible(false);
+	addChild(mMiniMapLayer, 5);
+
 	//global
 	menuOpen[0] = true;
 	userDefault = UserDefault::getInstance();
@@ -54,6 +70,7 @@ bool MainMenu::init()
 	auto settingLabel = createMenuLabel("setting");
 	auto setting = MenuItemLabel::create(settingLabel, CC_CALLBACK_1(MainMenu::enterCallback, this, "root", "setting", 0));
 	items["setting"] = setting;
+
 	auto exitLabel = createMenuLabel("exit");
 	auto exit = MenuItemLabel::create(exitLabel, CC_CALLBACK_1(MainMenu::enterCallback, this,"root", "exit", 0));
 	items["exit"] = exit;
@@ -71,15 +88,22 @@ bool MainMenu::init()
 	auto vsAi = MenuItemLabel::create(vsAiLabel, CC_CALLBACK_0(MainMenu::enterGameCallback, this, GameModeEnum::vsAi));
 	items["vsAi"] = vsAi;
 	closeModeSet.insert(GameModeEnum::vsAi);
+	//auto vsPlayerLabel = createMenuLabel("vsPlayer");
+	//auto vsPlayer = MenuItemLabel::create(vsPlayerLabel, CC_CALLBACK_0(MainMenu::enterGameCallback, this, GameModeEnum::vsPlayer));
+	//items["vsPlayer"] = vsPlayer;
+
 	auto vsPlayerLabel = createMenuLabel("vsPlayer");
-	auto vsPlayer = MenuItemLabel::create(vsPlayerLabel, CC_CALLBACK_0(MainMenu::enterGameCallback, this, GameModeEnum::vsPlayer));
+	auto vsPlayer = MenuItemLabel::create(vsPlayerLabel, CC_CALLBACK_1(MainMenu::enterCallback, this, "start", "mapName", 1));
 	items["vsPlayer"] = vsPlayer;
+
 	auto vsNetLabel = createMenuLabel("vsNet");
 	auto vsNet = MenuItemLabel::create(vsNetLabel, CC_CALLBACK_1(MainMenu::enterCallback, this, "start", "net", 1));
 	items["vsNet"] = vsNet;
+
 	auto backLabel = createMenuLabel("back");
 	auto back = MenuItemLabel::create(backLabel, CC_CALLBACK_1(MainMenu::backCallback,this, "start", "root", 1));
 	items["back"] = back;
+
 	startMenu = Menu::create(story, vsAi, vsPlayer, vsNet, back, NULL);
 	startMenu->alignItemsVerticallyWithPadding(10);
 	startMenu->setVisible(false);
@@ -160,6 +184,76 @@ bool MainMenu::init()
 	exitMenu->setVisible(false);
 	menuMap["exit"] = exitMenu;
 	addChild(exitMenu);
+
+	//map choose menu
+	_finddata_t FileInfo;
+	string strfind = "map\\*.*";
+	long Handle = _findfirst(strfind.c_str(), &FileInfo);
+	if (Handle == -1L)
+	{
+		CCLOG("can not match the folder");
+	}
+	do{
+		if (FileInfo.attrib & _A_SUBDIR)
+		{
+			//directory
+			//if( (strcmp(FileInfo.name, ".") != 0) 
+			//	&& (strcmp(FileInfo.name, "..") != 0))
+			//{}
+		}
+		else
+		{
+			std::string newFile;
+			for (char * tempC = FileInfo.name; *tempC; tempC++)
+			{
+				CCLOG("%c", *tempC);
+				newFile.push_back(*tempC);
+			}
+
+			if (newFile.size() >= 4)
+			{
+				if (newFile[newFile.size() - 1] == 'm'
+					&& newFile[newFile.size() - 2] == 'f'
+					&& newFile[newFile.size() - 3] == 'b'
+					&& newFile[newFile.size() - 4] == '.')
+				{
+					mapNameArray.push_back(newFile);
+				}
+			}
+		}
+	} while (_findnext(Handle, &FileInfo) == 0);
+	_findclose(Handle);
+
+	mapMenu = Menu::create();
+	for (int i = 0; i < mapNameArray.size(); i++)
+	{
+		string mapName = mapNameArray[i];
+		string mapNameCut = mapName;
+		mapNameCut.pop_back();
+		mapNameCut.pop_back();
+		mapNameCut.pop_back();
+		mapNameCut.pop_back();
+		auto mapLabel = createMenuLabel((char *)mapNameCut.c_str());
+		auto map = MenuItemLabel::create(mapLabel, CC_CALLBACK_1(MainMenu::displayMapCallBack, this, mapName));
+		items[mapName] = map;
+		mapMenu->addChild(map);
+	}
+	auto backInMapLabel = createMenuLabel("cancel");
+	auto backInMap = MenuItemLabel::create(backInMapLabel, CC_CALLBACK_1(MainMenu::backCallback, this, "mapName", "start", 2));
+	items["backInMenu"] = backInMap;
+	mapMenu->addChild(backInMap);
+
+	auto confirmLabel = createMenuLabel("ensureExit");
+	confirm = MenuItemLabel::create(confirmLabel, CC_CALLBACK_0(MainMenu::enterGameCallback, this, GameModeEnum::vsPlayer));
+	items["confirm"] = confirm;
+	confirm->setVisible(false);
+	mapMenu->addChild(confirm);
+	
+	mapMenu->alignItemsVerticallyWithPadding(10);
+	mapMenu->setVisible(false);
+	menuMap["mapName"] = mapMenu;
+	addChild(mapMenu);
+
 	//net Menu
 	auto serverLabel = createMenuLabel("server");
 	auto server = MenuItemLabel::create(serverLabel, CC_CALLBACK_1(MainMenu::displayEditBoxCallback,this,"server"));
@@ -170,7 +264,8 @@ bool MainMenu::init()
 	auto backInNetLabel = createMenuLabel("back");
 	auto backInNet = MenuItemLabel::create(backInNetLabel, CC_CALLBACK_1(MainMenu::backCallback,this,"net", "start", 2));
 	items["backInNet"] = backInNet;
-	netMenu = Menu::create(server, client, backInNet, NULL);
+	netMenu = Menu::create(server, client/*, backInNet*/, NULL);
+	netMenu->addChild(backInNet);
 	netMenu->alignItemsVerticallyWithPadding(10);
 	netMenu->setVisible(false);
 	menuMap["net"] = netMenu;
@@ -398,6 +493,12 @@ void MainMenu::backCallback(Ref * sender, const std::string & thisMenu, const st
 		menuMap[leftMenu]->setVisible(true);
 		menuOpen[nowDeep - 1] = true;
 	}
+	if (thisMenu == "mapName")
+	{
+		mMiniMapLayer->setVisible(false);
+		//mapNameLabel->setVisible(false);
+		confirm->setVisible(false);
+	}
 }
 
 void MainMenu::enterGameCallback(GameModeEnum gamemode)
@@ -485,7 +586,10 @@ void MainMenu::enterGameCallback(GameModeEnum gamemode)
 		}
 		else if (gamemode == GameModeEnum::vsPlayer )
 		{
-			userDefault->setIntegerForKey("gamemode", GameModeEnum::vsPlayer);
+			if (confirm->isVisible())
+			{
+				userDefault->setIntegerForKey("gamemode", GameModeEnum::vsPlayer);
+			}
 		}
 		//enter game!
 		//auto gameScene = GameScene::create();
@@ -512,6 +616,37 @@ void MainMenu::displayEditBoxCallback(Ref * sender, const std::string & mode)
 		clientLayer->runAction(clientLayerFadeIn);
 		clientLayer->setVisible(true);
 	}
+}
+
+void MainMenu::displayMapCallBack(Ref * sender, const std::string & mapName)
+{
+	playEffect(EFFECT_MUSIC);
+	//auto netMenuFadeOut = FadeOut::create(0.5);
+	//mapMenu->runAction(netMenuFadeOut);
+	//mapMenu->setVisible(false);
+	if (!mMiniMapLayer->isVisible())
+	{
+		mMiniMapLayer->setVisible(true);
+	}
+	if (!confirm->isVisible())
+	{
+		confirm->setVisible(true);
+	}
+	userDefault->setStringForKey("map", mapName);
+	for (auto i : items)
+	{
+		for (auto j : mapNameArray)
+		{
+			if (i.first == j)
+			{
+				i.second->setColor(Color3B(0, 0, 0));
+			}
+		}
+	}
+	items[mapName]->setColor(Color3B(255, 0, 0));
+
+	refreshMiniMap(mapName);
+
 }
 
 void MainMenu::cancelCallback(Ref * sender, const std::string & thisMenu)
@@ -669,6 +804,10 @@ std::string MainMenu::getDicValue(char * str)
 
 Label * MainMenu::createMenuLabel(char * str)
 {
+	if (getDicValue(str) == "")
+	{
+		return Label::createWithTTF(str, "fonts/STXIHEI.TTF", 30);
+	}
 	return Label::createWithTTF(getDicValue(str), "fonts/STXIHEI.TTF", 30);
 }
 
@@ -735,4 +874,101 @@ void MainMenu::playBackgroundMusic(const char * filePath)
 			SimpleAudioEngine::getInstance()->playBackgroundMusic(filePath, true);
 		}
 	}
+}
+
+void MainMenu::refreshMiniMap(std::string mapName)
+{
+	auto jsonFile = FileUtils::getInstance()->fullPathForFilename("map/" + mapName);
+	ssize_t size = 0;
+	unsigned char * loadStr = FileUtils::getInstance()->getFileData(jsonFile, "r", &size);
+	std::string jsonStr = std::string( (const char *)loadStr, size );
+
+	mBasePosition.clear();
+	mResourceMap.clear();
+
+	rapidjson::Document jDocument;
+	jDocument.Parse<0>(jsonStr.c_str());
+	if (jDocument.HasParseError())
+	{
+		CCLOG("unitDisplay.json parse error!");
+	}
+	if (!jDocument.IsObject())
+	{
+		CCLOG("error : not object!");
+	}
+	rapidjson::Value & mapElements = jDocument["mapelement"];
+	if (mapElements.IsArray())
+	{
+		for (int i = 0; i < mapElements.Size(); ++i)
+		{
+			rapidjson::Value & item = mapElements[i];
+			MyPointStruct point = { item["position"]["X"].GetInt(), item["position"]["Y"].GetInt() };
+			//CCLOG("point: %d,%d; num: %d", point.x, point.y, item["numHitPoint"].GetInt());
+			std::string element{ item["element"].GetString() };
+			//CCLOG("element: %s", element.c_str());
+			if (element == "base0")
+			{
+				mBasePosition.push_back(point);
+				continue;
+			}
+			if (element == "base1")
+			{	
+				mBasePosition.push_back(point);
+				continue;
+			}
+			if (element == "resourceFixed")
+			{
+				Unit unit = {
+					UnitEnum::fixedResource,
+					NULL,
+					UnitStateEnum::attacked,
+					NULL,
+				};
+				mResourceMap[point] = unit;
+				continue;
+			}
+			if (element == "resourceRandom")
+			{
+				//CCLOG("a resourceR!");
+				Unit unit = {
+					UnitEnum::randomResource,
+					NULL,
+					UnitStateEnum::attacked,
+					NULL
+				};
+				mResourceMap[point] = unit;
+				continue;
+			}
+		}
+	}
+
+	refreshMiniMap();
+}
+
+void MainMenu::refreshMiniMap()
+{
+	std::set<MyPointStruct> unitSet[2];
+	std::set<MyPointStruct> unitSetN[2];
+	std::set<MyPointStruct> fixedRSet;
+	std::set<MyPointStruct> randomRSet;
+
+	for (int i = 0; i < mBasePosition.size() && i < 2; ++i)
+	{
+		unitSet[i].insert(mBasePosition[i]);
+	}
+
+	for (const auto & i : mResourceMap)
+	{
+		if (i.second.type == fixedResource)
+		{
+			fixedRSet.insert(i.first);
+			continue;
+		}
+		if (i.second.type == randomResource)
+		{
+			randomRSet.insert(i.first);
+			continue;
+		}
+	}
+	mMiniMapLayer->refresh(unitSet[0], unitSetN[0], unitSet[1], unitSetN[1], fixedRSet, randomRSet);
 }

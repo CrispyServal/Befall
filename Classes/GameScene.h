@@ -459,6 +459,8 @@ private:
 	void addMist();
 	void initMist();
 
+	std::string mapName;
+
 	//theme
 	Color4F mBarColor;
 	Color4F mBgColor;

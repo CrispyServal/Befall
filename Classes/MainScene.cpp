@@ -34,6 +34,7 @@ bool MainScene::init()
 		userDefault->setStringForKey("language", "ch");
 		userDefault->setBoolForKey("mistOn", true);
 		userDefault->setStringForKey("theme", "grey");
+		userDefault->setStringForKey("map", "StarRiver.bfm");
 	}
 	//dictionary = Dictionary::createWithContentsOfFile("ch.xml");
 	dictionary = Dictionary::createWithContentsOfFile(std::string{ "dictionary/" + userDefault->getStringForKey("language") + ".xml" }.c_str());

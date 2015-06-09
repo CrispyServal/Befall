@@ -10,8 +10,8 @@ GameScene::~GameScene()
 
 std::string GameScene::getDicValue(char * str)
 {
-	 CCLOG("getdicValue: result: %s",mDictionary->valueForKey(str)->getCString());
-	 return std::string{mDictionary->valueForKey(str)->getCString()};
+	CCLOG("getdicValue: result: %s", mDictionary->valueForKey(str)->getCString());
+	return std::string{ mDictionary->valueForKey(str)->getCString() };
 }
 
 std::vector<MyPointStruct> GameScene::getNearPoint(const MyPointStruct & point)
@@ -115,7 +115,7 @@ std::vector<MyPointStruct> GameScene::getPath(const std::vector<PathNodeStruct> 
 
 bool GameScene::init()
 {
-	
+
 	if (!Scene::init())
 	{
 		return false;
@@ -124,7 +124,8 @@ bool GameScene::init()
 	initTheme();
 	mDirector = Director::getInstance();
 	mUserDefault = UserDefault::getInstance();
-    mDictionary = Dictionary::createWithContentsOfFile(
+	mapName = mUserDefault->getStringForKey("map");
+	mDictionary = Dictionary::createWithContentsOfFile(
 		std::string{ "dictionary/" + mCh + ".xml" }.c_str());
 	mDictionary->retain();
 	mKeyStruct = {
@@ -143,7 +144,7 @@ bool GameScene::init()
 	explosives = Sprite::createWithTexture(mAttackTexture.LR2E);
 	explosives->setOpacity(0);
 	whiteLine = DrawNode::create();
-    //mDictionary->retain();
+	//mDictionary->retain();
 	mDispatcher = mDirector->getEventDispatcher();
 	mWinHeight = mDirector->getWinSize().height;
 	mWinWidth = mDirector->getWinSize().width;
@@ -165,34 +166,34 @@ bool GameScene::init()
 	mTiledMapLayer->addChild(whiteLine, 10);
 	//init MapSize
 	mMapSize = mTiledMapLayer->getMapSize();
-	addChild(mTiledMapLayer,1);
+	addChild(mTiledMapLayer, 1);
 	//startMap
 	mStarMap = Sprite::create("uiComponent/starmap.jpg");
 	mStarMap->setPosition(mWinWidth / 2, mWinHeight / 2);
 	addChild(mStarMap, -1);
 	//menu
 	initGameMenu();
-	auto startMenu = Menu::create(MenuItemLabel::create( 
-	[&]()->Label*{
+	auto startMenu = Menu::create(MenuItemLabel::create(
+		[&]()->Label*{
 		auto label = Label::create(getDicValue("menu"), mFonts, 24);
 		label->setColor(Color3B(0, 0, 0));
 		return label;
 	}(),
 		[&](Ref * sender)->void{
-		if (!mGameMenu->isVisible()) 
-		{ 
-			mGameMenu->setVisible(true); 
+		if (!mGameMenu->isVisible())
+		{
+			mGameMenu->setVisible(true);
 		}
-		else 
-		{ 
-			mGameMenu->setVisible(false); 
-		} 
-	} ), NULL );
+		else
+		{
+			mGameMenu->setVisible(false);
+		}
+	}), NULL);
 	startMenu->setPosition(startMenu->getPosition().x - mWinWidth / 2 + 40, startMenu->getPosition().y + mWinHeight / 2 - 20);
-	addChild(startMenu,5);
+	addChild(startMenu, 5);
 	//timer
 	mTimer = GameTimer::create();
-	mTimer->setPosition(0, - mWinHeight / 2);
+	mTimer->setPosition(0, -mWinHeight / 2);
 	mTimer->setMaxTime(60);
 	mTimer->setEndName(getDicValue("endTurn"));
 	mTimer->setFonts(mFonts);
@@ -220,17 +221,17 @@ bool GameScene::init()
 	mMiniMapLayer->setBgColor(mBgColor);
 	mMiniMapLayer->setPointSize(miniPS);
 	mMiniMapLayer->setMapSize(mTiledMapLayer->getMapSize().width, mTiledMapLayer->getMapSize().height);
-	mMiniMapLayer->setPosition(Vec2((mWinWidth 
-		- mTiledMapLayer->getMapSize().width * miniPS 
-		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS) / 2, 
-		(- mWinHeight +mTiledMapLayer->getMapSize().width * miniPS 
-		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS ) / 2));
+	mMiniMapLayer->setPosition(Vec2((mWinWidth
+		- mTiledMapLayer->getMapSize().width * miniPS
+		- mWinHeight / mTiledMapLayer->getTileSize().width * miniPS) / 2,
+		(-mWinHeight + mTiledMapLayer->getMapSize().width * miniPS
+		+ mWinHeight / mTiledMapLayer->getTileSize().width * miniPS) / 2));
 	addChild(mMiniMapLayer, 5);
 
 	initGreyBar(miniPS, mBarColor);
 
 	//turn label
-	mTurnLabel = Label::createWithTTF(getDicValue("Going")+" 0 "+getDicValue("Turn"), mFonts, 24);
+	mTurnLabel = Label::createWithTTF(getDicValue("Going") + " 0 " + getDicValue("Turn"), mFonts, 24);
 	mTurnLabel->setColor(Color3B(0, 0, 0));
 	mTurnLabel->setPosition(mWinWidth - 120, mWinHeight - mTurnLabel->getContentSize().height / 2 - 5);
 	addChild(mTurnLabel, 8);
@@ -240,7 +241,7 @@ bool GameScene::init()
 	mUnitCampLayer = UnitCampLayer::create();
 	//mUnitCampLayer->setPosition(0, 50);
 	mUnitCampLayer->setFonts(mFonts);
-	mUnitCampLayer->setUnlocked(farmer,true);
+	mUnitCampLayer->setUnlocked(farmer, true);
 	/*
 	mUnitCampLayer->setUnlocked(shortrangeunit1,true);
 	mUnitCampLayer->setUnlocked(shortrangeunit2,true);
@@ -256,9 +257,9 @@ bool GameScene::init()
 		mDirector->getTextureCache()->addImage("uiComponent/icon_researchtab_white.png")
 	};
 	mTechTreeLayerButton = Sprite::createWithTexture(mTechTreeLayerButtonTexture.off);
-	mTechTreeLayerButton->setPosition(mWinWidth / 2 - 150, 
-		(mTechTreeLayerButton->getBoundingBox().getMaxY() 
-		- mTechTreeLayerButton->getBoundingBox().getMinY())/2 - 3);
+	mTechTreeLayerButton->setPosition(mWinWidth / 2 - 150,
+		(mTechTreeLayerButton->getBoundingBox().getMaxY()
+		- mTechTreeLayerButton->getBoundingBox().getMinY()) / 2 - 3);
 	mTechTreeLayerButton->setScale(0.9);
 	addChild(mTechTreeLayerButton, 8);
 
@@ -267,27 +268,27 @@ bool GameScene::init()
 		mDirector->getTextureCache()->addImage("uiComponent/icon_militarycamp_white.png")
 	};
 	mUnitCampLayerButton = Sprite::createWithTexture(mUnitCampLayerButtonTexture.off);
-	mUnitCampLayerButton->setPosition(mWinWidth / 2 + 150, 
-		(mUnitCampLayerButton->getBoundingBox().getMaxY() 
-		- mUnitCampLayerButton->getBoundingBox().getMinY())/2 - 3);
+	mUnitCampLayerButton->setPosition(mWinWidth / 2 + 150,
+		(mUnitCampLayerButton->getBoundingBox().getMaxY()
+		- mUnitCampLayerButton->getBoundingBox().getMinY()) / 2 - 3);
 	mUnitCampLayerButton->setScale(0.9);
 	addChild(mUnitCampLayerButton, 8);
 	//2 working button
 	mTechMakingButtonTexture = mTechTreeLayer->getTechTexture(techroot);
 	mTechMakingButton = Sprite::createWithTexture(mTechMakingButtonTexture);
 	mTechMakingButton->setScale(0.8);
-	mTechMakingButton->setPosition(mTechTreeLayerButton->getPosition().x 
-		- 2 * (mTechMakingButton->boundingBox().getMaxX() 
-		- mTechMakingButton->boundingBox().getMinX()), 
+	mTechMakingButton->setPosition(mTechTreeLayerButton->getPosition().x
+		- 2 * (mTechMakingButton->boundingBox().getMaxX()
+		- mTechMakingButton->boundingBox().getMinX()),
 		mTechTreeLayerButton->getPosition().y);
 	mTechMakingButton->setVisible(false);
 	addChild(mTechMakingButton, 8);
 	mUnitMakingButtonTexture = mUnitCampLayer->getUnitTexture(farmer);
 	mUnitMakingButton = Sprite::createWithTexture(mUnitMakingButtonTexture);
 	mUnitMakingButton->setScale(0.8);
-	mUnitMakingButton->setPosition(mUnitCampLayerButton->getPosition().x 
-		+ 2 * (mUnitMakingButton->boundingBox().getMaxX() 
-		- mUnitMakingButton->boundingBox().getMinX()), 
+	mUnitMakingButton->setPosition(mUnitCampLayerButton->getPosition().x
+		+ 2 * (mUnitMakingButton->boundingBox().getMaxX()
+		- mUnitMakingButton->boundingBox().getMinX()),
 		mUnitCampLayerButton->getPosition().y);
 	mUnitMakingButton->setVisible(false);
 	addChild(mUnitMakingButton, 8);
@@ -309,7 +310,7 @@ bool GameScene::init()
 	addChild(mFailImage[0], 12);
 	addChild(mFailImage[1], 12);
 	mWinFlag = false;
-	
+
 	if (mGameMode == vsPlayer)
 	{
 		mWelcomeLayerDisplay = false;
@@ -328,13 +329,13 @@ bool GameScene::init()
 	mDispatcher->addEventListenerWithSceneGraphPriority(GameScene::mMouseListener, this);
 	mTouchListener = EventListenerTouchOneByOne::create();
 	mTouchListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-	mTouchListener->onTouchMoved= CC_CALLBACK_2(GameScene::onTouchMoved, this);
-	mTouchListener->onTouchEnded= CC_CALLBACK_2(GameScene::onTouchEnded, this);
+	mTouchListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
+	mTouchListener->onTouchEnded = CC_CALLBACK_2(GameScene::onTouchEnded, this);
 	mDispatcher->addEventListenerWithSceneGraphPriority(GameScene::mTouchListener, this);
 	mKeyboardListener = EventListenerKeyboard::create();
 	mKeyboardListener->onKeyPressed = CC_CALLBACK_2(GameScene::onKeyPressed, this);
-	mKeyboardListener->onKeyReleased= CC_CALLBACK_2(GameScene::onKeyReleased, this);
-	mDispatcher->addEventListenerWithSceneGraphPriority(mKeyboardListener,this);
+	mKeyboardListener->onKeyReleased = CC_CALLBACK_2(GameScene::onKeyReleased, this);
+	mDispatcher->addEventListenerWithSceneGraphPriority(mKeyboardListener, this);
 
 	return true;
 }
@@ -645,7 +646,7 @@ void GameScene::switchTurn()
 		++mNumTurn;
 		//CCLOG("going : %s", getDicValue("Going").c_str());
 		//CCLOG("turn : %s", getDicValue("Turn").c_str());
-		mTurnLabel->setString(getDicValue("Going") + " " 
+		mTurnLabel->setString(getDicValue("Going") + " "
 			+ std::to_string(mNumTurn) + " " + getDicValue("Turn"));
 	}
 	//CCLOG("changed turn now %s", mBlueTurn ? "blue" : "red");
@@ -694,7 +695,7 @@ void GameScene::switchTurn()
 		{
 			refreshResource(1);
 		}
-		
+
 		//timer
 		if (mOperateEnable)
 		{
@@ -780,12 +781,12 @@ void GameScene::checkUnitFactory(int turnFlag)
 	{
 		mUnitFactory[turnFlag].refresh(mResources[turnFlag].numProductivity);
 	}
-	if (mUnitFactory[turnFlag].finished() && (!spawnOccupied(turnFlag)) )
+	if (mUnitFactory[turnFlag].finished() && (!spawnOccupied(turnFlag)))
 	{
 		//getUnit
 		auto newUnit = mUnitFactory[turnFlag].getFinishedUnit();
 		//spawn it 
-		spawnUnit(newUnit,turnFlag);
+		spawnUnit(newUnit, turnFlag);
 		if (newUnit == longrangeunit3)
 		{
 			playEffect(FOLLOWME);
@@ -796,7 +797,7 @@ void GameScene::checkUnitFactory(int turnFlag)
 		}
 		refreshMiniMap();
 		//add population
-		mPopulation[turnFlag] += (mUnitInitDataMap[newUnit].property.numPopulation 
+		mPopulation[turnFlag] += (mUnitInitDataMap[newUnit].property.numPopulation
 			+ mGameState[turnFlag].extraProperty[newUnit].numPopulation);
 		mUnitFactory[turnFlag].setExistence(false);
 		//display
@@ -856,10 +857,10 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	}
 	//sequence vector
 	Vector<FiniteTimeAction*> actionVector;
-	auto funcUp = CallFunc::create([unit,type,turnFlag,this]()->void{ unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].back); });
-	auto funcDown = CallFunc::create([unit,type,turnFlag,this]()->void{unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].front); });
-	auto funcLeft = CallFunc::create([unit,type,turnFlag,this]()->void{unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].side); unit.sprite->setFlippedX(true); });
-	auto funcRight = CallFunc::create([unit,type,turnFlag,this]()->void{unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].side); unit.sprite->setFlippedX(false); });
+	auto funcUp = CallFunc::create([unit, type, turnFlag, this]()->void{ unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].back); });
+	auto funcDown = CallFunc::create([unit, type, turnFlag, this]()->void{unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].front); });
+	auto funcLeft = CallFunc::create([unit, type, turnFlag, this]()->void{unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].side); unit.sprite->setFlippedX(true); });
+	auto funcRight = CallFunc::create([unit, type, turnFlag, this]()->void{unit.sprite->setTexture(mUnitTextureMap[turnFlag][type].side); unit.sprite->setFlippedX(false); });
 
 	//last action
 	//0: none, 1: up, 2: down, 3: left, 4: right
@@ -870,7 +871,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 		auto & nextP = path[i + 1];
 		auto nextPF = mTiledMapLayer->floatNodeCoorForPosition(nextP);
 		//check direction
-		if ( (thisP.x == nextP.x) && (thisP.y > nextP.y) )
+		if ((thisP.x == nextP.x) && (thisP.y > nextP.y))
 		{
 			//move up
 			if (lastAction != 1)
@@ -882,7 +883,7 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 		else if ((thisP.x == nextP.x) && (thisP.y < nextP.y))
 		{
 			//move down
-			if ( lastAction != 2 )
+			if (lastAction != 2)
 			{
 				actionVector.pushBack(funcDown);
 				lastAction = 2;
@@ -911,9 +912,9 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 		actionVector.pushBack(MoveTo::create(duration, nextPF));
 	}
 	//sequence
-	auto unLockOEC = CallFunc::create([this,oeBak]()->void{mOperateEnable = oeBak; });
+	auto unLockOEC = CallFunc::create([this, oeBak]()->void{mOperateEnable = oeBak; });
 	auto refreshUnitMapC = CallFunc::create(
-	[this,turnFlag,path,unit]()->void{
+		[this, turnFlag, path, unit]()->void{
 		//CCLOG("path test: %d,%d", path[0].x, path[0].y);
 		mGameState[turnFlag].unitMap.erase(path[0]);
 		mGameState[turnFlag].unitMap[path[path.size() - 1]] = unit;
@@ -921,8 +922,8 @@ void GameScene::moveUnit(std::vector<MyPointStruct> path, int turnFlag, bool sho
 	}
 	);
 	auto showAttackRangeC = CallFunc::create(
-	[this,path,turnFlag]()->void{
-		showAttackRange(path[path.size()-1], turnFlag);
+		[this, path, turnFlag]()->void{
+		showAttackRange(path[path.size() - 1], turnFlag);
 		if (mAttackRange.empty())
 		{
 			deleteAttackRange();
@@ -960,22 +961,22 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	int hDis = abs(rightDis);
 	int vDis = abs(upDis);
 	//change direction
-	if ( right && (hDis >= vDis) )
+	if (right && (hDis >= vDis))
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].side);
 		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
 	}
-	else if ( (!right) && (hDis >= vDis) ) 
+	else if ((!right) && (hDis >= vDis))
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].side);
 		mGameState[tF].unitMap[from].sprite->setFlippedX(true);
 	}
-	else if ( up && (hDis <= vDis))
+	else if (up && (hDis <= vDis))
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].back);
 		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
 	}
-	else if ( (!up) && (hDis <= vDis))
+	else if ((!up) && (hDis <= vDis))
 	{
 		mGameState[tF].unitMap[from].sprite->setTexture(mUnitTextureMap[tF][typeFrom].front);
 		mGameState[tF].unitMap[from].sprite->setFlippedX(false);
@@ -994,29 +995,29 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	bool oeBak = mOperateEnable;
 	mOperateEnable = false;
 
-	Vec2 fromP0 = Vec2(mTiledMapLayer->floatNodeCoorForPosition(from).x,mTiledMapLayer->floatNodeCoorForPosition(from).y);
+	Vec2 fromP0 = Vec2(mTiledMapLayer->floatNodeCoorForPosition(from).x, mTiledMapLayer->floatNodeCoorForPosition(from).y);
 	Vec2 toP = mTiledMapLayer->floatNodeCoorForPosition(attackedUnitPosition);
 	//ball->setOpacity(0);
 	ball->setPosition(fromP0);
 	explosives->setPosition(toP);
-	
+
 	//Actions
 	//moveball and blink
-	auto moveBall = MoveTo::create(0.3,mTiledMapLayer->floatNodeCoorForPosition(attackedUnitPosition));
-	
+	auto moveBall = MoveTo::create(0.3, mTiledMapLayer->floatNodeCoorForPosition(attackedUnitPosition));
+
 	//explore
 	auto Explode = Sequence::create(
 		Spawn::create(
 		Sequence::create(
-			DelayTime::create(0.2),
-			FadeOut::create(0.3),
-			NULL
+		DelayTime::create(0.2),
+		FadeOut::create(0.3),
+		NULL
 		),
-			ScaleTo::create(0.5, 2.5),
-			NULL
+		ScaleTo::create(0.5, 2.5),
+		NULL
 		),
 		NULL
-	);
+		);
 	Explode->retain();
 	//move
 	float moveDisX = mTiledMapLayer->getTileSize().width;
@@ -1024,32 +1025,32 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	float moveDisY = mTiledMapLayer->getTileSize().height;
 	CCLOG("moveDisY: %f", moveDisY);
 	auto attackUp = Sequence::create(
-		MoveBy::create(0.3, Vec2(0,-moveDisY)),
-		MoveBy::create(0.1, Vec2(0,1.5 * moveDisY)),
-		MoveBy::create(0.1, Vec2(0,- 0.5 * moveDisY)),
+		MoveBy::create(0.3, Vec2(0, -moveDisY)),
+		MoveBy::create(0.1, Vec2(0, 1.5 * moveDisY)),
+		MoveBy::create(0.1, Vec2(0, -0.5 * moveDisY)),
 		NULL
-	);
+		);
 	auto attackDown = Sequence::create(
-		MoveBy::create(0.3, Vec2(0,moveDisY)),
-		MoveBy::create(0.1, Vec2(0,-1.5*moveDisY)),
-		MoveBy::create(0.1, Vec2(0,0.5*moveDisY)),
+		MoveBy::create(0.3, Vec2(0, moveDisY)),
+		MoveBy::create(0.1, Vec2(0, -1.5*moveDisY)),
+		MoveBy::create(0.1, Vec2(0, 0.5*moveDisY)),
 		NULL
-	);
+		);
 	auto attackLeft = Sequence::create(
-		MoveBy::create(0.3, Vec2(moveDisX,0)),
-		MoveBy::create(0.1, Vec2(-1.5*moveDisX,0)),
-		MoveBy::create(0.1, Vec2(0.5*moveDisX,0)),
+		MoveBy::create(0.3, Vec2(moveDisX, 0)),
+		MoveBy::create(0.1, Vec2(-1.5*moveDisX, 0)),
+		MoveBy::create(0.1, Vec2(0.5*moveDisX, 0)),
 		NULL
-	);
+		);
 	auto attackRight = Sequence::create(
-		MoveBy::create(0.3, Vec2(-moveDisX,0)),
-		MoveBy::create(0.1, Vec2(1.5*moveDisX,0)),
-		MoveBy::create(0.1, Vec2(-0.5*moveDisX,0)),
+		MoveBy::create(0.3, Vec2(-moveDisX, 0)),
+		MoveBy::create(0.1, Vec2(1.5*moveDisX, 0)),
+		MoveBy::create(0.1, Vec2(-0.5*moveDisX, 0)),
 		NULL
-	);
+		);
 	//callFuncs
 	//callthis after
-	auto afterFunc = CallFunc::create([this, tF,from,typeFrom,attackedUnitPosition]()->void
+	auto afterFunc = CallFunc::create([this, tF, from, typeFrom, attackedUnitPosition]()->void
 	{
 		CCLOG("after Func called");
 		bool attackedBase = false;
@@ -1106,27 +1107,27 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 	afterFunc->retain();
 	auto unlockOE = CallFunc::create(
 		[this, oeBak]()->void{
-			CCLOG("unlockOE called");
-			mOperateEnable = oeBak;
-		}
+		CCLOG("unlockOE called");
+		mOperateEnable = oeBak;
+	}
 	);
 	unlockOE->retain();
-	
-	
+
+
 	auto runExplode = CallFunc::create(
-		[this,Explode,afterFunc,unlockOE]()->void
-		{
-			CCLOG("runing explode!");
-			explosives->setOpacity(255);
-			explosives->setScale(0.1);
-			explosives->runAction(
+		[this, Explode, afterFunc, unlockOE]()->void
+	{
+		CCLOG("runing explode!");
+		explosives->setOpacity(255);
+		explosives->setScale(0.1);
+		explosives->runAction(
 			Sequence::create(
-				Explode,
-				afterFunc,
-				unlockOE,
-				NULL)
+			Explode,
+			afterFunc,
+			unlockOE,
+			NULL)
 			);
-		}
+	}
 	);
 	//switch
 	if (typeFrom == shortrangeunit2 || typeFrom == longrangeunit1 || typeFrom == longrangeunit2)
@@ -1152,12 +1153,12 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 		ball->setOpacity(255);
 		ball->runAction(
 			Sequence::create(
-				moveBall,
-				CallFunc::create([this]()->void{ball->setOpacity(0); }),
-				runExplode,
-				NULL
+			moveBall,
+			CallFunc::create([this]()->void{ball->setOpacity(0); }),
+			runExplode,
+			NULL
 			)
-		);
+			);
 	}
 	else if (typeFrom == shortrangeunit1 || typeFrom == farmer)
 	{
@@ -1185,8 +1186,8 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 		hitAnimation.pushBack(unlockOE);
 		mGameState[tF].unitMap[from].sprite->runAction(
 			Sequence::create(hitAnimation)
-		);
-		
+			);
+
 	}
 	else if (typeFrom == longrangeunit3)
 	{
@@ -1201,15 +1202,15 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 		while (abs(x - toP.x) > 1 || abs(y - toP.y) > 1)
 		{
 			whiteLine->drawSolidCircle(Vec2(x, y), 10, 10, 10, Color4F(1, 1, 1, 1));
-			if ( (int)x % 2 < 1)
+			if ((int)x % 2 < 1)
 			{
 				whiteLine->drawSolidCircle(Vec2(x + (CCRANDOM_0_1() - 0.5) * 12, y + (CCRANDOM_0_1() - 0.5) * 12), 8, 10, 10, Color4F(1, 1, 1, 0.9));
 			}
-			if ( (int)x % 4 < 2)
+			if ((int)x % 4 < 2)
 			{
 				whiteLine->drawSolidCircle(Vec2(x + (CCRANDOM_0_1() - 0.5) * 64, y + (CCRANDOM_0_1() - 0.5) * 64), 4, 10, 10, Color4F(1, 1, 1, 0.7));
 			}
-			if ( (int)x % 12 < 2)
+			if ((int)x % 12 < 2)
 			{
 				whiteLine->drawSolidCircle(Vec2(x + (CCRANDOM_0_1() - 0.5) * 128, y + (CCRANDOM_0_1() - 0.5) * 128), 4, 10, 10, Color4F(1, 1, 1, 0.4));
 			}
@@ -1220,12 +1221,12 @@ void GameScene::attackUnit(const MyPointStruct & from, const MyPointStruct & att
 		CCLOG("before action!");
 		whiteLine->runAction(
 			Sequence::create(
-				DelayTime::create(0.3),
-				CallFunc::create([this]()->void{whiteLine->clear(); }),
-				runExplode,
-				NULL
+			DelayTime::create(0.3),
+			CallFunc::create([this]()->void{whiteLine->clear(); }),
+			runExplode,
+			NULL
 			)
-		);
+			);
 	}
 }
 
@@ -1329,7 +1330,7 @@ void GameScene::delayAndQuit(float delta)
 void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 {
 	auto pro = UnitPropertyStruct(mUnitInitDataMap[unit].property);
-	CCLOG("spawning property: {hp:%d,atk:%d,def:%d,movR:%d,atR:%d,po:%d,}", pro.numHitPoint,pro.numAttack,pro.numDefence,pro.numRangeMove,pro.numRangeAttack,pro.numPopulation);
+	CCLOG("spawning property: {hp:%d,atk:%d,def:%d,movR:%d,atR:%d,po:%d,}", pro.numHitPoint, pro.numAttack, pro.numDefence, pro.numRangeMove, pro.numRangeAttack, pro.numPopulation);
 	Unit newUnit = {
 		unit,
 		UnitPropertyStruct(mUnitInitDataMap[unit].property),
@@ -1338,10 +1339,10 @@ void GameScene::spawnUnit(UnitEnum unit, int turnFlag)
 		{
 			auto sprite = Sprite::createWithTexture(mUnitTextureMap[turnFlag][unit].front);
 			sprite->setPosition(mTiledMapLayer->floatNodeCoorForPosition(mSpawn[turnFlag]));
-			mTiledMapLayer->addChild(sprite,2);
+			mTiledMapLayer->addChild(sprite, 2);
 			return sprite;
 		}()
-		};
+	};
 	//add to unitMap
 	mGameState[turnFlag].unitMap[mSpawn[turnFlag]] = newUnit;
 }
@@ -1385,11 +1386,11 @@ void GameScene::backToMainScene(Ref * sender)
 	/*
 	if (mGameMode == server)
 	{
-		mNet.endServer();
+	mNet.endServer();
 	}
 	else if (mGameMode == client)
 	{
-		mNet.deleteConnect();
+	mNet.deleteConnect();
 	}
 	*/
 	mDirector->popScene();
@@ -1577,7 +1578,7 @@ void GameScene::unlockTechTree(const int & flag, TechEnum tech)
 {
 	mGameState[flag].techTree.unlock(tech);
 	//CCLOG("ssss: %d", mGameState[flag].techTree.isUnlocked(tech));
-	setTechInfluence(flag,tech);
+	setTechInfluence(flag, tech);
 	if (mOperateEnable)
 	{
 		refreshTechTreeLayer(flag);
@@ -1708,7 +1709,7 @@ void GameScene::setTechInfluence(const int & flag, TechEnum tech)
 
 void GameScene::refreshTechTreeLayer(const int & flag)
 {
-	
+
 	for (const auto & i : mTechEnumList)
 	{
 		if (mGameState[flag].techTree.unlockable(i))
@@ -1716,7 +1717,7 @@ void GameScene::refreshTechTreeLayer(const int & flag)
 			//CCLOG("tech a: %d", i);
 			mTechTreeLayer->setTechState(i, available);
 		}
-		else if(mGameState[flag].techTree.isUnlocked(i))
+		else if (mGameState[flag].techTree.isUnlocked(i))
 		{
 			//CCLOG("tech un: %d", i);
 			mTechTreeLayer->setTechState(i, unlocked);
@@ -1741,11 +1742,11 @@ void GameScene::refreshUnitCamp(const int & flag)
 	{
 		auto property = UnitPropertyStruct{
 			mUnitInitDataMap[unit.second].property.numHitPoint + mGameState[flag].extraProperty[unit.second].numHitPoint,
-			mUnitInitDataMap[unit.second].property.numDefence + mGameState[flag].extraProperty[unit.second].numDefence,
-			mUnitInitDataMap[unit.second].property.numAttack + mGameState[flag].extraProperty[unit.second].numAttack,
-			mUnitInitDataMap[unit.second].property.numRangeAttack + mGameState[flag].extraProperty[unit.second].numRangeAttack,
-			mUnitInitDataMap[unit.second].property.numRangeMove + mGameState[flag].extraProperty[unit.second].numRangeMove,
-			mUnitInitDataMap[unit.second].property.numPopulation + mGameState[flag].extraProperty[unit.second].numPopulation
+				mUnitInitDataMap[unit.second].property.numDefence + mGameState[flag].extraProperty[unit.second].numDefence,
+				mUnitInitDataMap[unit.second].property.numAttack + mGameState[flag].extraProperty[unit.second].numAttack,
+				mUnitInitDataMap[unit.second].property.numRangeAttack + mGameState[flag].extraProperty[unit.second].numRangeAttack,
+				mUnitInitDataMap[unit.second].property.numRangeMove + mGameState[flag].extraProperty[unit.second].numRangeMove,
+				mUnitInitDataMap[unit.second].property.numPopulation + mGameState[flag].extraProperty[unit.second].numPopulation
 		};
 		auto resource = ResourcesStruct{
 			mUnitInitDataMap[unit.second].consumption.numFixedResource,
@@ -1767,7 +1768,7 @@ void GameScene::refreshResourcesTexture()
 	for (auto & i : mResourceMap)
 	{
 		//CCLOG("position: %d,%d", i.first.x, i.first.y);
-		if ((i.second.type == fixedResource) || (i.second.type == randomResource) )
+		if ((i.second.type == fixedResource) || (i.second.type == randomResource))
 		{
 			float hp = (float)i.second.property.numHitPoint;
 			float hpL = (float)(mUnitInitDataMap[i.second.type].property.numHitPoint);
@@ -1891,18 +1892,18 @@ void GameScene::startGame()
 	}
 	//init farmer
 	//spawnUnit(farmer, 0);
-	spawnUnit(farmer, 0);
-	spawnUnit(farmer, 1);
-	spawnUnit(farmer, 1, MyPointStruct{	19,	2 });
-	spawnUnit(farmer, 1, MyPointStruct{ 17, 2 });
-	spawnUnit(farmer, 1, MyPointStruct{ 19, 4 });
-	spawnUnit(farmer, 0, MyPointStruct{ 2, 19 });
-	spawnUnit(farmer, 0, MyPointStruct{ 4, 19 });
-	spawnUnit(farmer, 0, MyPointStruct{ 2, 17 });
+
+	for (int i = 0; i < mBasePosition.size(); i++)
+	{
+		spawnUnit(farmer, i, MyPointStruct{ mBasePosition[i].x + 1, mBasePosition[i].y + 1 });
+		spawnUnit(farmer, i, MyPointStruct{ mBasePosition[i].x + 1, mBasePosition[i].y - 1 });
+		spawnUnit(farmer, i, MyPointStruct{ mBasePosition[i].x - 1, mBasePosition[i].y + 1 });
+		spawnUnit(farmer, i, MyPointStruct{ mBasePosition[i].x - 1, mBasePosition[i].y - 1 });
+	}
 	//
 	addMist();
 	//change Population
-	mPopulation[0] += 4 * (mUnitInitDataMap[farmer].property.numPopulation 
+	mPopulation[0] += 4 * (mUnitInitDataMap[farmer].property.numPopulation
 		+ mGameState[0].extraProperty[farmer].numPopulation);
 	mPopulation[1] += 4 * (mUnitInitDataMap[farmer].property.numPopulation
 		+ mGameState[1].extraProperty[farmer].numPopulation);
@@ -1912,7 +1913,7 @@ void GameScene::startGame()
 	refreshResourcesTexture();
 	refreshPopulationIcons(0);
 
-	
+
 
 	//Test for info map
 	//mInfoMapLayer->displayText("TECH", "FUCK YOU\nLIU QI!!\nAND FUCK YOUR MOTHER AND FATHER AND SISTER AND BROTHER", stringPredict + std::to_string(100) + stringTurn);
@@ -1994,7 +1995,7 @@ void GameScene::refreshMiniMap()
 		}
 		//base
 		unitSet[tF].insert(mBasePosition[tF]);
-		unitSet[1 - tF].insert(mBasePosition[1-tF]);
+		unitSet[1 - tF].insert(mBasePosition[1 - tF]);
 		for (auto i : getNearPoint(mBasePosition[tF]))
 		{
 			unitSet[tF].insert(i);
@@ -2019,22 +2020,22 @@ void GameScene::refreshMiniMap()
 		}
 
 	}
-		std::set<MyPointStruct> fixedRSet;
-		std::set<MyPointStruct> randomRSet;
-		for (const auto & i : mResourceMap)
+	std::set<MyPointStruct> fixedRSet;
+	std::set<MyPointStruct> randomRSet;
+	for (const auto & i : mResourceMap)
+	{
+		if (i.second.type == fixedResource)
 		{
-			if (i.second.type == fixedResource)
-			{
-				fixedRSet.insert(i.first);
-				continue;
-			}
-			if (i.second.type == randomResource)
-			{
-				randomRSet.insert(i.first);
-				continue;
-			}
+			fixedRSet.insert(i.first);
+			continue;
 		}
-		mMiniMapLayer->refresh(unitSet[0], unitSetN[0], unitSet[1], unitSetN[1], fixedRSet, randomRSet);
+		if (i.second.type == randomResource)
+		{
+			randomRSet.insert(i.first);
+			continue;
+		}
+	}
+	mMiniMapLayer->refresh(unitSet[0], unitSetN[0], unitSet[1], unitSetN[1], fixedRSet, randomRSet);
 }
 
 void GameScene::checkMiniMap()
@@ -2191,7 +2192,7 @@ void GameScene::checkMakingButtonOnMouseMoved()
 		}
 		else
 		{
-			mUnitMakingButton->setTexture(mUnitMakingButtonTexture);	
+			mUnitMakingButton->setTexture(mUnitMakingButtonTexture);
 		}
 	}
 	if (mTechMakingButton->isVisible())
@@ -2335,19 +2336,19 @@ void GameScene::checkLayersOnMouseMoved()
 					{
 						visibleFlag = true;
 					}
-					if(visibleFlag){
+					if (visibleFlag){
 						mInfoMapLayer->displayUnitProperty(
-						mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
-						unitInfo.property.numHitPoint
-						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
-						mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint
-						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
-						mDisplayInfoMap["ATK"] + std::to_string(unitInfo.property.numAttack
-						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numAttack) + "\n"
-						+ mDisplayInfoMap["DEF"] + std::to_string(unitInfo.property.numDefence
-						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numDefence) + "\n"
-						+ mDisplayInfoMap["RATK"] + std::to_string(unitInfo.property.numRangeAttack
-						+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numRangeAttack));
+							mUnitDisplayMap[unitInfo.mUnitEnum].unitName,
+							unitInfo.property.numHitPoint
+							+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
+							mUnitInitDataMap[unitInfo.mUnitEnum].property.numHitPoint
+							+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numHitPoint,
+							mDisplayInfoMap["ATK"] + std::to_string(unitInfo.property.numAttack
+							+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numAttack) + "\n"
+							+ mDisplayInfoMap["DEF"] + std::to_string(unitInfo.property.numDefence
+							+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numDefence) + "\n"
+							+ mDisplayInfoMap["RATK"] + std::to_string(unitInfo.property.numRangeAttack
+							+ mGameState[whosUnit(mPos)].extraProperty[unitInfo.mUnitEnum].numRangeAttack));
 						clearFlag = false;
 					}
 				}
@@ -2355,21 +2356,21 @@ void GameScene::checkLayersOnMouseMoved()
 		}
 
 		//UnitMaking Button
-		if (mUnitMakingButton->isVisible() 
+		if (mUnitMakingButton->isVisible()
 			&& mUnitMakingButton->boundingBox().containsPoint(mMouseCoordinate))
 		{
-				//refresh InfoMap
-				auto unit = mUnitFactory[tF].getMakingUnit();
-				mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit),
-					mUnitCampLayer->getUnitIntroDuction(unit),
-					mDisplayInfoMap["Predict"] + std::to_string(calcInteger(
-					mUnitFactory[tF].getLeftTime(),
-					mResources[tF].numProductivity)) + mDisplayInfoMap["Turn"]);
-				clearFlag = false;
+			//refresh InfoMap
+			auto unit = mUnitFactory[tF].getMakingUnit();
+			mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit),
+				mUnitCampLayer->getUnitIntroDuction(unit),
+				mDisplayInfoMap["Predict"] + std::to_string(calcInteger(
+				mUnitFactory[tF].getLeftTime(),
+				mResources[tF].numProductivity)) + mDisplayInfoMap["Turn"]);
+			clearFlag = false;
 		}
 
 		//TechMakingButton
-		if (mTechMakingButton->isVisible() && 
+		if (mTechMakingButton->isVisible() &&
 			mTechMakingButton->boundingBox().containsPoint(mMouseCoordinate))
 		{
 			//refresh InfoMap
@@ -2381,41 +2382,41 @@ void GameScene::checkLayersOnMouseMoved()
 				mResources[tF].numResearchLevel)) + mDisplayInfoMap["Turn"]);
 			clearFlag = false;
 		}
-		
+
 		//mUnitCampLayer
-		if (mUnitCampLayer->isVisible() && 
+		if (mUnitCampLayer->isVisible() &&
 			mUnitCampLayer->containPoint(mMouseCoordinate))
 		{
-				auto unit = mUnitCampLayer->getUnitMouseOn();
-				mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit), 
-					mUnitCampLayer->getUnitIntroDuction(unit), 
-					mDisplayInfoMap["Predict"] + std::to_string(calcInteger(
-					mUnitCampLayer->getUnitProductivity(unit), 
-					mResources[tF].numProductivity)) + mDisplayInfoMap["Turn"]);
-				clearFlag = false;
+			auto unit = mUnitCampLayer->getUnitMouseOn();
+			mInfoMapLayer->displayText(mUnitCampLayer->getUnitName(unit),
+				mUnitCampLayer->getUnitIntroDuction(unit),
+				mDisplayInfoMap["Predict"] + std::to_string(calcInteger(
+				mUnitCampLayer->getUnitProductivity(unit),
+				mResources[tF].numProductivity)) + mDisplayInfoMap["Turn"]);
+			clearFlag = false;
 		}
 
 		//techTreeLayer
-		if (mTechTreeLayer->isVisible() 
+		if (mTechTreeLayer->isVisible()
 			&& mTechTreeLayer->containPoint(mMouseCoordinate))
 		{
-				auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinate);
-				if (mGameState[tF].techTree.unlockable(tech))
-				{
-				mInfoMapLayer->displayText(mTechDisplayMap[tech].techName, 
-					mTechDisplayMap[tech].techIntroduction, 
+			auto tech = mTechTreeLayer->getTechContainingPoint(mMouseCoordinate);
+			if (mGameState[tF].techTree.unlockable(tech))
+			{
+				mInfoMapLayer->displayText(mTechDisplayMap[tech].techName,
+					mTechDisplayMap[tech].techIntroduction,
 					mDisplayInfoMap["Predict"] + std::to_string(calcInteger(
 					mTechInitDataMap[tech].numResearchLevel,
 					mResources[tF].numResearchLevel)) + mDisplayInfoMap["Turn"]);
 				clearFlag = false;
-				}
-				if (mGameState[tF].techTree.isUnlocked(tech))
-				{
-					mInfoMapLayer->displayText(mTechDisplayMap[tech].techName,
-						mTechDisplayMap[tech].techIntroduction,
-						"");
-					clearFlag = false;
-				}
+			}
+			if (mGameState[tF].techTree.isUnlocked(tech))
+			{
+				mInfoMapLayer->displayText(mTechDisplayMap[tech].techName,
+					mTechDisplayMap[tech].techIntroduction,
+					"");
+				clearFlag = false;
+			}
 		}
 
 		if (isGrayBarContains(mMouseCoordinate))
@@ -2476,10 +2477,10 @@ void GameScene::checkLayersOnMouseMoved()
 		if (mTimer->containPoint(mMouseCoordinate))
 		{
 			mInfoMapLayer->displayText(mDisplayInfoMap["Timer"],
-				mDisplayInfoMap["TimerIntro"], "");				
+				mDisplayInfoMap["TimerIntro"], "");
 			clearFlag = false;
 		}
-		
+
 		//waiting method to get label  contain info;
 		if (clearFlag)
 		{
@@ -2532,7 +2533,7 @@ UnitNowDisplayStruct GameScene::existUnitOnTiledMap(const MyPointStruct & mPos)
 			}
 		}
 	}
-	return  UnitNowDisplayStruct{ false, base, UnitPropertyStruct{0,0,0,0,0,0} };
+	return  UnitNowDisplayStruct{ false, base, UnitPropertyStruct{ 0, 0, 0, 0, 0, 0 } };
 }
 
 int GameScene::calcInteger(int a, int b)
@@ -2602,7 +2603,7 @@ void GameScene::checkTechAndUnitButton()
 
 void GameScene::initAttackTexture()
 {
-	mAttackTexture = 
+	mAttackTexture =
 	{
 		mDirector->getTextureCache()->addImage("animation/LR1ThrowOut.png"),
 		mDirector->getTextureCache()->addImage("animation/LR1Explosive.png"),
@@ -2698,12 +2699,12 @@ void GameScene::initGameState()
 	std::map<MyPointStruct, Unit> unitMap;
 	std::map<UnitEnum, UnitPropertyStruct> extraProperty;
 	std::map<UnitEnum, bool> unitLockMap = {
-		{farmer, false},
-		{shortrangeunit1, true},
-		{shortrangeunit2, true},
-		{longrangeunit1, true},
-		{longrangeunit2, true},
-		{longrangeunit3, true},
+		{ farmer, false },
+		{ shortrangeunit1, true },
+		{ shortrangeunit2, true },
+		{ longrangeunit1, true },
+		{ longrangeunit2, true },
+		{ longrangeunit3, true },
 	};
 	GameStateStruct  gameState = {
 		techTree,
@@ -2716,12 +2717,12 @@ void GameScene::initGameState()
 	//initUnitFactory
 	for (int i = 0; i < 2; ++i)
 	{
-		mUnitFactory[i].setUnitTime(farmer,mUnitCampLayer->getUnitResources(farmer).numProductivity);
-		mUnitFactory[i].setUnitTime(shortrangeunit1,mUnitCampLayer->getUnitResources(shortrangeunit1).numProductivity);
-		mUnitFactory[i].setUnitTime(shortrangeunit2,mUnitCampLayer->getUnitResources(shortrangeunit2).numProductivity);
-		mUnitFactory[i].setUnitTime(longrangeunit1,mUnitCampLayer->getUnitResources(longrangeunit1).numProductivity);
-		mUnitFactory[i].setUnitTime(longrangeunit2,mUnitCampLayer->getUnitResources(longrangeunit2).numProductivity);
-		mUnitFactory[i].setUnitTime(longrangeunit3,mUnitCampLayer->getUnitResources(longrangeunit3).numProductivity);
+		mUnitFactory[i].setUnitTime(farmer, mUnitCampLayer->getUnitResources(farmer).numProductivity);
+		mUnitFactory[i].setUnitTime(shortrangeunit1, mUnitCampLayer->getUnitResources(shortrangeunit1).numProductivity);
+		mUnitFactory[i].setUnitTime(shortrangeunit2, mUnitCampLayer->getUnitResources(shortrangeunit2).numProductivity);
+		mUnitFactory[i].setUnitTime(longrangeunit1, mUnitCampLayer->getUnitResources(longrangeunit1).numProductivity);
+		mUnitFactory[i].setUnitTime(longrangeunit2, mUnitCampLayer->getUnitResources(longrangeunit2).numProductivity);
+		mUnitFactory[i].setUnitTime(longrangeunit3, mUnitCampLayer->getUnitResources(longrangeunit3).numProductivity);
 	}
 	for (int i = 0; i < 2; i++)
 	{
@@ -2764,10 +2765,10 @@ void GameScene::initResourceMap()
 	//const float ranScale = 0.5;
 	//const float fixScale = 0.5;
 	//fixed: json
-	auto jsonFile = FileUtils::getInstance()->fullPathForFilename("dictionary/mapinitialize.json");
+	auto jsonFile = FileUtils::getInstance()->fullPathForFilename("map/" + mapName);
 	ssize_t size = 0;
 	unsigned char * loadStr = FileUtils::getInstance()->getFileData(jsonFile, "r", &size);
-	std::string jsonStr = std::string( (const char *)loadStr, size );
+	std::string jsonStr = std::string((const char *)loadStr, size);
 
 	rapidjson::Document jDocument;
 	jDocument.Parse<0>(jsonStr.c_str());
@@ -2779,7 +2780,7 @@ void GameScene::initResourceMap()
 	{
 		CCLOG("error : not object!");
 	}
-	rapidjson::Value & mapElements= jDocument["mapelement"];
+	rapidjson::Value & mapElements = jDocument["mapelement"];
 	if (mapElements.IsArray())
 	{
 		for (int i = 0; i < mapElements.Size(); ++i)
@@ -2802,8 +2803,8 @@ void GameScene::initResourceMap()
 						sprite->setScale(0.75);
 						return sprite;
 					}()
-					//Sprite::create("item1.png")
-					//sprite
+						//Sprite::create("item1.png")
+						//sprite
 				};
 				//
 				//CCLOG("reM,add base:%d,%d,%d,%d,%d,%d", unit.property.numHitPoint, unit.property.numDefence, unit.property.numAttack, unit.property.numRangeAttack, unit.property.numRangeMove, unit.property.numPopulation);
@@ -2811,7 +2812,7 @@ void GameScene::initResourceMap()
 				continue;
 			}
 			if (element == "base1")
-			{	
+			{
 				//CCLOG("a base!");
 				mBasePosition.push_back(point);
 				Unit unit = {
@@ -2823,8 +2824,8 @@ void GameScene::initResourceMap()
 						sprite->setScale(0.75);
 						return sprite;
 					}()
-					//Sprite::create("item1.png")
-					//sprite
+						//Sprite::create("item1.png")
+						//sprite
 				};
 				//
 				//CCLOG("reM,add base:%d,%d,%d,%d,%d,%d", unit.property.numHitPoint, unit.property.numDefence, unit.property.numAttack, unit.property.numRangeAttack, unit.property.numRangeMove, unit.property.numPopulation);
@@ -2843,7 +2844,7 @@ void GameScene::initResourceMap()
 						//sprite->setScale(fixScale);
 						return sprite;
 					}()
-					//Sprite::createWithTexture(mResourceTextureMap[fixedResource].abundant)
+						//Sprite::createWithTexture(mResourceTextureMap[fixedResource].abundant)
 				};
 				mResourceMap[point] = unit;
 				continue;
@@ -2860,7 +2861,7 @@ void GameScene::initResourceMap()
 						//sprite->setScale(ranScale);
 						return sprite;
 					}()
-					//Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
+						//Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
 				};
 				//save HP of randomR
 				mHitPointOfRandomResource = item["numHitPoint"].GetInt();
@@ -2953,8 +2954,8 @@ void GameScene::initResourceMap()
 						auto err = WSAGetLastError();
 						if (err != WSAEWOULDBLOCK)
 						{
-							CCLOG("he GGed so fast!!!");
-							mDirector->popScene();
+						CCLOG("he GGed so fast!!!");
+						mDirector->popScene();
 						}
 						*/
 					}
@@ -2979,7 +2980,7 @@ void GameScene::initResourceMap()
 						//sprite->setScale(ranScale);
 						return sprite;
 					}()
-					//Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
+						//Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
 				};
 				++i;
 			}
@@ -3010,8 +3011,8 @@ void GameScene::initResourceMap()
 				/*
 				if (err != WSAEWOULDBLOCK )
 				{
-					CCLOG("he GGed so fast!!!");
-					mDirector->popScene();
+				CCLOG("he GGed so fast!!!");
+				mDirector->popScene();
 				}
 				*/
 			}
@@ -3029,16 +3030,16 @@ void GameScene::initResourceMap()
 			if (mNet.getWhich() == onePoint)
 			{
 				mResourceMap[mNet.getOnePoint()] = Unit{
-					UnitEnum::randomResource,
-					UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
-					UnitStateEnum::attacked,
-					[&]()->Sprite*{
-						auto sprite = Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant);
-						//sprite->setScale(ranScale);
-						return sprite;
-					}()
+				UnitEnum::randomResource,
+				UnitPropertyStruct{ mHitPointOfRandomResource, 0, 0, 0, 0, 0 },
+				UnitStateEnum::attacked,
+				[&]()->Sprite*{
+					auto sprite = Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant);
+					//sprite->setScale(ranScale);
+					return sprite;
+				}()
 					//Sprite::createWithTexture(mResourceTextureMap[randomResource].abundant)
-				};
+			};
 				CCLOG("read: %d,%d", mNet.getOnePoint().x, mNet.getOnePoint().y);
 			}
 		}
@@ -3109,7 +3110,7 @@ void GameScene::initUnitData()
 	auto jsonFile = FileUtils::getInstance()->fullPathForFilename("dictionary/unitdata.json");
 	ssize_t size = 0;
 	unsigned char * loadStr = FileUtils::getInstance()->getFileData(jsonFile, "r", &size);
-	std::string jsonStr = std::string( (const char *)loadStr, size );
+	std::string jsonStr = std::string((const char *)loadStr, size);
 
 	rapidjson::Document jDocument;
 	jDocument.Parse<0>(jsonStr.c_str());
@@ -3129,14 +3130,14 @@ void GameScene::initUnitData()
 			rapidjson::Value & unit = unitData[i];
 			UnitInitDataStruct data = {
 				UnitPropertyStruct{
-					unit["attributes"]["numHitPoint"].GetInt(),
-					unit["attributes"]["numDefence"].GetInt(),
-					unit["attributes"]["numAttack"].GetInt(),
-					unit["attributes"]["numAttackRange"].GetInt(),
-					unit["attributes"]["numMoveRange"].GetInt(),
-					unit["attributes"]["numPopulation"].GetInt()
-				},
-				ResourcesStruct{
+				unit["attributes"]["numHitPoint"].GetInt(),
+				unit["attributes"]["numDefence"].GetInt(),
+				unit["attributes"]["numAttack"].GetInt(),
+				unit["attributes"]["numAttackRange"].GetInt(),
+				unit["attributes"]["numMoveRange"].GetInt(),
+				unit["attributes"]["numPopulation"].GetInt()
+			},
+			ResourcesStruct{
 					unit["consumption"]["numFixedResource"].GetInt(),
 					unit["consumption"]["numRandomResource"].GetInt(),
 					unit["consumption"]["absProductivity"].GetInt(),
@@ -3259,7 +3260,7 @@ void GameScene::initResourcesIcons()
 
 	//You shall not change scale arbitrarily, if you change this, then change the scale in isReourcesIconsCotains()
 	resourcesIcons->setScale(0.6);
-	resourcesIcons->setPosition(mWinWidth / 2 - 2.5 * offset * resourcesIcons->getScale(), mWinHeight - (fixedResourceIcon->boundingBox().getMaxY() - fixedResourceIcon->boundingBox().getMinY())/2);
+	resourcesIcons->setPosition(mWinWidth / 2 - 2.5 * offset * resourcesIcons->getScale(), mWinHeight - (fixedResourceIcon->boundingBox().getMaxY() - fixedResourceIcon->boundingBox().getMinY()) / 2);
 	addChild(resourcesIcons, 3);
 
 	CCLOG("BOX(%f,%f,%f,%f)", resourcesIcons->getChildByTag(randomResourceI)->getBoundingBox().getMaxX(),
@@ -3310,8 +3311,8 @@ void GameScene::initGameMenu()
 		//autorelease();
 	});
 	auto menuBg = DrawNode::create();
-	menuBg->drawSolidRect(Vec2(mWinWidth / 2 - 100, mWinHeight / 2 - 150), 
-		Vec2(mWinWidth / 2 + 100, mWinHeight / 2 + 150), 
+	menuBg->drawSolidRect(Vec2(mWinWidth / 2 - 100, mWinHeight / 2 - 150),
+		Vec2(mWinWidth / 2 + 100, mWinHeight / 2 + 150),
 		mBarColor);
 	auto menu = Menu::create(/*bgItem,*/ youWinItem, GGItem, NULL);
 	menu->alignItemsVerticallyWithPadding(20);
@@ -3385,7 +3386,7 @@ void GameScene::initYypNet()
 	{
 	case server:
 		mNet.startServer(mUserDefault->getIntegerForKey("port"));
-		schedule(schedule_selector(GameScene::acceptConnect),0.1,CC_REPEAT_FOREVER,0);
+		schedule(schedule_selector(GameScene::acceptConnect), 0.1, CC_REPEAT_FOREVER, 0);
 		break;
 	case client:
 		//display juFlower
@@ -3393,7 +3394,7 @@ void GameScene::initYypNet()
 		mNet.startConnect((char *)(mUserDefault->getStringForKey("ip").c_str()), mUserDefault->getIntegerForKey("port"));
 		CCLOG("ip: %s", (char *)(mUserDefault->getStringForKey("ip").c_str()));
 		CCLOG("port %d", mUserDefault->getIntegerForKey("port"));
-		schedule(schedule_selector(GameScene::startConnecting),0.1,CC_REPEAT_FOREVER,0);
+		schedule(schedule_selector(GameScene::startConnecting), 0.1, CC_REPEAT_FOREVER, 0);
 		//startConnecting(0.1);
 		break;
 	case vsPlayer:
@@ -3424,34 +3425,34 @@ void GameScene::initUnitTexture()
 	for (int i = 0; i < 2; ++i)
 	{
 		mUnitTextureMap[i][farmer] = {
-			mDirector->getTextureCache()->addImage(mIconFile + "/farmer_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/farmer_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/farmer_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/farmer_front_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/farmer_back_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/farmer_side_" + std::to_string(i) + ".png")
 		};
 		mUnitTextureMap[i][longrangeunit1] = {
-			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit1_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit1_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit1_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit1_front_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit1_back_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit1_side_" + std::to_string(i) + ".png")
 		};
 		mUnitTextureMap[i][longrangeunit2] = {
-			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit2_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit2_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit2_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit2_front_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit2_back_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit2_side_" + std::to_string(i) + ".png")
 		};
 		mUnitTextureMap[i][longrangeunit3] = {
-			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit3_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit3_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit3_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit3_front_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit3_back_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/longrangeunit3_side_" + std::to_string(i) + ".png")
 		};
 		mUnitTextureMap[i][shortrangeunit1] = {
-			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit1_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit1_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit1_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit1_front_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit1_back_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit1_side_" + std::to_string(i) + ".png")
 		};
 		mUnitTextureMap[i][shortrangeunit2] = {
-			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit2_front_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit2_back_" + std::to_string(i)+".png"),
-			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit2_side_" + std::to_string(i)+".png")
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit2_front_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit2_back_" + std::to_string(i) + ".png"),
+			mDirector->getTextureCache()->addImage(mIconFile + "/shortrangeunit2_side_" + std::to_string(i) + ".png")
 		};
 	}
 	CCLOG("munittexturemap size: %d", mUnitTextureMap[0].size());
@@ -3484,7 +3485,7 @@ void GameScene::showMoveRange(const MyPointStruct & unitPoint, const int & tF)//
 	mMoveRange = getPathTree(unitPoint, unit.property.numRangeMove + mGameState[tF].extraProperty[unit.type].numRangeMove, barrier);
 	for (auto unitPath : mMoveRange)
 	{
-			mTiledMapLayer->setTileColor(unitPath.point, 2);
+		mTiledMapLayer->setTileColor(unitPath.point, 2);
 	}
 	playUnitSound(unit.type);
 }
@@ -3498,7 +3499,7 @@ void GameScene::showAttackRange(const MyPointStruct & unitPoint, const int & tF)
 	auto attackTree = getPathTree(unitPoint, unit.property.numRangeAttack + mGameState[tF].extraProperty[unit.type].numRangeAttack, barrier);
 	CCLOG("my atk range: %d", unit.property.numRangeAttack);
 	for (auto attacking : attackTree)
-	{ 
+	{
 		if (attacking.point == mBasePosition[1 - tF])
 		{
 			mAttackRange.insert(attacking.point);
@@ -3558,7 +3559,7 @@ void GameScene::deleteAttackRange()
 
 //--unitAction
 void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
-{	
+{
 	CCLOG("in unitAction: tF = %d", tF);
 	//mUnitActionFSM[tF] = 0;
 	CCLOG("%d", mUnitActionFSM[tF]);
@@ -3665,12 +3666,12 @@ void GameScene::unitAction(const MyPointStruct & nowPoint, int tF)
 				showAttackRange(nowPoint, tF);
 				if (mAttackRange.empty())
 				{
-					deleteAttackRange();		
-					mUnitActionFSM[tF] = 0;
+				deleteAttackRange();
+				mUnitActionFSM[tF] = 0;
 				}
 				else
 				{
-					mUnitActionFSM[tF] = 2;
+				mUnitActionFSM[tF] = 2;
 				}
 				*/
 				return;
@@ -4108,27 +4109,27 @@ void GameScene::addMist(const int & tF, bool beginOfTurn)
 	/*bool foundUnit = false;
 	for (auto & pUnit : mGameState[tF].unitMap)
 	{
-		for (auto mUnit : mGameState[1 - tF].unitMap)
-		{
-			for (auto p : getPathTree(mUnit.first, sightRange, std::set<MyPointStruct>{}))
-			{
-				if (p.point == pUnit.first)
-				{
-					if (!pUnit.second.sprite->isVisible())
-					{
-						pUnit.second.sprite->setVisible(true);
-						foundUnit = true;
-					}
-				}
-			}
-		}
-		if (!foundUnit)
-		{
-			if (pUnit.second.sprite->isVisible())
-			{
-				pUnit.second.sprite->setVisible(false);
-			}
-		}
+	for (auto mUnit : mGameState[1 - tF].unitMap)
+	{
+	for (auto p : getPathTree(mUnit.first, sightRange, std::set<MyPointStruct>{}))
+	{
+	if (p.point == pUnit.first)
+	{
+	if (!pUnit.second.sprite->isVisible())
+	{
+	pUnit.second.sprite->setVisible(true);
+	foundUnit = true;
+	}
+	}
+	}
+	}
+	if (!foundUnit)
+	{
+	if (pUnit.second.sprite->isVisible())
+	{
+	pUnit.second.sprite->setVisible(false);
+	}
+	}
 	}*/
 }
 

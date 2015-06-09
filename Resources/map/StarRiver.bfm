@@ -1,0 +1,76 @@
+{
+    "mapelement": [
+        {
+            "element": "base0",
+            "position": {
+                "X": 3,
+                "Y": 18
+            },
+            "numHitPoint": 400
+        },
+        {
+            "element": "base1",
+            "position": {
+                "X": 18,
+                "Y": 3
+            },
+            "numHitPoint": 400
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 1,
+                "Y": 20
+            },
+            "numHitPoint": 500
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 20,
+                "Y": 1
+            },
+            "numHitPoint": 500
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 1,
+                "Y": 1
+            },
+            "numHitPoint": 800
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 20,
+                "Y": 20
+            },
+            "numHitPoint": 800
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 11,
+                "Y": 11
+            },
+            "numHitPoint": 1500
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 5,
+                "Y": 20
+            },
+            "numHitPoint": 120
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 16,
+                "Y": 1
+            },
+            "numHitPoint": 120
+        }
+    ]
+}

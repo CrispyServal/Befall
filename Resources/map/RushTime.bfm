@@ -1,0 +1,172 @@
+{
+    "mapelement": [
+        {
+            "element": "base0",
+            "position": {
+                "X": 5,
+                "Y": 11
+            },
+            "numHitPoint": 400
+        },
+        {
+            "element": "base1",
+            "position": {
+                "X": 16,
+                "Y": 11
+            },
+            "numHitPoint": 400
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 3,
+                "Y": 13
+            },
+            "numHitPoint": 300
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 18,
+                "Y": 9
+            },
+            "numHitPoint": 300
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 1,
+                "Y": 1
+            },
+            "numHitPoint": 800
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 20,
+                "Y": 20
+            },
+            "numHitPoint": 800
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 1,
+                "Y": 20
+            },
+            "numHitPoint": 800
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 20,
+                "Y": 1
+            },
+            "numHitPoint": 800
+        },
+        {
+            "element": "resourceFixed",
+            "position": {
+                "X": 11,
+                "Y": 11
+            },
+            "numHitPoint": 1500
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 5
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 6
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 7
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 8
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 9
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 10
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 12
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 13
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 14
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 15
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 16
+            },
+            "numHitPoint": 60
+        },
+        {
+            "element": "resourceRandom",
+            "position": {
+                "X": 11,
+                "Y": 17
+            },
+            "numHitPoint": 60
+        }
+    ]
+}

@@ -253,3 +253,8 @@ void MiniMapLayer::drawShape(DrawNode* & who, Vec2 v1, Vec2 v2, Color4F color)
 		who->drawSolidCircle(Vec2((v1.x + v2.x) / 2, (v1.y + v2.y) / 2), abs(v2.x - v1.x)/2, 0, 10, color);
 	}
 }
+
+void MiniMapLayer::setDragFrameInvisible(bool isVisible = true)
+{
+	mViewBox->setVisible(isVisible);
+}
