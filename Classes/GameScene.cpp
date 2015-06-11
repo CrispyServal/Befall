@@ -3848,11 +3848,14 @@ void GameScene::refreshResourceCollectionState(const MyPointStruct & resourcePos
 			return;
 		}
 	}
-	//not found, add new
-	mResourceCollectionMap[resourcePosition] = ResourceCollectionStruct{
+	//not found, add new or return
+	if (increase)
+	{
+		mResourceCollectionMap[resourcePosition] = ResourceCollectionStruct{
 		tF,
 		1
-	};
+		};
+	}
 }
 
 //need test
