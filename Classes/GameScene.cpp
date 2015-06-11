@@ -611,13 +611,16 @@ void GameScene::update(float delta)
 	}
 	else
 	{
-		//ended
-		if (!mUpdateTimerLock)
+		if (mOperateEnable)
 		{
-			//first time to end
-			mUpdateTimerLock = true;
-			playEffect(ELECTROSWITCH);
-			switchTurn();
+			//ended
+			if (!mUpdateTimerLock)
+			{
+				//first time to end
+				mUpdateTimerLock = true;
+				playEffect(ELECTROSWITCH);
+				switchTurn();
+			}
 		}
 	}
 	auto p0 = Vec2(
