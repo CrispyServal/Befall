@@ -611,16 +611,13 @@ void GameScene::update(float delta)
 	}
 	else
 	{
-		if (mOperateEnable)
+		//ended
+		if (!mUpdateTimerLock)
 		{
-			//ended
-			if (!mUpdateTimerLock)
-			{
-				//first time to end
-				mUpdateTimerLock = true;
-				playEffect(ELECTROSWITCH);
-				switchTurn();
-			}
+			//first time to end
+			mUpdateTimerLock = true;
+			playEffect(ELECTROSWITCH);
+			switchTurn();
 		}
 	}
 	auto p0 = Vec2(
@@ -1276,6 +1273,10 @@ void GameScene::die(const MyPointStruct & point, const int & tF)
 	if (foundU)
 	{
 		playEffect(FALLAPART);
+		if (mGameState[tF].unitMap.at(point).type == farmer)
+		{
+			refreshResourceCollectionState(point, false, tF);
+		}
 		mPopulation[tF] -= mGameState[tF].unitMap[point].property.numPopulation;
 		if (mGameMode == server || mGameMode == client)
 		{
