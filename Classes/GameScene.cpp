@@ -465,6 +465,7 @@ void GameScene::netUpdate(float delta)
 			CCLOG("2 p");
 			while (!mNet.sendTwoPoint(mNet.getPoints()));
 			CCLOG("sended back");
+			CCLOG("%d,%d  %d,%d", mNet.getPoints().first.x, mNet.getPoints().first.y, mNet.getPoints().second.x, mNet.getPoints().second.y);
 			readTwoPoint(tF);
 		}
 		else if (which == end)
@@ -485,7 +486,7 @@ void GameScene::netUpdate(float delta)
 	else
 	{
 		auto err = WSAGetLastError();
-		CCLOG("net err: %d", err);
+		//CCLOG("net err: %d", err);
 		if (err != WSAEWOULDBLOCK)
 		{
 			CCLOG("he GGed!!!");
@@ -516,6 +517,17 @@ void GameScene::readTwoPoint(const int & tF)
 		{
 			//attack resource
 			CCLOG("read 2 p: attack resources or base");
+			attack = true;
+			break;
+		}
+	}
+	//near base!
+	for (auto & i : getNearPoint(mBasePosition[tF]))
+	{
+		if (i == twoPoint.second)
+		{
+			//attack my base
+			CCLOG("read 2p: attack my base nearing");
 			attack = true;
 			break;
 		}
